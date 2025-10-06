@@ -99,7 +99,7 @@
             android:paddingEnd="16dp">
 
             <Button
-                android:id="@+id/button1"
+                android:id="@+id/button_layout_duration_15min"
                 style="@style/Widget.MaterialComponents.Button.Icon"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -109,7 +109,7 @@
 
             <!-- 버튼 2 -->
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/button_layout_duration_30min"
                 style="@style/Widget.MaterialComponents.Button.Icon"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -119,7 +119,7 @@
 
             <!-- 버튼 3 -->
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/button_layout_duration_60min"
                 style="@style/Widget.MaterialComponents.Button.Icon"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -129,7 +129,7 @@
 
             <!-- 버튼 4 -->
             <Button
-                android:id="@+id/button4"
+                android:id="@+id/button_layout_duration_custom"
                 style="@style/Widget.MaterialComponents.Button.Icon"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
