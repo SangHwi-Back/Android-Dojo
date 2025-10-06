@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SimpleNeatPomodoro</string>
+    <string name="app_title">Pomodoro Timer</string>
+    <string name="app_sub_title">Stay focuesed and productive</string>
+</resources>
