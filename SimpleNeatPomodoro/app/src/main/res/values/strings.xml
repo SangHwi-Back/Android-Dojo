@@ -3,4 +3,11 @@
     <string name="app_title">Pomodoro Timer</string>
     <string name="app_sub_title">Stay focuesed and productive</string>
     <string name="main_button_start">Start</string>
+    <string name="main_select_duration_title">Select Duration</string>
+    <string name="main_select_duration_15min">15m</string>
+    <string name="main_select_duration_30min">30m</string>
+    <string name="main_select_duration_60min">60m</string>
+    <string name="main_repeat_count_title">Repeat Count</string>
+    <string name="main_repeat_count_plus">+</string>
+    <string name="main_repeat_count_minus">-</string>
 </resources>
