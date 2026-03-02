@@ -31,17 +31,6 @@ class MainActivity : AppCompatActivity() {
         navController = navHostFragment.navController
         bottomNavigationView.setupWithNavController(navController)
 
-        val menuView = bottomNavigationView.getChildAt(0) as ViewGroup
-        val margin = (80 * resources.displayMetrics.density).toInt()
-        for (i in 0 until menuView.childCount) {
-            val item = menuView.getChildAt(i)
-            val newParams = ViewGroup.MarginLayoutParams(item.layoutParams)
-            newParams.marginStart = if (i == 0) margin else 0
-            newParams.marginEnd = if (i == menuView.childCount - 1) margin else 0
-            item.layoutParams = newParams
-            item.requestLayout()
-        }
-
         cameraFloatingButton.setOnClickListener {
             val intent = Intent(this, CameraActivity::class.java)
             startActivity(intent)
