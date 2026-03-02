@@ -62,6 +62,8 @@ dependencies {
 //    navigation
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+//    glide
+    implementation(libs.glide)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
