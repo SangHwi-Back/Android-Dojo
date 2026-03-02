@@ -24,18 +24,14 @@ class CameraActivity : AppCompatActivity() {
     private val REQUEST_ALBUM_CAPTURE = 102
     private val CAMERA_PERMISSION_CODE = 103
     private val ALBUM_PERMISSION_CODE = 104
-    private val imageCaptureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-    private val getContentImageIntent = Intent(Intent.ACTION_GET_CONTENT).apply {
-        type = "image/*"
-    }
     private fun isGrantedCameraPermission() = ContextCompat.checkSelfPermission(
         this,
         Manifest.permission.CAMERA
-    ) != PackageManager.PERMISSION_GRANTED
+    ) == PackageManager.PERMISSION_GRANTED
     private fun isGrantedAlbumPermission() = ContextCompat.checkSelfPermission(
         this,
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    ) != PackageManager.PERMISSION_GRANTED
+        Manifest.permission.READ_MEDIA_IMAGES
+    ) == PackageManager.PERMISSION_GRANTED
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -62,32 +58,31 @@ class CameraActivity : AppCompatActivity() {
         overridePendingTransition(0, R.anim.slide_down)
     }
     private fun requestCameraPermission() {
-        if (isGrantedCameraPermission()) {
+        if (isGrantedCameraPermission())
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.CAMERA),
                 CAMERA_PERMISSION_CODE
             )
-        } else {
+        else
             dispatchTakePictureIntent()
-        }
     }
     private fun requestAlbumPermission() {
-        if (isGrantedAlbumPermission()) {
+        if (isGrantedAlbumPermission())
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
-                ALBUM_PERMISSION_CODE
-            )
-        } else {
+                ALBUM_PERMISSION_CODE)
+        else
             dispatchOpenAlbumIntent()
-        }
     }
     private fun dispatchTakePictureIntent() {
-        startActivityForResult(imageCaptureIntent, REQUEST_IMAGE_CAPTURE)
+        startActivityForResult(Intent(MediaStore.ACTION_IMAGE_CAPTURE), REQUEST_IMAGE_CAPTURE)
     }
     private fun dispatchOpenAlbumIntent() {
-        startActivityForResult(getContentImageIntent, REQUEST_ALBUM_CAPTURE)
+        startActivityForResult(Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "image/*"
+        }, REQUEST_ALBUM_CAPTURE)
     }
     override fun onRequestPermissionsResult(
         requestCode: Int,
