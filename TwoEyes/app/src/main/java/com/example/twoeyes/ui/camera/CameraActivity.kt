@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.Button
@@ -28,9 +29,13 @@ class CameraActivity : AppCompatActivity() {
         this,
         Manifest.permission.CAMERA
     ) == PackageManager.PERMISSION_GRANTED
-    private fun isGrantedAlbumPermission() = ContextCompat.checkSelfPermission(
+    // Android 13 이상: READ_MEDIA_IMAGES 사용
+    // Android 12 이하: READ_EXTERNAL_STORAGE 사용
+    private val currentAlbumPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+        Manifest.permission.READ_MEDIA_IMAGES else Manifest.permission.READ_EXTERNAL_STORAGE
+    private fun isGrantedAlbumPermission(): Boolean = ContextCompat.checkSelfPermission(
         this,
-        Manifest.permission.READ_MEDIA_IMAGES
+        currentAlbumPermission
     ) == PackageManager.PERMISSION_GRANTED
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +76,7 @@ class CameraActivity : AppCompatActivity() {
         if (isGrantedAlbumPermission())
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
+                arrayOf(currentAlbumPermission),
                 ALBUM_PERMISSION_CODE)
         else
             dispatchOpenAlbumIntent()
