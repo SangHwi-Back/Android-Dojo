@@ -31,13 +31,12 @@
             android:src="@drawable/rounded_arrow_cool_down_24"/>
     </FrameLayout>
 
-    <ImageView
-        android:id="@+id/picture_image_view"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/picture_view_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="16dp"
         android:background="@color/black"
-        android:contentDescription="picture_image_view"
         app:layout_constraintTop_toBottomOf="@id/parent_button_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
