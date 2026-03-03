@@ -11,8 +11,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -21,22 +21,19 @@ import com.example.twoeyes.R
 import com.google.android.material.button.MaterialButton
 
 class CameraActivity : AppCompatActivity() {
-    private val REQUEST_IMAGE_CAPTURE = 101
-    private val REQUEST_ALBUM_CAPTURE = 102
-    private val CAMERA_PERMISSION_CODE = 103
-    private val ALBUM_PERMISSION_CODE = 104
-    private fun isGrantedCameraPermission() = ContextCompat.checkSelfPermission(
-        this,
-        Manifest.permission.CAMERA
-    ) == PackageManager.PERMISSION_GRANTED
     // Android 13 이상: READ_MEDIA_IMAGES 사용
     // Android 12 이하: READ_EXTERNAL_STORAGE 사용
     private val currentAlbumPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
         Manifest.permission.READ_MEDIA_IMAGES else Manifest.permission.READ_EXTERNAL_STORAGE
+    private fun isGrantedCameraPermission() = ContextCompat.checkSelfPermission(
+        this,
+        Manifest.permission.CAMERA
+    ) == PackageManager.PERMISSION_GRANTED
     private fun isGrantedAlbumPermission(): Boolean = ContextCompat.checkSelfPermission(
         this,
         currentAlbumPermission
     ) == PackageManager.PERMISSION_GRANTED
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -47,90 +44,79 @@ class CameraActivity : AppCompatActivity() {
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
-        findViewById<MaterialButton>(R.id.button_back).setOnClickListener {
-            finish()
-        }
-        findViewById<Button>(R.id.show_camera_button).setOnClickListener {
-            requestCameraPermission()
-        }
-        findViewById<Button>(R.id.show_album_button).setOnClickListener {
-            requestAlbumPermission()
-        }
+        findViewById<MaterialButton>(R.id.button_back)
+            .setOnClickListener { finish() }
+        findViewById<Button>(R.id.show_camera_button)
+            .setOnClickListener { requestCameraPermission() }
+        findViewById<Button>(R.id.show_album_button)
+            .setOnClickListener { requestAlbumPermission() }
     }
     override fun finish() {
         super.finish()
-        overridePendingTransition(0, R.anim.slide_down)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+            overrideActivityTransition(
+                OVERRIDE_TRANSITION_CLOSE, 0, R.anim.slide_down)
+        else
+            @Suppress("DEPRECATION")
+            overridePendingTransition(0, R.anim.slide_down)
     }
+    // 카메라로 사진 찍기
+    private val takePictureLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val imageBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            result.data?.extras?.getParcelable("data", Bitmap::class.java)
+        else
+            @Suppress("DEPRECATION")
+            result.data?.extras?.getParcelable("data")
+
+        if (result.resultCode == RESULT_OK && imageBitmap != null)
+            findViewById<ImageView>(R.id.picture_image_view).setImageBitmap(imageBitmap)
+        else
+            showToast("Failed to get image")
+    }
+    // 앨범에서 이미지 선택
+    private val pickImageLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val uri = result.data?.data
+        if (result.resultCode == RESULT_OK && uri != null)
+            Glide.with(this).load(uri).into(findViewById(R.id.picture_image_view))
+        else
+            showToast("Failed to get image URI")
+    }
+    // 카메라 권한 요청
+    private val cameraPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (isGranted) takePictureLauncher.launch(intent) else showToast("Camera permission not granted")
+    }
+    // 앨범 권한 요청
+    private val albumPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply { type = "image/*" }
+        if (isGranted) pickImageLauncher.launch(intent) else showToast("Album permission not granted")
+    }
+    private fun showToast(message: String) = Toast
+        .makeText(this, message, Toast.LENGTH_LONG).show()
     private fun requestCameraPermission() {
         if (isGrantedCameraPermission())
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                CAMERA_PERMISSION_CODE
-            )
+            // 권한이 이미 있으면 바로 카메라 실행
+            takePictureLauncher.launch(Intent(MediaStore.ACTION_IMAGE_CAPTURE))
         else
-            dispatchTakePictureIntent()
+            // 권한이 없으면 권한 요청
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
     }
+
     private fun requestAlbumPermission() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply { type = "image/*" }
         if (isGrantedAlbumPermission())
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(currentAlbumPermission),
-                ALBUM_PERMISSION_CODE)
+            // 권한이 이미 있으면 바로 앨범 실행
+            pickImageLauncher.launch(intent)
         else
-            dispatchOpenAlbumIntent()
-    }
-    private fun dispatchTakePictureIntent() {
-        startActivityForResult(Intent(MediaStore.ACTION_IMAGE_CAPTURE), REQUEST_IMAGE_CAPTURE)
-    }
-    private fun dispatchOpenAlbumIntent() {
-        startActivityForResult(Intent(Intent.ACTION_GET_CONTENT).apply {
-            type = "image/*"
-        }, REQUEST_ALBUM_CAPTURE)
-    }
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String?>,
-        grantResults: IntArray,
-        deviceId: Int
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
-        val isPermissionGranted = grantResults.isNotEmpty()
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED
-        if (isPermissionGranted.not()) {
-            Toast
-                .makeText(this, "Permission not granted", Toast.LENGTH_LONG)
-                .show()
-            return
-        }
-        when (requestCode) {
-            CAMERA_PERMISSION_CODE -> dispatchTakePictureIntent()
-            ALBUM_PERMISSION_CODE -> dispatchOpenAlbumIntent()
-            else -> return
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if ((resultCode == RESULT_OK).not()) {
-            Toast
-                .makeText(this, "Activity Result Error", Toast.LENGTH_LONG)
-                .show()
-            return
-        }
-
-        if (requestCode == REQUEST_IMAGE_CAPTURE) {
-            val imageBitmap = data?.extras?.get("data") as Bitmap
-            findViewById<ImageView>(R.id.picture_image_view).setImageBitmap(imageBitmap)
-        } else if (requestCode == REQUEST_ALBUM_CAPTURE) {
-            val uri = data?.data
-            if (uri != null) {
-                val imageView = findViewById<ImageView>(R.id.picture_image_view)
-                Glide.with(this).load(uri).into(imageView)
-            } else {
-                Toast.makeText(this, "Failed to get image URI", Toast.LENGTH_SHORT).show()
-            }
-        }
+            // 권한이 없으면 권한 요청
+            albumPermissionLauncher.launch(currentAlbumPermission)
     }
 }
