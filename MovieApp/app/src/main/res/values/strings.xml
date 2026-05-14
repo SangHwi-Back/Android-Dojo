@@ -261,6 +261,7 @@
     <string name="sample_theater_3">Starlight Cinema</string>
     <string name="sample_theater_3_address">789 Park Boulevard, Uptown</string>
     <string name="search_trending_now">Trending Now</string>
-    <string name="search_browsing_all">Browsing All!</string>
+    <string name="search_browse_all">Browse All</string>
+    <string name="search_fragment_recent_searches">Recent Searches</string>
 
 </resources>

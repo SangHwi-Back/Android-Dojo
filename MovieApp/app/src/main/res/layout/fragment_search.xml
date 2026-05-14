@@ -19,13 +19,13 @@
             android:background="?android:attr/listDivider"
             android:layout_marginBottom="8dp"/>
 
-
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.Material3.SearchBar.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp"
             android:background="@color/background_secondary"
             app:boxCornerRadiusBottomEnd="@dimen/cardview_default_radius">
 
@@ -37,42 +37,85 @@
         </com.google.android.material.textfield.TextInputLayout>
 
 <!--        Recent Search-->
-        <TextView
-            android:layout_marginStart="8dp"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:pointerIcon="wait"
-            android:text="@string/screen_title_search" />
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp"
+            android:layout_marginHorizontal="8dp">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/search_trending_now"
+                android:src="@drawable/schedule_outlined_24px"
+                app:tint="@color/icon_default"
+                android:layout_marginEnd="4dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary"
+                android:fontFamily="@font/dm_sans_medium"
+                android:layout_gravity="center"
+                android:textSize="@dimen/text_sm"
+                android:text="@string/search_fragment_recent_searches" />
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recent_search_chip_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="24dp"
+            android:layout_marginHorizontal="4dp" />
 
 <!--        Trending Now-->
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/search_trending_now"/>
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp"
+            android:layout_marginHorizontal="8dp"
+            tools:ignore="UseCompoundDrawables">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/search_trending_now"
+                android:src="@drawable/trending_up_24px"
+                app:tint="@color/green_accent"
+                android:layout_marginEnd="4dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/search_trending_now"
+                android:fontFamily="@font/dm_sans_semibold"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_sm"
+                android:layout_gravity="center"/>
+        </LinearLayout>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/trending_now_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="24dp"
+            android:layout_marginHorizontal="4dp" />
 
 <!--        Browsing All-->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/search_browsing_all"/>
+            android:text="@string/search_browse_all"
+            android:fontFamily="@font/dm_sans_semibold"
+            android:textSize="@dimen/text_lg"
+            android:textColor="@color/text_primary"
+            android:layout_marginBottom="8dp"
+            android:layout_marginHorizontal="8dp"/>
 
-        <LinearLayout
-            android:id="@+id/browsing_all_linear_layout"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/browse_all_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"/>
+            android:layout_marginHorizontal="4dp" />
 
     </LinearLayout>
 </ScrollView>
