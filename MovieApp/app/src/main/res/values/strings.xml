@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ======================== -->
+    <!--       APP GENERAL        -->
+    <!-- ======================== -->
+
+    <string name="app_name">CineBook</string>
+    <string name="app_tagline">Your Cinema, Your Way</string>
+
+    <!-- ======================== -->
+    <!--     NAVIGATION TABS      -->
+    <!-- ======================== -->
+
+    <string name="nav_search">Search</string>
+    <string name="nav_book">Book</string>
+    <string name="nav_my_info">My Info</string>
+
+    <!-- ======================== -->
+    <!--      COMMON ACTIONS      -->
+    <!-- ======================== -->
+
+    <string name="action_back">Back</string>
+    <string name="action_close">Close</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_continue">Continue</string>
+    <string name="action_done">Done</string>
+    <string name="action_sign_in">Sign In</string>
+    <string name="action_sign_out">Sign Out</string>
+    <string name="action_book_now">Book Now</string>
+    <string name="action_add_to_list">Add to List</string>
+    <string name="action_view_all">View All</string>
+    <string name="action_see_more">See More</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_search">Search</string>
+    <string name="action_share">Share</string>
+    <string name="action_more_options">More Options</string>
+    <string name="action_history">History</string>
+    <string name="action_play_trailer">Play Trailer</string>
+
+    <!-- ======================== -->
+    <!--      BOOK MOVIE SCREEN   -->
+    <!-- ======================== -->
+
+    <string name="screen_title_book_movie">Book Movie</string>
+    <string name="label_select_theater">Select Theater</string>
+    <string name="label_select_date">Select Date</string>
+    <string name="label_select_showtime">Select Showtime</string>
+    <string name="label_select_seats">Select Seats</string>
+
+    <!-- Step labels -->
+    <string name="step_theater">Theater</string>
+    <string name="step_date">Date</string>
+    <string name="step_seats">Seats</string>
+    <string name="step_payment">Payment</string>
+
+    <!-- Theater list item -->
+    <string name="label_distance_format">%1$.1f km</string>
+    <string name="content_desc_theater_chevron">View showtimes for %1$s</string>
+
+    <!-- ======================== -->
+    <!--    MOVIE DETAIL SHEET    -->
+    <!-- ======================== -->
+
+    <string name="label_rating_format">%1$.1f /10</string>
+    <string name="label_duration_format">%1$dh %2$dm</string>
+    <string name="label_release_date_format">%1$s</string>
+    <string name="content_desc_play_button">Play trailer for %1$s</string>
+    <string name="content_desc_close_button">Close</string>
+    <string name="content_desc_movie_poster">%1$s movie poster</string>
+
+    <!-- ======================== -->
+    <!--      MY INFO SCREEN      -->
+    <!-- ======================== -->
+
+    <string name="screen_title_my_info">CineBook</string>
+
+    <!-- User profile card -->
+    <string name="label_guest_user">Guest User</string>
+    <string name="label_guest_subtitle">Sign in to access your bookings</string>
+    <string name="content_desc_profile_avatar">Profile avatar</string>
+
+    <!-- Stats -->
+    <string name="label_stats_movies">Movies</string>
+    <string name="label_stats_points">Points</string>
+    <string name="label_stats_saved">Saved</string>
+    <string name="label_stats_movies_count">%1$d</string>
+    <string name="label_stats_points_format">%1$s</string>
+    <string name="label_stats_saved_format">$%1$d</string>
+
+    <!-- Upcoming bookings section -->
+    <string name="section_upcoming_bookings">Upcoming Bookings</string>
+    <string name="label_no_upcoming_bookings">No upcoming bookings</string>
+    <string name="label_booking_cinema">%1$s</string>
+    <string name="label_booking_datetime">%1$s at %2$s</string>
+    <string name="label_booking_seats">Seats: %1$s</string>
+    <string name="content_desc_booking_item_arrow">View booking details for %1$s</string>
+
+    <!-- Menu items -->
+    <string name="menu_my_bookings">My Bookings</string>
+    <string name="menu_payment_methods">Payment Methods</string>
+    <string name="menu_notifications">Notifications</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_help_support">Help &amp; Support</string>
+    <string name="menu_about">About CineBook</string>
+
+    <!-- ======================== -->
+    <!--      SEARCH SCREEN       -->
+    <!-- ======================== -->
+
+    <string name="screen_title_search">Search Movies</string>
+    <string name="hint_search_movies">Search movies, genresâ¦</string>
+    <string name="label_now_playing">Now Playing</string>
+    <string name="label_coming_soon">Coming Soon</string>
+    <string name="label_top_rated">Top Rated</string>
+    <string name="label_no_results">No results found for \"%1$s\"</string>
+
+    <!-- ======================== -->
+    <!--    MOVIE CARD LABELS     -->
+    <!-- ======================== -->
+
+    <string name="label_genre_sci_fi">Sci-Fi</string>
+    <string name="label_genre_adventure">Adventure</string>
+    <string name="label_genre_action">Action</string>
+    <string name="label_genre_drama">Drama</string>
+    <string name="label_genre_comedy">Comedy</string>
+    <string name="label_genre_thriller">Thriller</string>
+    <string name="label_genre_horror">Horror</string>
+    <string name="label_genre_romance">Romance</string>
+    <string name="label_genre_animation">Animation</string>
+    <string name="label_genre_documentary">Documentary</string>
+
+    <!-- ======================== -->
+    <!--      SEAT SELECTION      -->
+    <!-- ======================== -->
+
+    <string name="screen_title_select_seats">Select Seats</string>
+    <string name="label_screen_front">SCREEN</string>
+    <string name="label_seat_available">Available</string>
+    <string name="label_seat_selected">Selected</string>
+    <string name="label_seat_unavailable">Unavailable</string>
+    <string name="label_selected_seats">Selected: %1$s</string>
+    <string name="label_total_price">Total: $%1$.2f</string>
+    <string name="label_no_seats_selected">Please select at least one seat</string>
+
+    <!-- ======================== -->
+    <!--      PAYMENT SCREEN      -->
+    <!-- ======================== -->
+
+    <string name="screen_title_payment">Payment</string>
+    <string name="label_order_summary">Order Summary</string>
+    <string name="label_ticket_price">Ticket Price</string>
+    <string name="label_service_fee">Service Fee</string>
+    <string name="label_total">Total</string>
+    <string name="label_payment_method">Payment Method</string>
+    <string name="action_pay_now">Pay Now</string>
+    <string name="label_secure_payment">Secured by 256-bit encryption</string>
+
+    <!-- ======================== -->
+    <!--    BOOKING CONFIRMATION  -->
+    <!-- ======================== -->
+
+    <string name="screen_title_booking_confirmed">Booking Confirmed!</string>
+    <string name="label_booking_id">Booking ID: %1$s</string>
+    <string name="label_booking_confirmed_message">Your tickets have been booked successfully. Show this QR code at the theater.</string>
+    <string name="action_download_ticket">Download Ticket</string>
+    <string name="action_add_to_wallet">Add to Wallet</string>
+    <string name="action_go_home">Go to Home</string>
+
+    <!-- ======================== -->
+    <!--       SIGN IN SCREEN     -->
+    <!-- ======================== -->
+
+    <string name="screen_title_sign_in">Sign In</string>
+    <string name="hint_email">Email address</string>
+    <string name="hint_password">Password</string>
+    <string name="action_forgot_password">Forgot password?</string>
+    <string name="label_or">or</string>
+    <string name="action_sign_in_google">Continue with Google</string>
+    <string name="action_sign_in_apple">Continue with Apple</string>
+    <string name="label_no_account">Don\'t have an account?</string>
+    <string name="action_create_account">Create Account</string>
+
+    <!-- ======================== -->
+    <!--     ERROR / EMPTY STATES -->
+    <!-- ======================== -->
+
+    <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="error_network">No internet connection. Please check your network.</string>
+    <string name="error_not_found">Content not found.</string>
+    <string name="error_loading_movies">Failed to load movies. Tap to retry.</string>
+    <string name="error_loading_theaters">Failed to load theaters. Tap to retry.</string>
+    <string name="error_booking_failed">Booking failed. Please try again.</string>
+    <string name="error_payment_failed">Payment failed. Please check your details.</string>
+    <string name="empty_bookings">You have no upcoming bookings.\nBook a movie to get started!</string>
+    <string name="empty_watchlist">Your watchlist is empty.\nAdd movies you want to watch.</string>
+
+    <!-- ======================== -->
+    <!--     CONTENT DESCRIPTIONS -->
+    <!-- ======================== -->
+
+    <string name="content_desc_star_rating">Rating: %1$.1f out of 10</string>
+    <string name="content_desc_location_icon">Theater location</string>
+    <string name="content_desc_duration_icon">Duration</string>
+    <string name="content_desc_calendar_icon">Release date</string>
+    <string name="content_desc_ticket_icon">Booking</string>
+    <string name="content_desc_search_icon">Search</string>
+    <string name="content_desc_profile_icon">My profile</string>
+    <string name="content_desc_chevron_right">Navigate</string>
+    <string name="content_desc_badge_count">%1$d notifications</string>
+    <string name="content_desc_share">Share</string>
+    <string name="content_desc_history">Browsing history</string>
+    <string name="content_desc_more">More options</string>
+
+    <!-- ======================== -->
+    <!--     LOADING / STATUS     -->
+    <!-- ======================== -->
+
+    <string name="status_loading">Loadingâ¦</string>
+    <string name="status_loading_movies">Loading moviesâ¦</string>
+    <string name="status_loading_theaters">Finding theaters near youâ¦</string>
+    <string name="status_processing_payment">Processing paymentâ¦</string>
+
+    <!-- ======================== -->
+    <!--     DIALOGS / PROMPTS    -->
+    <!-- ======================== -->
+
+    <string name="dialog_title_cancel_booking">Cancel Booking?</string>
+    <string name="dialog_message_cancel_booking">Are you sure you want to cancel this booking? This action cannot be undone.</string>
+    <string name="dialog_title_remove_from_list">Remove from List?</string>
+    <string name="dialog_confirm">Confirm</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_yes">Yes</string>
+    <string name="dialog_no">No</string>
+    <string name="dialog_ok">OK</string>
+
+    <!-- ======================== -->
+    <!--    NOTIFICATION LABELS   -->
+    <!-- ======================== -->
+
+    <string name="notif_channel_bookings_name">Bookings</string>
+    <string name="notif_channel_bookings_desc">Notifications for your movie bookings</string>
+    <string name="notif_channel_promotions_name">Promotions</string>
+    <string name="notif_channel_promotions_desc">Deals and offers from CineBook</string>
+    <string name="notif_booking_reminder_title">Your movie starts soon!</string>
+    <string name="notif_booking_reminder_body">%1$s at %2$s begins in 1 hour. Don\'t forget your tickets!</string>
+
+    <!-- ======================== -->
+    <!--      SAMPLE / DEMO DATA  -->
+    <!-- (Remove in production)   -->
+    <!-- ======================== -->
+
+    <string name="sample_movie_title_1">Ocean\'s Eleven: Legacy</string>
+    <string name="sample_movie_title_2">Dune: Part Three</string>
+    <string name="sample_movie_title_3">Neon Knights</string>
+    <string name="sample_theater_1">IMAX Cineplex Downtown</string>
+    <string name="sample_theater_1_address">123 Main Street, Downtown</string>
+    <string name="sample_theater_2">Galaxy Multiplex</string>
+    <string name="sample_theater_2_address">456 Oak Avenue, Midtown</string>
+    <string name="sample_theater_3">Starlight Cinema</string>
+    <string name="sample_theater_3_address">789 Park Boulevard, Uptown</string>
+
+</resources>

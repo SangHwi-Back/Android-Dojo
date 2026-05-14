@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ======================== -->
+    <!--     PRIMARY GREEN        -->
+    <!-- ======================== -->
+
+    <!-- Main brand green (buttons, highlights, icons) -->
+    <color name="green_primary">#4CAF50</color>
+
+    <!-- Darker green (pressed states, dark backgrounds) -->
+    <color name="green_dark">#2E7D32</color>
+
+    <!-- Lighter green (subtle accents) -->
+    <color name="green_light">#A5D6A7</color>
+
+    <!-- Green accent (ratings, distance labels, seat labels) -->
+    <color name="green_accent">#66BB6A</color>
+
+    <!-- Green for bottom nav active indicator background -->
+    <color name="green_indicator">#1A4CAF50</color>
+
+    <!-- Green for avatar circle background -->
+    <color name="green_avatar_bg">#1B5E20</color>
+
+    <!-- ======================== -->
+    <!--     BACKGROUND COLORS    -->
+    <!-- ======================== -->
+
+    <!-- Main app background (deepest black) -->
+    <color name="background_primary">#0A0A0A</color>
+
+    <!-- Secondary background (bottom nav, header bar) -->
+    <color name="background_secondary">#111111</color>
+
+    <!-- Tertiary background (slightly lighter panels) -->
+    <color name="background_tertiary">#181818</color>
+
+    <!-- ======================== -->
+    <!--     SURFACE / CARD       -->
+    <!-- ======================== -->
+
+    <!-- Card / list item background -->
+    <color name="surface_card">#1A1A1A</color>
+
+    <!-- Elevated surface (modals, dialogs) -->
+    <color name="surface_elevated">#222222</color>
+
+    <!-- Movie detail sheet background -->
+    <color name="surface_sheet">#141414</color>
+
+    <!-- Stats card background -->
+    <color name="surface_stats">#1E1E1E</color>
+
+    <!-- ======================== -->
+    <!--      TEXT COLORS         -->
+    <!-- ======================== -->
+
+    <!-- Primary text (titles, main content) -->
+    <color name="text_primary">#FFFFFF</color>
+
+    <!-- Secondary text (subtitles, meta info) -->
+    <color name="text_secondary">#9E9E9E</color>
+
+    <!-- Hint / placeholder text -->
+    <color name="text_hint">#616161</color>
+
+    <!-- Disabled text -->
+    <color name="text_disabled">#424242</color>
+
+    <!-- ======================== -->
+    <!--       ICON COLORS        -->
+    <!-- ======================== -->
+
+    <!-- Default icon color (inactive nav, chevrons) -->
+    <color name="icon_default">#757575</color>
+
+    <!-- Active icon color (selected nav item) -->
+    <color name="icon_active">#FFFFFF</color>
+
+    <!-- Green icon (location pin, booking icon) -->
+    <color name="icon_green">#4CAF50</color>
+
+    <!-- ======================== -->
+    <!--    BORDER / DIVIDER      -->
+    <!-- ======================== -->
+
+    <!-- Subtle border for cards / chips -->
+    <color name="border_color">#2C2C2C</color>
+
+    <!-- Divider line color -->
+    <color name="divider_color">#1F1F1F</color>
+
+    <!-- ======================== -->
+    <!--     CHIP / TAG COLORS    -->
+    <!-- ======================== -->
+
+    <!-- Genre chip background -->
+    <color name="chip_background">#1F1F1F</color>
+
+    <!-- Genre chip stroke -->
+    <color name="chip_stroke">#3A3A3A</color>
+
+    <!-- Genre chip text -->
+    <color name="chip_text">#CCCCCC</color>
+
+    <!-- ======================== -->
+    <!--    BOTTOM NAVIGATION     -->
+    <!-- ======================== -->
+
+    <!-- Bottom nav icon unselected -->
+    <color name="bottom_nav_icon_unselected">#757575</color>
+
+    <!-- Bottom nav icon selected -->
+    <color name="bottom_nav_icon_selected">#FFFFFF</color>
+
+    <!-- Bottom nav background -->
+    <color name="bottom_nav_background">#111111</color>
+
+    <!--
+        bottom_nav_icon_color is a state-list color defined in
+        res/color/bottom_nav_icon_color.xml (selected=#FFFFFF, default=#757575).
+        Reference it as @color/bottom_nav_icon_color in themes.xml.
+    -->
+
+    <!-- ======================== -->
+    <!--    PROGRESS / STEPPER    -->
+    <!-- ======================== -->
+
+    <!-- Step indicator active (filled green dot) -->
+    <color name="step_active">#4CAF50</color>
+
+    <!-- Step indicator completed (green dot, previous) -->
+    <color name="step_completed">#4CAF50</color>
+
+    <!-- Step indicator inactive (gray dot) -->
+    <color name="step_inactive">#424242</color>
+
+    <!-- Step connector line active -->
+    <color name="step_line_active">#4CAF50</color>
+
+    <!-- Step connector line inactive -->
+    <color name="step_line_inactive">#424242</color>
+
+    <!-- ======================== -->
+    <!--       BADGE              -->
+    <!-- ======================== -->
+
+    <!-- Notification badge background (green) -->
+    <color name="badge_background">#4CAF50</color>
+
+    <!-- Notification badge text -->
+    <color name="badge_text">#000000</color>
+
+    <!-- ======================== -->
+    <!--    OVERLAY / SCRIM       -->
+    <!-- ======================== -->
+
+    <!-- Image gradient overlay (bottom of movie poster) -->
+    <color name="overlay_gradient_start">#00000000</color>
+    <color name="overlay_gradient_end">#E6000000</color>
+
+    <!-- Sheet scrim (backdrop behind bottom sheet) -->
+    <color name="scrim_color">#80000000</color>
+
+    <!-- Play button overlay circle -->
+    <color name="play_button_bg">#CC4CAF50</color>
+
+    <!-- ======================== -->
+    <!--    STAR / RATING         -->
+    <!-- ======================== -->
+
+    <!-- Star rating color -->
+    <color name="star_color">#FFC107</color>
+
+    <!-- Star empty color -->
+    <color name="star_empty">#424242</color>
+
+    <!-- ======================== -->
+    <!--   STATE / INTERACTION    -->
+    <!-- ======================== -->
+
+    <!-- Ripple effect on dark surfaces -->
+    <color name="ripple_color">#1AFFFFFF</color>
+
+    <!-- Ripple effect on green buttons -->
+    <color name="ripple_on_green">#1A000000</color>
+
+    <!-- Pressed state for cards -->
+    <color name="card_pressed">#252525</color>
+
+    <!-- ======================== -->
+    <!--        MISC              -->
+    <!-- ======================== -->
+
+    <!-- Pure white -->
+    <color name="white">#FFFFFF</color>
+
+    <!-- Pure black -->
+    <color name="black">#000000</color>
+
+    <!-- Error / destructive -->
+    <color name="error_red">#CF6679</color>
+
+    <!-- Transparent -->
+    <color name="transparent">#00000000</color>
+
+    <!-- Seat selected highlight -->
+    <color name="seat_selected">#4CAF50</color>
+
+    <!-- Seat available -->
+    <color name="seat_available">#2C2C2C</color>
+
+    <!-- Seat taken / unavailable -->
+    <color name="seat_unavailable">#424242</color>
+
+</resources>

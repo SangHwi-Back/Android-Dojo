@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Place this file in:  res/color/bottom_nav_icon_color.xml
+    Referenced in themes.xml as @color/bottom_nav_icon_color
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Active / selected tab -->
+    <item
+        android:color="@color/bottom_nav_icon_selected"
+        android:state_checked="true" />
+    <!-- Pressed state -->
+    <item
+        android:color="@color/bottom_nav_icon_selected"
+        android:state_pressed="true" />
+    <!-- Default (unselected) -->
+    <item android:color="@color/bottom_nav_icon_unselected" />
+</selector>

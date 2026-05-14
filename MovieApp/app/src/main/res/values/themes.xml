@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme
+         material = "1.13.0" 은 Material 3 라이브러리이므로
+         모든 parent는 Theme.Material3 / Widget.Material3 계열을 사용해야 합니다. -->
+    <style name="Theme.CineBook" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/green_primary</item>
+        <item name="colorPrimaryContainer">@color/green_dark</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorOnPrimaryContainer">@color/white</item>
+        <item name="colorSecondary">@color/green_accent</item>
+        <item name="colorSecondaryContainer">@color/green_dark</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorOnSecondaryContainer">@color/white</item>
+        <item name="android:colorBackground">@color/background_primary</item>
+        <item name="colorSurface">@color/surface_card</item>
+        <item name="colorOnBackground">@color/text_primary</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorSurfaceVariant">@color/surface_elevated</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorError">@color/error_red</item>
+        <item name="colorOnError">@color/white</item>
+        <item name="android:statusBarColor">@color/background_primary</item>
+        <item name="android:navigationBarColor">@color/background_primary</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowBackground">@color/background_primary</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+        <item name="colorControlHighlight">@color/ripple_color</item>
+        <item name="toolbarStyle">@style/Widget.CineBook.Toolbar</item>
+        <item name="bottomNavigationStyle">@style/Widget.CineBook.BottomNavigationView</item>
+        <item name="materialCardViewStyle">@style/Widget.CineBook.CardView</item>
+        <item name="materialButtonStyle">@style/Widget.CineBook.Button</item>
+        <item name="borderlessButtonStyle">@style/Widget.CineBook.Button.Borderless</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.CineBook.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.CineBook.MediumComponent</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.CineBook.LargeComponent</item>
+    </style>
+
+    <!-- Splash screen theme -->
+    <style name="Theme.CineBook.Splash" parent="Theme.CineBook">
+        <item name="android:windowBackground">@drawable/ic_launcher_foreground</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <!-- ===================== -->
+    <!--      WIDGET STYLES    -->
+    <!-- ===================== -->
+
+    <!-- Toolbar -->
+    <style name="Widget.CineBook.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/background_primary</item>
+        <item name="titleTextColor">@color/green_primary</item>
+        <item name="titleTextAppearance">@style/TextAppearance.CineBook.Toolbar.Title</item>
+        <item name="android:elevation">0dp</item>
+    </style>
+
+    <!-- Bottom Navigation -->
+    <style name="Widget.CineBook.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="android:background">@color/background_secondary</item>
+        <item name="itemIconTint">@color/bottom_nav_icon_color</item>
+        <item name="itemTextColor">@color/bottom_nav_icon_color</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.CineBook.BottomNavIndicator</item>
+        <item name="elevation">8dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+    </style>
+
+    <style name="Widget.CineBook.BottomNavIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/green_indicator</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.CineBook.BottomNavIndicator</item>
+    </style>
+
+    <style name="ShapeAppearance.CineBook.BottomNavIndicator" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- Card View -->
+    <style name="Widget.CineBook.CardView" parent="Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">@color/surface_card</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="contentPadding">0dp</item>
+        <item name="strokeWidth">0dp</item>
+    </style>
+
+    <style name="Widget.CineBook.CardView.TheaterItem" parent="Widget.CineBook.CardView">
+        <item name="cardCornerRadius">12dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+    </style>
+
+    <style name="Widget.CineBook.CardView.BookingItem" parent="Widget.CineBook.CardView">
+        <item name="cardCornerRadius">12dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+    </style>
+
+    <style name="Widget.CineBook.CardView.Stats" parent="Widget.CineBook.CardView">
+        <item name="cardCornerRadius">10dp</item>
+    </style>
+
+    <!-- Primary Button (Green filled) -->
+    <style name="Widget.CineBook.Button" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/green_primary</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textAppearance">@style/TextAppearance.CineBook.Button</item>
+        <item name="cornerRadius">50dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:minHeight">52dp</item>
+        <item name="elevation">0dp</item>
+    </style>
+
+    <!-- Outlined Button -->
+    <style name="Widget.CineBook.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:backgroundTint">@color/surface_card</item>
+        <item name="strokeColor">@color/border_color</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textAppearance">@style/TextAppearance.CineBook.Button</item>
+        <item name="cornerRadius">50dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:minHeight">52dp</item>
+    </style>
+
+    <!-- Borderless / Text Button -->
+    <style name="Widget.CineBook.Button.Borderless" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">@color/green_primary</item>
+        <item name="android:textAppearance">@style/TextAppearance.CineBook.Button</item>
+        <item name="rippleColor">@color/ripple_color</item>
+    </style>
+
+    <!-- Sign In Button (small outlined) -->
+    <style name="Widget.CineBook.Button.SignIn" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:backgroundTint">@color/background_primary</item>
+        <item name="strokeColor">@color/border_color</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textAppearance">@style/TextAppearance.CineBook.Body.Medium</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:minHeight">40dp</item>
+    </style>
+
+    <!-- Avatar / Profile Button -->
+    <style name="Widget.CineBook.AvatarButton" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/green_dark</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAppearance">@style/TextAppearance.CineBook.Body.Bold</item>
+        <item name="cornerRadius">50dp</item>
+        <item name="android:minWidth">40dp</item>
+        <item name="android:minHeight">40dp</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="elevation">0dp</item>
+    </style>
+
+    <!-- Genre Tag Chip -->
+    <style name="Widget.CineBook.GenreChip" parent="Widget.Material3.Chip.Filter">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="chipBackgroundColor">@color/chip_background</item>
+        <item name="chipStrokeColor">@color/chip_stroke</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipCornerRadius">50dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.CineBook.Caption</item>
+        <item name="chipMinHeight">32dp</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+    </style>
+
+    <!-- Progress Stepper Dot -->
+    <style name="Widget.CineBook.StepDot.Active" parent="">
+        <item name="android:background">@drawable/ic_launcher_foreground</item>
+        <item name="android:layout_width">10dp</item>
+        <item name="android:layout_height">10dp</item>
+    </style>
+
+    <style name="Widget.CineBook.StepDot.Inactive" parent="">
+        <item name="android:background">@drawable/ic_launcher_foreground</item>
+        <item name="android:layout_width">10dp</item>
+        <item name="android:layout_height">10dp</item>
+    </style>
+
+    <!-- ======================== -->
+    <!--   SHAPE APPEARANCES      -->
+    <!-- ======================== -->
+
+    <style name="ShapeAppearance.CineBook.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="ShapeAppearance.CineBook.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+
+    <style name="ShapeAppearance.CineBook.LargeComponent" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <style name="ShapeAppearance.CineBook.BottomSheet" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">20dp</item>
+        <item name="cornerSizeTopRight">20dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+    <!-- ======================== -->
+    <!--     TEXT APPEARANCES     -->
+    <!-- ======================== -->
+
+    <style name="TextAppearance.CineBook.AppTitle" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:textColor">@color/green_primary</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:fontFamily">@font/cinebook_display</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.02</item>
+    </style>
+
+    <style name="TextAppearance.CineBook.Toolbar.Title" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textColor">@color/green_primary</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/cinebook_display</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.CineBook.MovieTitle" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:fontFamily">@font/cinebook_display</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.CineBook.MovieTitle.Small" parent="TextAppearance.CineBook.MovieTitle">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TextAppearance.CineBook.SectionHeader" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/cinebook_body</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.CineBook.VenueName" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/cinebook_body</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="TextAppearance.CineBook.Body" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">@font/cinebook_body</item>
+        <item name="android:lineSpacingMultiplier">1.5</item>
+    </style>
+
+    <style name="TextAppearance.CineBook.Body.Medium" parent="TextAppearance.CineBook.Body">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextAppearance.CineBook.Body.Bold" parent="TextAppearance.CineBook.Body">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <style name="TextAppearance.CineBook.Button" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/cinebook_body</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+
+    <style name="TextAppearance.CineBook.Caption" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/cinebook_body</item>
+    </style>
+
+    <style name="TextAppearance.CineBook.Caption.Distance" parent="TextAppearance.CineBook.Caption">
+        <item name="android:textColor">@color/green_primary</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="TextAppearance.CineBook.Caption.Seats" parent="TextAppearance.CineBook.Caption">
+        <item name="android:textColor">@color/green_primary</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="TextAppearance.CineBook.Rating" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/cinebook_body</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.CineBook.StatsNumber" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:textColor">@color/green_primary</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:fontFamily">@font/cinebook_display</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.CineBook.StatsLabel" parent="TextAppearance.CineBook.Caption">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="TextAppearance.CineBook.Badge" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:fontFamily">@font/cinebook_body</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- ======================== -->
+    <!--   DIALOG / BOTTOM SHEET  -->
+    <!-- ======================== -->
+
+    <style name="Theme.CineBook.BottomSheetDialog" parent="Theme.Material3.DayNight.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.CineBook.BottomSheet</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Widget.CineBook.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="android:background">@color/background_primary</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.CineBook.BottomSheet</item>
+        <item name="elevation">16dp</item>
+    </style>
+
+    <!-- ======================== -->
+    <!--    NAVIGATION FRAGMENT   -->
+    <!-- ======================== -->
+
+    <style name="Theme.CineBook.Fragment" parent="Theme.CineBook">
+        <item name="android:windowAnimationStyle">@style/Animation.CineBook.Fragment</item>
+    </style>
+
+    <style name="Animation.CineBook.Fragment" parent="@android:style/Animation">
+        <item name="android:activityOpenEnterAnimation">@anim/slide_in_right</item>
+        <item name="android:activityOpenExitAnimation">@anim/slide_out_left</item>
+        <item name="android:activityCloseEnterAnimation">@anim/slide_in_left</item>
+        <item name="android:activityCloseExitAnimation">@anim/slide_out_right</item>
+    </style>
+
+</resources>
