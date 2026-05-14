@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui)
     // Feature module support for Fragments
     implementation(libs.androidx.navigation.dynamic.features.fragment)
+    implementation(libs.androidx.recyclerview)
     // Testing Navigation
     androidTestImplementation(libs.androidx.navigation.testing)
     // JSON serialization library, works with the Kotlin serialization plugin

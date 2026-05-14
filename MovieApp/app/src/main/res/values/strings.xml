@@ -110,7 +110,7 @@
     <!-- ======================== -->
 
     <string name="screen_title_search">Search Movies</string>
-    <string name="hint_search_movies">Search movies, genresâ¦</string>
+    <string name="hint_search_movies">Search movies, genres</string>
     <string name="label_now_playing">Now Playing</string>
     <string name="label_coming_soon">Coming Soon</string>
     <string name="label_top_rated">Top Rated</string>
@@ -260,5 +260,7 @@
     <string name="sample_theater_2_address">456 Oak Avenue, Midtown</string>
     <string name="sample_theater_3">Starlight Cinema</string>
     <string name="sample_theater_3_address">789 Park Boulevard, Uptown</string>
+    <string name="search_trending_now">Trending Now</string>
+    <string name="search_browsing_all">Browsing All!</string>
 
 </resources>
