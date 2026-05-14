@@ -13,15 +13,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         setSupportActionBar(binding.topAppBar)
 
         changeFragment(SearchFragment())
 
-        binding.navigationBar.setOnItemSelectedListener { item ->
+        binding.navigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_search -> {  changeFragment(SearchFragment()) }
                 R.id.nav_book -> {    changeFragment(BookFragment()) }
@@ -38,7 +38,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun changeFragment(fragment: Fragment) {
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.main_fragment, fragment).commit()
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.main_fragment, fragment)
+            .commit()
     }
 }
