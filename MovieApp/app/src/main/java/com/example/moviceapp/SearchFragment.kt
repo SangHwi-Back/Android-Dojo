@@ -1,16 +1,15 @@
 package com.example.moviceapp
 
-import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.example.moviceapp.databinding.FragmentSearchBinding
 
 // https://jtm0609.tistory.com/261
@@ -50,7 +49,7 @@ class SearchFragment : Fragment() {
             layoutManager = LinearLayoutManager(view.context).apply {
                 orientation = LinearLayoutManager.VERTICAL
             }
-            adapter = BrowseAllViewAdapter(movies, view.context)
+            adapter = BrowseAllViewAdapter(movies)
         }
     }
 
@@ -78,7 +77,7 @@ class SearchFragment : Fragment() {
         val nameText: TextView = itemView.findViewById(R.id.name_text_view)
     }
     class TrendingNowViewAdapter(
-        val bookings: List<Booking>
+        val bookings: List<Booking>,
     ) : RecyclerView.Adapter<TrendingNowViewHolder>() {
         override fun onCreateViewHolder(
             parent: ViewGroup,
@@ -92,17 +91,21 @@ class SearchFragment : Fragment() {
         override fun onBindViewHolder(
             holder: TrendingNowViewHolder,
             position: Int
-        ) {
-            holder.nameText.text = "Hello!"
-        }
+        ) = holder.setBooking(bookings[position])
         override fun getItemCount(): Int = bookings.size
     }
     class TrendingNowViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val nameText: TextView = itemView.findViewById(R.id.name_text_view)
+        fun setBooking(booking: Booking) {
+            itemView.findViewById<TextView>(R.id.name_text_view)
+                .text = booking.movie.title
+            itemView.findViewById<TextView>(R.id.point_text_view)
+                .text = booking.movie.rating.toString()
+            itemView.findViewById<ImageView>(R.id.movie_image_view)
+                .load(booking.movie.posterRes ?: R.drawable.ic_launcher_background)
+        }
     }
     class BrowseAllViewAdapter(
         val movies: List<Movie>,
-        val context: Context,
     ) : RecyclerView.Adapter<BrowseAllViewHolder>() {
         override fun onCreateViewHolder(
             parent: ViewGroup,
@@ -116,19 +119,19 @@ class SearchFragment : Fragment() {
         override fun onBindViewHolder(
             holder: BrowseAllViewHolder,
             position: Int
-        ) {
-            holder.imageView.setImageDrawable(
-                ContextCompat.getDrawable(context, R.drawable.ic_launcher_background))
-            holder.nameTextView.text = movies[position].title
-            holder.pointTextView.text = movies[position].rating.toString()
-            holder.playTimeTextView.text = movies[position].duration
-        }
+        ) = holder.setMovie(movies[position])
         override fun getItemCount(): Int = movies.size
     }
     class BrowseAllViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val imageView = itemView.findViewById<ImageView>(R.id.movie_image_view)
-        val nameTextView = itemView.findViewById<TextView>(R.id.name_text_view)
-        val pointTextView = itemView.findViewById<TextView>(R.id.point_text_view)
-        val playTimeTextView = itemView.findViewById<TextView>(R.id.play_text_view)
+        fun setMovie(movie: Movie) {
+            itemView.findViewById<ImageView>(R.id.movie_image_view)
+                .load(movie.posterRes ?: R.drawable.ic_launcher_background)
+            itemView.findViewById<TextView>(R.id.name_text_view)
+                .text = movie.title
+            itemView.findViewById<TextView>(R.id.point_text_view)
+                .text = movie.rating.toString()
+            itemView.findViewById<TextView>(R.id.play_text_view)
+                .text = movie.duration
+        }
     }
 }
