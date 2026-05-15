@@ -25,8 +25,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
-            android:layout_marginHorizontal="4dp"
-            app:spanCount="3"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager" />
+            android:layout_marginHorizontal="4dp" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

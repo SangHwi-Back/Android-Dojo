@@ -27,10 +27,10 @@ class SearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 //        RECENT SEARCHES
         binding.recentSearchChipRecyclerView.adapter = RecentChipViewAdapter(
-            listOf("Action movies", "Sci-Fi 2026", "Comedy"))
+            listOf("Action movies", "Sci-rFi 2026", "Comedy"))
 //        TRENDING NOW
         binding.trendingNowRecyclerView.adapter = ThumbnailAdapter(
-            (screenWidth/3).toInt()).apply {
+            (screenWidth * (2.toFloat()/3.toFloat())).toInt()).apply {
                 this.submitList(MoviesMock.all)
             }
 //        BROWSE ALL

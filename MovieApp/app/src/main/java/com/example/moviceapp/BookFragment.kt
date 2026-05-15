@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.moviceapp.databinding.FragmentBookBinding
 
 class BookFragment : Fragment() {
@@ -18,8 +19,9 @@ class BookFragment : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.root.width
         binding.bookRecyclerGridView.apply {
+            layoutManager = GridLayoutManager(context, 3)
+            addItemDecoration(GridSpanDecoration(3, 8))
             adapter = ThumbnailAdapter().apply {
                 this.submitList(MoviesMock.all)
             }
