@@ -35,7 +35,7 @@ class SearchFragment : Fragment() {
             }
 //        BROWSE ALL
         binding.browseAllRecyclerView.adapter = BrowseAllViewAdapter(
-            MoviesMock.all)
+            MoviesMock.all, { modalBottomSheet(it) })
     }
 
     class RecentChipViewAdapter(
@@ -63,6 +63,7 @@ class SearchFragment : Fragment() {
     }
     class BrowseAllViewAdapter(
         val movies: List<Movie>,
+        val onClickListener: (Movie) -> Unit,
     ) : RecyclerView.Adapter<BrowseAllViewHolder>() {
         override fun onCreateViewHolder(
             parent: ViewGroup,
@@ -71,16 +72,16 @@ class SearchFragment : Fragment() {
             val layoutInflater = LayoutInflater.from(parent.context)
             val listItem = layoutInflater.inflate(
                 R.layout.browse_all_list_item, parent, false)
-            return BrowseAllViewHolder(listItem)
+            return BrowseAllViewHolder(listItem, onClickListener)
         }
         override fun onBindViewHolder(
             holder: BrowseAllViewHolder,
             position: Int
-        ) = holder.setMovie(movies[position])
+        ) = holder.bind(movies[position])
         override fun getItemCount(): Int = movies.size
     }
-    class BrowseAllViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun setMovie(movie: Movie) {
+    class BrowseAllViewHolder(itemView: View, val onClickListener: (Movie) -> Unit) : RecyclerView.ViewHolder(itemView) {
+        fun bind(movie: Movie) {
             itemView.findViewById<ImageView>(R.id.movie_image_view)
                 .load(movie.posterRes ?: R.drawable.ic_launcher_background)
             itemView.findViewById<TextView>(R.id.name_text_view)
@@ -89,6 +90,13 @@ class SearchFragment : Fragment() {
                 .text = movie.rating.toString()
             itemView.findViewById<TextView>(R.id.play_text_view)
                 .text = movie.duration
+            itemView.setOnClickListener {
+                onClickListener(movie)
+            }
         }
+    }
+    private fun modalBottomSheet(movie: Movie) {
+        val modal = MovieBottomSheet(movie)
+        modal.show(childFragmentManager, MovieBottomSheet.TAG)
     }
 }

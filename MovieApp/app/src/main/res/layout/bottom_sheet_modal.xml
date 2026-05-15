@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- 이 레이아웃은 여기서 투명하게 만들 필요가 없습니다 (애초에 불가능) -->
+    <!-- 코드상에서 직접 style을 적용해 줄 거예요 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_reject_today"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="오늘 하루 보지 않기"
+            android:textColor="@color/white"
+            tools:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="닫기"
+            android:textColor="@color/white"
+            tools:textColor="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 텍스트 아래에 들어갈 View의 background를 둥근 모서리로 지정해주세요 -->
+    <!-- 들어갈 View가 여러 개라면 layout이나 cardView로 감싸 모서리를 둥글게 해주세요 -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:background="@drawable/round_top_border_20"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
+        app:srcCompat="@drawable/ic_launcher_background" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
