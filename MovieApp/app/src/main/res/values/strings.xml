@@ -161,6 +161,7 @@
     <!--    BOOKING CONFIRMATION  -->
     <!-- ======================== -->
 
+    <string name="book_screen_title">Select a Movie</string>
     <string name="screen_title_booking_confirmed">Booking Confirmed!</string>
     <string name="label_booking_id">Booking ID: %1$s</string>
     <string name="label_booking_confirmed_message">Your tickets have been booked successfully. Show this QR code at the theater.</string>
