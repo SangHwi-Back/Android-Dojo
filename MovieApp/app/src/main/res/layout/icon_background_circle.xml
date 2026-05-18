@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable name="src" type="android.graphics.drawable.Drawable" />
+    </data>
+    <FrameLayout
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:background="@drawable/rounded_icon_background">
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center"
+            android:src="@{src != null ? src : @drawable/ic_launcher_background}"
+            tools:src="@tools:sample/avatars"/>
+    </FrameLayout>
+</layout>

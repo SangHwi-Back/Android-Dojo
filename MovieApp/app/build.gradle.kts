@@ -8,6 +8,7 @@ android {
     namespace = "com.example.moviceapp"
     buildFeatures {
         viewBinding = true
+        dataBinding = true
     }
 
     compileSdk {

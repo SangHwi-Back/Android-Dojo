@@ -1,14 +1,306 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MyInfoFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/nav_my_info" />
 
-</FrameLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <FrameLayout android:theme="@style/ShapeAppearance.CineBook.SmallComponent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@color/surface_card">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/user_profile_image_view"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_margin="8dp"
+                    android:background="@color/green_avatar_bg"
+                    android:contentDescription="User Thumbnail"
+                    android:src="@drawable/person_outlined_24px"
+                    android:layout_gravity="center"
+                    app:tint="@color/green_dark"
+                    tools:src="@tools:sample/avatars" />
+
+                <LinearLayout
+                    android:id="@+id/user_profile_status_linear_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/user_profile_name_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dm_sans_bold"
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/text_lg"
+                        tools:text="Guest User" />
+
+                    <TextView
+                        android:id="@+id/user_profile_status_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dm_sans_medium"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="@dimen/text_sm"
+                        tools:text="Sign in to access your bookings" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/user_sign_in_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/syne_regular"
+                    android:layout_gravity="center"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp"
+                    android:text="@string/action_sign_in"
+                    android:textColor="@color/text_secondary" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout android:theme="@style/ShapeAppearance.CineBook.SmallComponent"
+                android:id="@+id/user_info_box_1"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="8dp"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:orientation="vertical"
+                android:background="@color/surface_card">
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/green_dark"
+                    android:fontFamily="@font/syne_semibold"
+                    android:textSize="@dimen/text_lg"
+                    android:textAlignment="center"
+                    android:layout_marginHorizontal="8dp"
+                    tools:text="12"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_primary"
+                    android:fontFamily="@font/syne_regular"
+                    android:textSize="@dimen/text_sm"
+                    android:textAlignment="center"
+                    android:layout_marginHorizontal="8dp"
+                    tools:text="Movies"/>
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+
+            <LinearLayout android:theme="@style/ShapeAppearance.CineBook.SmallComponent"
+                android:id="@+id/user_info_box_2"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="8dp"
+                app:layout_constraintDimensionRatio="1:0.8"
+                app:layout_constraintStart_toEndOf="@id/user_info_box_1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:layout_marginVertical="8dp"
+                android:background="@color/surface_card">
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/green_dark"
+                    android:fontFamily="@font/syne_semibold"
+                    android:textSize="@dimen/text_lg"
+                    android:textAlignment="center"
+                    android:layout_marginHorizontal="8dp"
+                    tools:text="1.2K"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_primary"
+                    android:fontFamily="@font/syne_regular"
+                    android:textSize="@dimen/text_sm"
+                    android:textAlignment="center"
+                    android:layout_marginHorizontal="8dp"
+                    tools:text="Points"/>
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+
+            <LinearLayout android:theme="@style/ShapeAppearance.CineBook.SmallComponent"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="8dp"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toEndOf="@id/user_info_box_2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:orientation="vertical"
+                android:background="@color/surface_card">
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/green_dark"
+                    android:fontFamily="@font/syne_semibold"
+                    android:textSize="@dimen/text_lg"
+                    android:textAlignment="center"
+                    android:layout_marginHorizontal="8dp"
+                    tools:text="$89"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_primary"
+                    android:fontFamily="@font/syne_regular"
+                    android:textSize="@dimen/text_sm"
+                    android:textAlignment="center"
+                    android:layout_marginHorizontal="8dp"
+                    tools:text="Saved"/>
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/section_upcoming_bookings"
+            android:fontFamily="@font/dm_sans_semibold"
+            android:textSize="@dimen/text_lg"
+            android:textColor="@color/text_primary"
+            android:layout_marginBottom="8dp"
+            android:layout_marginHorizontal="8dp"/>
+
+        <LinearLayout android:theme="@style/ShapeAppearance.CineBook.SmallComponent"
+            android:background="@color/surface_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="128dp"
+                android:scaleType="centerCrop"
+                tools:src="@tools:sample/avatars" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+            </LinearLayout>
+
+            <ImageButton
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/play_arrow_24px"/>
+        </LinearLayout>
+
+        <LinearLayout android:theme="@style/ShapeAppearance.CineBook.SmallComponent"
+            android:background="@color/surface_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="128dp"
+                android:scaleType="centerCrop"
+                tools:src="@tools:sample/avatars" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+            </LinearLayout>
+
+            <ImageButton
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/play_arrow_24px"/>
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
+            android:layout_margin="8dp"
+            android:orientation="horizontal">
+            
+            <include layout="@layout/icon_background_circle"
+                app:src="@drawable/confirmation_number_outlined_24px"/>
+
+            <include layout="@layout/section_title"
+                app:titleText="My bookings"/>
+
+            <include layout="@layout/badge_number_circle"
+                app:number="12" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
+            android:layout_margin="8dp"
+            android:orientation="horizontal">
+
+            <include layout="@layout/icon_background_circle"
+                app:src="@drawable/confirmation_number_outlined_24px"/>
+
+            <include layout="@layout/section_title"
+                app:titleText="My bookings"/>
+
+            <include layout="@layout/badge_number_circle"
+                app:number="12" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

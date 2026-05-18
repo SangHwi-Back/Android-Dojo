@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+            name="titleText"
+            type="String" />
+    </data>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@{titleText}"
+        android:fontFamily="@font/dm_sans_semibold"
+        android:textSize="@dimen/text_lg"
+        android:textColor="@color/text_primary" />
+</layout>
