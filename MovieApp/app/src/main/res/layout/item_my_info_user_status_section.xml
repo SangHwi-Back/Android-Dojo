@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+            name="icon_src"
+            type="android.graphics.drawable.Drawable" />
+        <variable
+            name="section_title"
+            type="String" />
+        <variable
+            name="badge_text"
+            type="String" />
+    </data>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="80dp"
+        android:layout_margin="8dp"
+        android:orientation="horizontal"
+        tools:showIn="@layout/fragment_my_info">
+
+        <include
+            layout="@layout/icon_background_circle"
+            app:src="@{icon_src}" />
+
+        <include
+            layout="@layout/section_title"
+            app:text="@{section_title}" />
+
+        <include
+            layout="@layout/badge_text_circle"
+            app:text="@{badge_text}" />
+    </LinearLayout>
+</layout>

@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.moviceapp.databinding.FragmentSearchBinding
+import com.example.moviceapp.databinding.ItemBrowseAllListBinding
 
 // https://jtm0609.tistory.com/261
 class SearchFragment : Fragment() {
@@ -71,8 +72,11 @@ class SearchFragment : Fragment() {
         ): BrowseAllViewHolder {
             val layoutInflater = LayoutInflater.from(parent.context)
             val listItem = layoutInflater.inflate(
-                R.layout.browse_all_list_item, parent, false)
-            return BrowseAllViewHolder(listItem, onClickListener)
+                R.layout.item_browse_all_list, parent, false)
+            return BrowseAllViewHolder(
+                listItem,
+                ItemBrowseAllListBinding.inflate(layoutInflater),
+                onClickListener)
         }
         override fun onBindViewHolder(
             holder: BrowseAllViewHolder,
@@ -80,7 +84,11 @@ class SearchFragment : Fragment() {
         ) = holder.bind(movies[position])
         override fun getItemCount(): Int = movies.size
     }
-    class BrowseAllViewHolder(itemView: View, val onClickListener: (Movie) -> Unit) : RecyclerView.ViewHolder(itemView) {
+    class BrowseAllViewHolder(
+        itemView: View,
+        binding: ItemBrowseAllListBinding,
+        val onClickListener: (Movie) -> Unit
+    ) : RecyclerView.ViewHolder(itemView) {
         fun bind(movie: Movie) {
             itemView.findViewById<ImageView>(R.id.movie_image_view)
                 .load(movie.posterRes ?: R.drawable.ic_launcher_background)
