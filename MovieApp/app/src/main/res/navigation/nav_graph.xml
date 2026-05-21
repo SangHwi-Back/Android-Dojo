@@ -34,7 +34,11 @@
         android:id="@+id/bookTheaterFragment"
         android:name="com.example.moviceapp.BookTheaterFragment"
         android:label="fragment_book_theater"
-        tools:layout="@layout/fragment_book_theater" />
+        tools:layout="@layout/fragment_book_theater" >
+        <argument
+            android:name="movie"
+            app:argType="com.example.moviceapp.Movie" />
+    </fragment>
     <dialog
         android:id="@+id/movieBottomSheet"
         android:name="com.example.moviceapp.MovieBottomSheet"

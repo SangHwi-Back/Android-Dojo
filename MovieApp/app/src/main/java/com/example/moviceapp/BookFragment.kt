@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.moviceapp.databinding.FragmentBookBinding
 
@@ -22,7 +23,9 @@ class BookFragment : Fragment() {
         binding.bookRecyclerGridView.apply {
             layoutManager = GridLayoutManager(context, 3)
             addItemDecoration(GridSpanDecoration(3, 8))
-            adapter = ThumbnailAdapter().apply {
+            adapter = ThumbnailAdapter { movie ->
+                findNavController().navigate(BookFragmentDirections.actionBookFragmentToBookTheaterFragment(movie))
+            }.apply {
                 this.submitList(MoviesMock.all)
             }
         }

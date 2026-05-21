@@ -1,9 +1,13 @@
 package com.example.moviceapp
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 // ================================================================
 //  데이터 모델
 // ================================================================
 
+@Parcelize
 data class Movie(
     val id: Int,
     val title: String,
@@ -14,7 +18,7 @@ data class Movie(
     val description: String,
     val posterRes: Int? = null,    // R.drawable.xxx  (없으면 null → placeholder)
     val backdropRes: Int? = null,
-)
+) : Parcelable
 
 data class Theater(
     val id: Int,

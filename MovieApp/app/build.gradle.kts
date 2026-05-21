@@ -1,7 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
-    kotlin("plugin.serialization") version "2.0.21"
-    id("androidx.navigation.safeargs.kotlin") version "2.9.8" // Add this line
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.navigation.safeargs)
 }
 
 android {
@@ -11,11 +13,7 @@ android {
         dataBinding = true
     }
 
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.moviceapp"
@@ -39,6 +37,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = "11"
     }
 }
 

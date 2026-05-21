@@ -30,9 +30,11 @@ class SearchFragment : Fragment() {
             listOf("Action movies", "Sci-rFi 2026", "Comedy"))
 //        TRENDING NOW
         binding.trendingNowRecyclerView.adapter = ThumbnailAdapter(
-            (screenWidth * (2.toFloat()/3.toFloat())).toInt()).apply {
-                this.submitList(MoviesMock.all)
-            }
+            (screenWidth * (2.toFloat()/3.toFloat())).toInt()) {
+
+        }.apply {
+            this.submitList(MoviesMock.all)
+        }
 //        BROWSE ALL
         binding.browseAllRecyclerView.adapter = BrowseAllViewAdapter(
             MoviesMock.all
