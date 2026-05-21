@@ -2,15 +2,19 @@ package com.example.moviceapp
 
 import android.app.Activity
 import android.os.Build
-import androidx.annotation.RequiresApi
+import android.util.DisplayMetrics
 import androidx.fragment.app.Fragment
 
 val Fragment.screenWidth: Float
-    @RequiresApi(Build.VERSION_CODES.R)
-    get() {
-        return requireActivity().screenWidth
-    }
+    get() = requireActivity().screenWidth
 
 val Activity.screenWidth: Float
-    @RequiresApi(Build.VERSION_CODES.R)
-    get() = windowManager.currentWindowMetrics.bounds.width() / resources.displayMetrics.density
+    get() {
+        if (Build.VERSION_CODES.R <= Build.VERSION.SDK_INT) {
+            return windowManager.currentWindowMetrics.bounds.width() / resources.displayMetrics.density
+        } else {
+            val displayMetrics = DisplayMetrics()
+            windowManager.defaultDisplay.getMetrics(displayMetrics)
+            return displayMetrics.widthPixels.toFloat()
+        }
+    }
