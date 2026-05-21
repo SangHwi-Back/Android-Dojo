@@ -58,10 +58,8 @@ class BookTheaterFragment : Fragment() {
         }
         override fun getItemCount(): Int = items.size
         fun setItems(items: List<Theater>) {
-            if (this.items.size < items.size && this.items.isNotEmpty())
-                notifyItemRangeRemoved(this.items.size-1, items.size-1)
             this.items = items.toMutableList()
-            notifyItemRangeChanged(0, this.items.size-1)
+            notifyDataSetChanged()
         }
     }
     class TheaterViewHolder(

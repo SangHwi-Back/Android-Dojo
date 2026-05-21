@@ -96,7 +96,7 @@ class SearchFragment : Fragment() {
         }
     }
     private fun modalBottomSheet(movie: Movie) {
-        val modal = MovieBottomSheet(movie)
+        val modal = MovieBottomSheet.newInstance(movie)
         modal.show(childFragmentManager, MovieBottomSheet.TAG)
     }
 }

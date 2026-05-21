@@ -26,10 +26,8 @@ class ThumbnailAdapter(
     }
     private var items: List<Movie> = emptyList()
     fun submitList(newItems: List<Movie>) {
-        if (items.size < newItems.size && items.isNotEmpty())
-            notifyItemRangeRemoved(items.size-1, newItems.size-1)
         items = newItems
-        notifyItemRangeChanged(0, items.size-1)
+        notifyDataSetChanged()
     }
     override fun onBindViewHolder(holder: ThumbnailViewHolder, position: Int) =
         holder.bind(items[position])

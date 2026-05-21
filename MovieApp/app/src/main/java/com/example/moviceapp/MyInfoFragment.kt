@@ -28,7 +28,7 @@ class MyInfoFragment : Fragment() {
         binding.myInfoHistoryRecyclerView.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
         binding.myInfoHistoryRecyclerView.adapter =
-            RecyclerViewAdapter(ViewHolderType.USER_STATUS_SECTION).also {
+            RecyclerViewAdapter(ViewHolderType.HISTORY).also {
                 it.setHistoryItems(listOf(
                     MyInfoHistory("Movies", "12"),
                     MyInfoHistory("Points", "1.2K"),
@@ -99,31 +99,18 @@ class MyInfoFragment : Fragment() {
         }
         fun setHistoryItems(items: List<MyInfoHistory>) {
             if (adapterType != ViewHolderType.HISTORY) return
-            setItems(statusItems, items) {
-                historyItems = items.toMutableList()
-            }
+            historyItems = items.toMutableList()
+            notifyDataSetChanged()
         }
         fun setMovieItems(items: List<Movie>) {
             if (adapterType != ViewHolderType.UPCOMING_MOVIE) return
-            setItems(statusItems, items) {
-                movieItems = items.toMutableList()
-            }
+            movieItems = items.toMutableList()
+            notifyDataSetChanged()
         }
         fun setStatusItems(items: List<MyInfoStatusSection>) {
             if (adapterType != ViewHolderType.USER_STATUS_SECTION) return
-            setItems(statusItems, items) {
-                statusItems = items.toMutableList()
-            }
-        }
-        private fun setItems(
-            prev: List<Any>,
-            items: List<Any>,
-            setItems: ()->Unit,
-        ) {
-            if (prev.size < items.size && prev.isNotEmpty())
-                notifyItemRangeRemoved(prev.size-1, items.size-1)
-            setItems()
-            notifyItemRangeChanged(0, prev.size-1)
+            statusItems = items.toMutableList()
+            notifyDataSetChanged()
         }
     }
     class UpcomingMovieViewHolder(
