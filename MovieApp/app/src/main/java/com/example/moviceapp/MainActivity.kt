@@ -5,6 +5,8 @@ import android.view.Menu
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
+import androidx.navigation.ui.setupWithNavController
 import com.example.moviceapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -21,6 +23,8 @@ class MainActivity : AppCompatActivity() {
 
         changeFragment(SearchFragment())
 
+        val navController = findNavController(R.id.main_fragment)
+        binding.navigationView.setupWithNavController(navController)
         binding.navigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_search -> {  changeFragment(SearchFragment()) }

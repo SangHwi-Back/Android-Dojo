@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     kotlin("plugin.serialization") version "2.0.21"
-
+    id("androidx.navigation.safeargs.kotlin") version "2.9.8" // Add this line
 }
 
 android {
