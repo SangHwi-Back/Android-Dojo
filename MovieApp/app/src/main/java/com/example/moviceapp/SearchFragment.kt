@@ -1,11 +1,12 @@
 package com.example.moviceapp
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
@@ -24,6 +25,7 @@ class SearchFragment : Fragment() {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 //        RECENT SEARCHES
@@ -36,7 +38,8 @@ class SearchFragment : Fragment() {
             }
 //        BROWSE ALL
         binding.browseAllRecyclerView.adapter = BrowseAllViewAdapter(
-            MoviesMock.all, { modalBottomSheet(it) })
+            MoviesMock.all
+        ) { modalBottomSheet(it) }
     }
 
     class RecentChipViewAdapter(
@@ -71,12 +74,8 @@ class SearchFragment : Fragment() {
             viewType: Int
         ): BrowseAllViewHolder {
             val layoutInflater = LayoutInflater.from(parent.context)
-            val listItem = layoutInflater.inflate(
-                R.layout.item_browse_all_list, parent, false)
-            return BrowseAllViewHolder(
-                listItem,
-                ItemBrowseAllListBinding.inflate(layoutInflater),
-                onClickListener)
+            val binding = ItemBrowseAllListBinding.inflate(layoutInflater)
+            return BrowseAllViewHolder(binding, onClickListener)
         }
         override fun onBindViewHolder(
             holder: BrowseAllViewHolder,
@@ -85,22 +84,16 @@ class SearchFragment : Fragment() {
         override fun getItemCount(): Int = movies.size
     }
     class BrowseAllViewHolder(
-        itemView: View,
-        binding: ItemBrowseAllListBinding,
+        val binding: ItemBrowseAllListBinding,
         val onClickListener: (Movie) -> Unit
-    ) : RecyclerView.ViewHolder(itemView) {
+    ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(movie: Movie) {
-            itemView.findViewById<ImageView>(R.id.movie_image_view)
-                .load(movie.posterRes ?: R.drawable.ic_launcher_background)
-            itemView.findViewById<TextView>(R.id.name_text_view)
-                .text = movie.title
-            itemView.findViewById<TextView>(R.id.point_text_view)
-                .text = movie.rating.toString()
-            itemView.findViewById<TextView>(R.id.play_text_view)
-                .text = movie.duration
-            itemView.setOnClickListener {
-                onClickListener(movie)
-            }
+            binding.movieImageView.load(
+                movie.posterRes ?: R.drawable.ic_launcher_background)
+            binding.nameTextView.text = movie.title
+            binding.pointTextView.text = movie.rating.toString()
+            binding.playTextView.text = movie.duration
+            binding.root.setOnClickListener { onClickListener(movie) }
         }
     }
     private fun modalBottomSheet(movie: Movie) {
