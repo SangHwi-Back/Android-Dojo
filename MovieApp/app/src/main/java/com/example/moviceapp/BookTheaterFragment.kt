@@ -48,7 +48,8 @@ class BookTheaterFragment : Fragment() {
             viewType: Int
         ): TheaterViewHolder {
             val inflater = LayoutInflater.from(parent.context)
-            return TheaterViewHolder(ItemBookTheaterSelectTheaterBinding.inflate(inflater))
+            return TheaterViewHolder(ItemBookTheaterSelectTheaterBinding
+                .inflate(inflater, parent, false))
         }
         override fun onBindViewHolder(
             holder: TheaterViewHolder,
