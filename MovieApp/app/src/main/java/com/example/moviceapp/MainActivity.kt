@@ -5,9 +5,12 @@ import android.view.Menu
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavHost
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.moviceapp.databinding.ActivityMainBinding
+import androidx.navigation.ui.NavigationUI.onNavDestinationSelected
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -20,18 +23,12 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.topAppBar)
 
-        changeFragment(SearchFragment())
-
-        val navController = findNavController(R.id.main_fragment)
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.main_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
         binding.navigationView.setupWithNavController(navController)
         binding.navigationView.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_search -> {  changeFragment(SearchFragment()) }
-                R.id.nav_book -> {    changeFragment(BookFragment()) }
-                R.id.nav_my_info -> { changeFragment(MyInfoFragment()) }
-                else -> return@setOnItemSelectedListener false
-            }
-            return@setOnItemSelectedListener true
+            onNavDestinationSelected(item, navController)
         }
     }
 

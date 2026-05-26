@@ -2,15 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 <!--    TODO: ADD ICON-->
     <item
-        android:id="@+id/nav_search"
+        android:id="@+id/action_searchFragment"
         android:icon="@drawable/search_outlined_24px"
         android:title="@string/nav_search"/>
     <item
-        android:id="@+id/nav_book"
+        android:id="@+id/action_bookFragment"
         android:icon="@drawable/confirmation_number_outlined_24px"
         android:title="@string/nav_book"/>
     <item
-        android:id="@+id/nav_my_info"
+        android:id="@+id/action_myInfoFragment"
         android:icon="@drawable/person_outlined_24px"
         android:title="@string/nav_my_info"/>
 </menu>

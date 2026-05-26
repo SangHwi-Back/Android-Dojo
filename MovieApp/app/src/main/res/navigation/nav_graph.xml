@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/searchFragment">
+    <!-- SEARCH TAB -->
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.example.moviceapp.SearchFragment"
@@ -16,6 +17,8 @@
             android:id="@+id/action_searchFragment_to_movieBottomSheet"
             app:destination="@id/movieBottomSheet" />
     </fragment>
+
+    <!-- BOOK TAB -->
     <fragment
         android:id="@+id/bookFragment"
         android:name="com.example.moviceapp.BookFragment"
@@ -26,11 +29,6 @@
             app:destination="@id/bookTheaterFragment" />
     </fragment>
     <fragment
-        android:id="@+id/myInfoFragment"
-        android:name="com.example.moviceapp.MyInfoFragment"
-        android:label="fragment_my_info"
-        tools:layout="@layout/fragment_my_info" />
-    <fragment
         android:id="@+id/bookTheaterFragment"
         android:name="com.example.moviceapp.BookTheaterFragment"
         android:label="fragment_book_theater"
@@ -39,6 +37,27 @@
             android:name="movie"
             app:argType="com.example.moviceapp.Movie" />
     </fragment>
+
+    <!-- MY INFO TAB -->
+    <fragment
+        android:id="@+id/myInfoFragment"
+        android:name="com.example.moviceapp.MyInfoFragment"
+        android:label="fragment_my_info"
+        tools:layout="@layout/fragment_my_info">
+    </fragment>
+
+    <!-- NAVIGATION VIEW -->
+    <action
+        android:id="@+id/action_searchFragment"
+        app:destination="@id/searchFragment" />
+    <action
+        android:id="@+id/action_bookFragment"
+        app:destination="@id/bookFragment" />
+    <action
+        android:id="@+id/action_myInfoFragment"
+        app:destination="@id/myInfoFragment" />
+
+    <!-- BOTTOM SHEET -->
     <dialog
         android:id="@+id/movieBottomSheet"
         android:name="com.example.moviceapp.MovieBottomSheet"
