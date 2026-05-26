@@ -20,12 +20,13 @@ data class Movie(
     val backdropRes: Int? = null,
 ) : Parcelable
 
+@Parcelize
 data class Theater(
     val id: Int,
     val name: String,
     val address: String,
     val distanceKm: Double,        // 1.2
-)
+) : Parcelable
 
 data class Booking(
     val id: Int,

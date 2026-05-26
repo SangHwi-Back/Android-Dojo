@@ -36,6 +36,9 @@
         <argument
             android:name="movie"
             app:argType="com.example.moviceapp.Movie" />
+        <action
+            android:id="@+id/action_bookTheaterFragment_to_bookScheduleFragment"
+            app:destination="@id/bookScheduleFragment" />
     </fragment>
 
     <!-- MY INFO TAB -->
@@ -62,4 +65,16 @@
         android:id="@+id/movieBottomSheet"
         android:name="com.example.moviceapp.MovieBottomSheet"
         android:label="MovieBottomSheet" />
+    <fragment
+        android:id="@+id/bookScheduleFragment"
+        android:name="com.example.moviceapp.BookScheduleFragment"
+        android:label="fragment_book_schedule"
+        tools:layout="@layout/fragment_book_schedule" >
+        <argument
+            android:name="movie"
+            app:argType="com.example.moviceapp.Movie" />
+        <argument
+            android:name="theater"
+            app:argType="com.example.moviceapp.Theater" />
+    </fragment>
 </navigation>

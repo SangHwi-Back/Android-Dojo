@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,12 +38,19 @@ class BookTheaterFragment : Fragment() {
             requireActivity(),
             LinearLayoutManager.VERTICAL,
             false)
+        adapter.onItemTouchListener = { theater ->
+            val action = BookTheaterFragmentDirections
+                .actionBookTheaterFragmentToBookScheduleFragment(args.movie, theater)
+            findNavController().navigate(action)
+        }
+
         binding.theaterRecyclerView.adapter = adapter
         adapter.setItems(TheatersMock.list)
     }
 
     class RecyclerViewAdapter: RecyclerView.Adapter<TheaterViewHolder>() {
         private var items = mutableListOf<Theater>()
+        var onItemTouchListener: ((Theater) -> Unit)? = null
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
@@ -56,6 +64,9 @@ class BookTheaterFragment : Fragment() {
             position: Int
         ) {
             holder.bind(items[position])
+            holder.itemView.setOnClickListener {
+                onItemTouchListener?.invoke(items[position])
+            }
         }
         override fun getItemCount(): Int = items.size
         fun setItems(items: List<Theater>) {
