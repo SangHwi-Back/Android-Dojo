@@ -1,14 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
     tools:context=".BookScheduleFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <!-- Select Date 헤더 -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="12dp">
 
-</FrameLayout>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/calendar_today_outlined_24px"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="@string/label_select_date"
+            app:tint="@color/green_accent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_select_date"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_lg"
+            android:fontFamily="@font/dm_sans_bold" />
+    </LinearLayout>
+
+    <!-- 날짜 선택 RecyclerView (가로 스크롤) -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/date_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Select Time 헤더 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="12dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/schedule_outlined_24px"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="@string/label_select_time"
+            app:tint="@color/green_accent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_select_time"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_lg"
+            android:fontFamily="@font/dm_sans_bold" />
+    </LinearLayout>
+
+    <!-- 시간 선택 RecyclerView (3열 그리드) -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/time_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false" />
+
+</LinearLayout>

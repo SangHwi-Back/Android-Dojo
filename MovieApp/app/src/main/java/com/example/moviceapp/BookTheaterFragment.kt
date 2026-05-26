@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.moviceapp.databinding.FragmentBookTheaterBinding
@@ -15,14 +17,15 @@ import com.example.moviceapp.databinding.ItemBookTheaterSelectTheaterBinding
 
 class BookTheaterFragment : Fragment() {
     val args: BookTheaterFragmentArgs by navArgs()
-    val adapter: RecyclerViewAdapter = RecyclerViewAdapter()
-    lateinit var binding: FragmentBookTheaterBinding
-    
+    val adapter: TheaterListAdapter = TheaterListAdapter()
+    private var _binding: FragmentBookTheaterBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentBookTheaterBinding.inflate(inflater)
+        _binding = FragmentBookTheaterBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -45,42 +48,48 @@ class BookTheaterFragment : Fragment() {
         }
 
         binding.theaterRecyclerView.adapter = adapter
-        adapter.setItems(TheatersMock.list)
+        adapter.submitList(TheatersMock.list)
     }
 
-    class RecyclerViewAdapter: RecyclerView.Adapter<TheaterViewHolder>() {
-        private var items = mutableListOf<Theater>()
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    class TheaterListAdapter : ListAdapter<Theater, TheaterViewHolder>(TheaterDiffCallback) {
         var onItemTouchListener: ((Theater) -> Unit)? = null
-        override fun onCreateViewHolder(
-            parent: ViewGroup,
-            viewType: Int
-        ): TheaterViewHolder {
-            val inflater = LayoutInflater.from(parent.context)
-            return TheaterViewHolder(ItemBookTheaterSelectTheaterBinding
-                .inflate(inflater, parent, false))
+
+        object TheaterDiffCallback : DiffUtil.ItemCallback<Theater>() {
+            override fun areItemsTheSame(oldItem: Theater, newItem: Theater): Boolean =
+                oldItem.name == newItem.name
+            override fun areContentsTheSame(oldItem: Theater, newItem: Theater): Boolean =
+                oldItem == newItem
         }
-        override fun onBindViewHolder(
-            holder: TheaterViewHolder,
-            position: Int
-        ) {
-            holder.bind(items[position])
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TheaterViewHolder {
+            val inflater = LayoutInflater.from(parent.context)
+            return TheaterViewHolder(
+                ItemBookTheaterSelectTheaterBinding.inflate(inflater, parent, false)
+            )
+        }
+
+        override fun onBindViewHolder(holder: TheaterViewHolder, position: Int) {
+            val theater = getItem(position)
+            holder.bind(theater)
             holder.itemView.setOnClickListener {
-                onItemTouchListener?.invoke(items[position])
+                onItemTouchListener?.invoke(theater)
             }
         }
-        override fun getItemCount(): Int = items.size
-        fun setItems(items: List<Theater>) {
-            this.items = items.toMutableList()
-            notifyDataSetChanged()
-        }
     }
+
     class TheaterViewHolder(
         val binding: ItemBookTheaterSelectTheaterBinding
     ): RecyclerView.ViewHolder(binding.root) {
         fun bind(theater: Theater) {
             binding.nameTextView.text = theater.name
             binding.addressTextView.text = theater.address
-            binding.distanceTextView.text = theater.distanceKm.toString()
+            binding.distanceTextView.text =
+                binding.root.context.getString(R.string.label_distance_format, theater.distanceKm)
         }
     }
 }

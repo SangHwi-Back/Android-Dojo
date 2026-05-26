@@ -10,11 +10,12 @@ val Fragment.screenWidth: Float
 
 val Activity.screenWidth: Float
     get() {
-        if (Build.VERSION_CODES.R <= Build.VERSION.SDK_INT) {
-            return windowManager.currentWindowMetrics.bounds.width().toFloat()
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            windowManager.currentWindowMetrics.bounds.width().toFloat()
         } else {
             val displayMetrics = DisplayMetrics()
+            @Suppress("DEPRECATION")
             windowManager.defaultDisplay.getMetrics(displayMetrics)
-            return displayMetrics.widthPixels.toFloat()
+            displayMetrics.widthPixels.toFloat()
         }
     }

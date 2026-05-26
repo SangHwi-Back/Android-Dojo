@@ -9,6 +9,7 @@ plugins {
 android {
     namespace = "com.example.moviceapp"
     buildFeatures {
+        // dataBinding = true already implies viewBinding, so viewBinding is not needed separately
         viewBinding = true
         dataBinding = true
     }
@@ -52,13 +53,13 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     // ViewPager2
     implementation(libs.androidx.viewpager2)
-    // Retrofit
-    implementation(libs.retrofit)
+    // Retrofit (not currently used — commented out)
+    // implementation(libs.retrofit)
     // Views/Fragments integration
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.ui)
-    // Feature module support for Fragments
-    implementation(libs.androidx.navigation.dynamic.features.fragment)
+    // Feature module support for Fragments (not currently used — commented out)
+    // implementation(libs.androidx.navigation.dynamic.features.fragment)
     implementation(libs.androidx.recyclerview)
     // Testing Navigation
     androidTestImplementation(libs.androidx.navigation.testing)

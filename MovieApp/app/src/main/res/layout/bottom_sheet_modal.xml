@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:text="오늘 하루 보지 않기"
+            android:text="@string/dismiss_today"
             android:textColor="@color/white"
             tools:textColor="@color/black"
             app:layout_constraintStart_toStartOf="parent"
@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:text="닫기"
+            android:text="@string/close"
             android:textColor="@color/white"
             tools:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
@@ -39,6 +39,7 @@
     <!-- 텍스트 아래에 들어갈 View의 background를 둥근 모서리로 지정해주세요 -->
     <!-- 들어갈 View가 여러 개라면 layout이나 cardView로 감싸 모서리를 둥글게 해주세요 -->
     <ImageView
+        android:id="@+id/movie_image_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"

@@ -4,6 +4,8 @@ import android.graphics.Rect
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.moviceapp.databinding.ItemMovieThumbnailCardBinding
@@ -11,7 +13,8 @@ import com.example.moviceapp.databinding.ItemMovieThumbnailCardBinding
 class ThumbnailAdapter(
     private val fixedWidth: Int = ViewGroup.LayoutParams.MATCH_PARENT,
     private val setOnClickViewListener: (Movie) -> Unit,
-) : RecyclerView.Adapter<ThumbnailViewHolder>() {
+) : ListAdapter<Movie, ThumbnailViewHolder>(MovieDiffCallback()) {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ThumbnailViewHolder {
         val binding = ItemMovieThumbnailCardBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
@@ -22,16 +25,16 @@ class ThumbnailAdapter(
                 width = fixedWidth
             }
         }
-        return ThumbnailViewHolder(binding,setOnClickViewListener)
+        return ThumbnailViewHolder(binding, setOnClickViewListener)
     }
-    private var items: List<Movie> = emptyList()
-    fun submitList(newItems: List<Movie>) {
-        items = newItems
-        notifyDataSetChanged()
-    }
+
     override fun onBindViewHolder(holder: ThumbnailViewHolder, position: Int) =
-        holder.bind(items[position])
-    override fun getItemCount() = items.size
+        holder.bind(getItem(position))
+
+    private class MovieDiffCallback : DiffUtil.ItemCallback<Movie>() {
+        override fun areItemsTheSame(oldItem: Movie, newItem: Movie) = oldItem.id == newItem.id
+        override fun areContentsTheSame(oldItem: Movie, newItem: Movie) = oldItem == newItem
+    }
 }
 
 class ThumbnailViewHolder(

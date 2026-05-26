@@ -46,6 +46,7 @@
     <string name="screen_title_book_movie">Book Movie</string>
     <string name="label_select_theater">Select Theater</string>
     <string name="label_select_date">Select Date</string>
+    <string name="label_select_time">Select Time</string>
     <string name="label_select_showtime">Select Showtime</string>
     <string name="label_select_seats">Select Seats</string>
 
@@ -58,6 +59,13 @@
     <!-- Theater list item -->
     <string name="label_distance_format">%1$.1f km</string>
     <string name="content_desc_theater_chevron">View showtimes for %1$s</string>
+
+    <!-- ======================== -->
+    <!--    BOTTOM SHEET MODAL   -->
+    <!-- ======================== -->
+
+    <string name="dismiss_today">오늘 하루 보지 않기</string>
+    <string name="close">닫기</string>
 
     <!-- ======================== -->
     <!--    MOVIE DETAIL SHEET    -->
@@ -218,10 +226,10 @@
     <!--     LOADING / STATUS     -->
     <!-- ======================== -->
 
-    <string name="status_loading">Loadingâ¦</string>
-    <string name="status_loading_movies">Loading moviesâ¦</string>
-    <string name="status_loading_theaters">Finding theaters near youâ¦</string>
-    <string name="status_processing_payment">Processing paymentâ¦</string>
+    <string name="status_loading">Loading…</string>
+    <string name="status_loading_movies">Loading movies…</string>
+    <string name="status_loading_theaters">Finding theaters near you…</string>
+    <string name="status_processing_payment">Processing payment…</string>
 
     <!-- ======================== -->
     <!--     DIALOGS / PROMPTS    -->
@@ -248,23 +256,11 @@
     <string name="notif_booking_reminder_body">%1$s at %2$s begins in 1 hour. Don\'t forget your tickets!</string>
 
     <!-- ======================== -->
-    <!--      SAMPLE / DEMO DATA  -->
-    <!-- (Remove in production)   -->
+    <!--      SEARCH SECTION LABELS -->
     <!-- ======================== -->
 
-    <string name="sample_movie_title_1">Ocean\'s Eleven: Legacy</string>
-    <string name="sample_movie_title_2">Dune: Part Three</string>
-    <string name="sample_movie_title_3">Neon Knights</string>
-    <string name="sample_theater_1">IMAX Cineplex Downtown</string>
-    <string name="sample_theater_1_address">123 Main Street, Downtown</string>
-    <string name="sample_theater_2">Galaxy Multiplex</string>
-    <string name="sample_theater_2_address">456 Oak Avenue, Midtown</string>
-    <string name="sample_theater_3">Starlight Cinema</string>
-    <string name="sample_theater_3_address">789 Park Boulevard, Uptown</string>
     <string name="search_trending_now">Trending Now</string>
     <string name="search_browse_all">Browse All</string>
     <string name="search_fragment_recent_searches">Recent Searches</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

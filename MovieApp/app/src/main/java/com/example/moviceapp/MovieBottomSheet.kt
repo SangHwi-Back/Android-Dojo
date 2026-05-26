@@ -5,9 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import coil.load
+import com.example.moviceapp.databinding.BottomSheetModalBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class MovieBottomSheet : BottomSheetDialogFragment() {
+    private var _binding: BottomSheetModalBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var movie: Movie
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,9 +29,21 @@ class MovieBottomSheet : BottomSheetDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
-        return inflater.inflate(R.layout.bottom_sheet_modal, container, false)
+    ): View {
+        _binding = BottomSheetModalBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.movieImageView.load(movie.posterRes ?: R.drawable.ic_launcher_background)
+        binding.tvRejectToday.setOnClickListener { dismiss() }
+        binding.tvClose.setOnClickListener { dismiss() }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {

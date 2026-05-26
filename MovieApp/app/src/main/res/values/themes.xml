@@ -180,7 +180,7 @@
     </style>
 
     <style name="Widget.CineBook.StepDot.Inactive" parent="">
-        <item name="android:background">@drawable/ic_launcher_foreground</item>
+        <item name="android:background">@color/step_inactive</item>
         <item name="android:layout_width">10dp</item>
         <item name="android:layout_height">10dp</item>
     </style>

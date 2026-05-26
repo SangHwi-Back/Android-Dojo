@@ -130,8 +130,8 @@
     <!-- Step indicator active (filled green dot) -->
     <color name="step_active">#4CAF50</color>
 
-    <!-- Step indicator completed (green dot, previous) -->
-    <color name="step_completed">#4CAF50</color>
+    <!-- Step indicator completed (darker green dot, previous step) -->
+    <color name="step_completed">#388E3C</color>
 
     <!-- Step indicator inactive (gray dot) -->
     <color name="step_inactive">#424242</color>
