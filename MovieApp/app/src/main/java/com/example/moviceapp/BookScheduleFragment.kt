@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
@@ -25,11 +26,19 @@ class BookScheduleFragment : Fragment() {
 
     private var _binding: FragmentBookScheduleBinding? = null
     private val binding get() = _binding!!
+    private var selectedDate: ShowtimeMock.ShowDate? = null
+    private var selectedTime: ShowtimeMock.Showtime? = null
 
     private val dateAdapter = DateAdapter { selectedDate ->
         timeAdapter.submitList(ShowtimeMock.timesForDate(selectedDate.isoDate))
+        this.selectedDate = ShowtimeMock.ShowDate(selectedDate.dayNum.toString(), selectedDate.isoDate)
     }
-    private val timeAdapter = TimeAdapter()
+    private val timeAdapter = TimeAdapter { selectedTime ->
+        this.selectedTime = selectedTime
+        if (this.selectedDate != null)
+            findNavController().navigate(BookScheduleFragmentDirections
+                .actionBookScheduleFragmentToBookSeatFragment(args.movie, args.theater))
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -153,7 +162,9 @@ class BookScheduleFragment : Fragment() {
     }
 
     // ── 시간 Adapter ──────────────────────────────────────────────────
-    class TimeAdapter : ListAdapter<ShowtimeMock.Showtime, TimeAdapter.TimeViewHolder>(TimeDiffCallback) {
+    class TimeAdapter(
+        val onTimeSelected: (ShowtimeMock.Showtime) -> Unit
+    ) : ListAdapter<ShowtimeMock.Showtime, TimeAdapter.TimeViewHolder>(TimeDiffCallback) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeViewHolder {
             val binding = ItemBookScheduleTimeBinding.inflate(
@@ -164,6 +175,9 @@ class BookScheduleFragment : Fragment() {
 
         override fun onBindViewHolder(holder: TimeViewHolder, position: Int) {
             holder.bind(getItem(position))
+            holder.itemView.setOnClickListener {
+                onTimeSelected(getItem(position))
+            }
         }
 
         object TimeDiffCallback : DiffUtil.ItemCallback<ShowtimeMock.Showtime>() {

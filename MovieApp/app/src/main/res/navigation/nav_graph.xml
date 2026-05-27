@@ -76,5 +76,20 @@
         <argument
             android:name="theater"
             app:argType="com.example.moviceapp.Theater" />
+        <action
+            android:id="@+id/action_bookScheduleFragment_to_bookSeatFragment"
+            app:destination="@id/bookSeatFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/bookSeatFragment"
+        android:name="com.example.moviceapp.BookSeatFragment"
+        android:label="fragment_book_seat"
+        tools:layout="@layout/fragment_book_seat" >
+        <argument
+            android:name="movie"
+            app:argType="com.example.moviceapp.Movie" />
+        <argument
+            android:name="theater"
+            app:argType="com.example.moviceapp.Theater" />
     </fragment>
 </navigation>
