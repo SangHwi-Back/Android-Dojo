@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-<!--    TODO: ADD ICON-->
     <item
-        android:id="@+id/action_searchFragment"
+        android:id="@+id/searchFragment"
         android:icon="@drawable/search_outlined_24px"
         android:title="@string/nav_search"/>
     <item
-        android:id="@+id/action_bookFragment"
+        android:id="@+id/bookFragment"
         android:icon="@drawable/confirmation_number_outlined_24px"
         android:title="@string/nav_book"/>
     <item
-        android:id="@+id/action_myInfoFragment"
+        android:id="@+id/myInfoFragment"
         android:icon="@drawable/person_outlined_24px"
         android:title="@string/nav_my_info"/>
 </menu>

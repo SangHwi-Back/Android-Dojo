@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.moviceapp.databinding.ActivityMainBinding
-import androidx.navigation.ui.NavigationUI.onNavDestinationSelected
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -24,9 +23,11 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.main_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         binding.navigationView.setupWithNavController(navController)
-        binding.navigationView.setOnItemSelectedListener { item ->
-            onNavDestinationSelected(item, navController)
-        }
+//        navController.addOnDestinationChangedListener { _, destination, _ ->
+//            when (destination.id) {
+//
+//            }
+//        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
