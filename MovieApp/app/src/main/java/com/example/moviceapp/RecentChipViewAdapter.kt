@@ -26,6 +26,6 @@ class RecentChipViewAdapter : ListAdapter<String, RecentChipViewAdapter.SearchRe
     }
 
     class SearchRecentChipViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val nameText: TextView = itemView.findViewById(R.id.name_text_view)
+        val nameText: TextView = itemView.findViewById(R.id.number_text_view)
     }
 }

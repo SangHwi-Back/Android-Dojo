@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import android.graphics.Rect
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -32,15 +33,25 @@ class MyInfoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.userProfileNameTextView.text = "Guest User"
+        binding.userProfileStatusTextView.text = "Sign in to access your bookings"
+
         // HISTORY
         val historyAdapter = HistoryListAdapter()
+        val spacingPx = (8 * resources.displayMetrics.density).toInt()
         binding.myInfoHistoryRecyclerView.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
+        binding.myInfoHistoryRecyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
+            override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+                val position = parent.getChildAdapterPosition(view)
+                outRect.left = if (position == 0) 0 else spacingPx
+            }
+        })
         binding.myInfoHistoryRecyclerView.adapter = historyAdapter
         historyAdapter.submitList(listOf(
-            MyInfoHistory("Movies", "12"),
-            MyInfoHistory("Points", "1.2K"),
-            MyInfoHistory("Saved", "$89")
+            MyInfoHistory("12", "Movies"),
+            MyInfoHistory("1.2K", "Points"),
+            MyInfoHistory("$89", "Saved")
         ))
 
         // UPCOMING_MOVIE
@@ -79,7 +90,14 @@ class MyInfoFragment : Fragment() {
         }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryViewHolder {
             val inflater = LayoutInflater.from(parent.context)
-            return HistoryViewHolder(ItemMyInfoHistoryBinding.inflate(inflater, parent, false))
+            val binding = ItemMyInfoHistoryBinding.inflate(inflater, parent, false)
+            val spacingPx = (8 * parent.context.resources.displayMetrics.density).toInt()
+            // 아이템 3개, 사이 gap 2개(8dp) → 각 아이템 너비 = (RecyclerView 너비 - 8dp × 2) / 3
+            val itemWidth = (parent.measuredWidth - spacingPx * 2) / 3
+            binding.root.layoutParams = binding.root.layoutParams.apply {
+                width = itemWidth
+            }
+            return HistoryViewHolder(binding)
         }
         override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) =
             holder.bind(getItem(position))
@@ -131,8 +149,8 @@ class MyInfoFragment : Fragment() {
         val binding: ItemMyInfoHistoryBinding
     ): RecyclerView.ViewHolder(binding.root) {
         fun bind(history: MyInfoHistory) {
+            binding.numberTextView.text = history.number
             binding.nameTextView.text = history.name
-            binding.contentsTextView.text = history.contents
         }
     }
 
@@ -149,8 +167,8 @@ class MyInfoFragment : Fragment() {
 }
 
 data class MyInfoHistory(
+    val number: String,
     val name: String,
-    val contents: String,
 )
 data class MyInfoStatusSection(
     val drawable: Drawable,

@@ -10,11 +10,12 @@
     android:orientation="horizontal"
     tools:showIn="@layout/fragment_my_info">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/movie_image_view"
         android:layout_width="80dp"
         android:layout_height="128dp"
         android:scaleType="centerCrop"
+        app:shapeAppearance="@style/ShapeAppearance.CineBook.MediumComponent"
         tools:src="@tools:sample/avatars" />
 
     <LinearLayout
