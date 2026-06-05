@@ -17,9 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            app:cardBackgroundColor="@color/surface_card"
-            android:theme="@style/ShapeAppearance.CineBook.MediumComponent"
-            app:cardElevation="0dp">
+            android:theme="@style/Widget.CineBook.CardView">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -47,36 +45,28 @@
                     android:layout_gravity="center"
                     android:orientation="vertical">
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/user_profile_name_text_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/dm_sans_bold"
-                        android:textColor="@color/text_primary"
-                        android:textSize="@dimen/text_lg"
+                        android:theme="@style/TextAppearance.CineBook.VenueName"
                         tools:text="Guest User" />
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/user_profile_status_text_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/dm_sans_medium"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="@dimen/text_sm"
+                        android:theme="@style/TextAppearance.CineBook.Body.Medium"
                         tools:text="Sign in to access your bookings" />
                 </LinearLayout>
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/user_sign_in_button"
+                    android:theme="@style/Widget.CineBook.Button.SignIn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/dm_sans_regular"
                     android:layout_gravity="center"
-                    android:paddingHorizontal="4dp"
-                    android:paddingVertical="2dp"
                     android:text="@string/action_sign_in"
-                    app:backgroundTint="@color/ripple_color"
-                    android:textColor="@color/text_primary"
                     android:layout_marginEnd="4dp"/>
             </LinearLayout>
 
