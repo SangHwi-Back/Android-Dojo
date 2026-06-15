@@ -27,7 +27,7 @@ class SearchFragment : Fragment() {
         }
 //        TRENDING NOW
         binding.trendingNowRecyclerView.adapter = ThumbnailAdapter(
-            (screenWidth * (2.toFloat()/3.toFloat())).toInt()) {
+            (screenWidth * 0.32).toInt()) {
 
         }.apply {
             this.submitList(MoviesMock.all)

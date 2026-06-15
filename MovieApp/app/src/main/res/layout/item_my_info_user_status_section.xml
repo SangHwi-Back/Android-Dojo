@@ -19,10 +19,16 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginVertical="16dp"
+        android:paddingHorizontal="4dp"
+        android:paddingVertical="12dp"
+        android:layout_marginHorizontal="4dp"
+        android:layout_marginVertical="4dp"
         android:orientation="horizontal"
         android:gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:stateListAnimator="@animator/item_press_scale"
         tools:showIn="@layout/fragment_my_info">
 
         <include
