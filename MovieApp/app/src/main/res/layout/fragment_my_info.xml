@@ -49,14 +49,14 @@
                         android:id="@+id/user_profile_name_text_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:theme="@style/TextAppearance.CineBook.VenueName"
+                        android:textAppearance="@style/TextAppearance.CineBook.VenueName"
                         tools:text="Guest User" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/user_profile_status_text_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:theme="@style/TextAppearance.CineBook.Body.Medium"
+                        android:textAppearance="@style/TextAppearance.CineBook.Body.Medium"
                         tools:text="Sign in to access your bookings" />
                 </LinearLayout>
 

@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:layout_marginHorizontal="8dp"
-            android:theme="@style/TextAppearance.CineBook.StatsNumber"
+            android:textAppearance="@style/TextAppearance.CineBook.StatsNumber"
             tools:text="12"/>
 
         <com.google.android.material.textview.MaterialTextView
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:layout_marginHorizontal="8dp"
-            android:theme="@style/TextAppearance.CineBook.StatsLabel"
+            android:textAppearance="@style/TextAppearance.CineBook.StatsLabel"
             tools:text="Movies"/>
 
         <Space

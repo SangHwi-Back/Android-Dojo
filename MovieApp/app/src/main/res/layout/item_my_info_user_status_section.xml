@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:tools="http://schemas.android.com/tools">
     <data>
+        <import type="android.view.View" />
         <variable
             name="icon_src"
             type="android.graphics.drawable.Drawable" />
@@ -8,29 +9,66 @@
             name="section_title"
             type="String" />
         <variable
+            name="sub_title"
+            type="String" />
+        <variable
             name="badge_text"
             type="String" />
     </data>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="80dp"
-        android:layout_margin="8dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginVertical="16dp"
         android:orientation="horizontal"
+        android:gravity="center"
         tools:showIn="@layout/fragment_my_info">
 
         <include
             layout="@layout/icon_background_circle"
             app:src="@{icon_src}" />
 
-        <include
-            layout="@layout/section_title"
-            app:text="@{section_title}" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="16dp"
+            android:orientation="vertical">
+
+            <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{section_title}"
+                android:fontFamily="@font/dm_sans_semibold"
+                android:textSize="@dimen/text_sm"
+                android:textColor="@color/text_primary"
+                tools:text="My Bookings"/>
+
+            <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{sub_title}"
+                android:visibility="@{sub_title != null &amp;&amp; !sub_title.empty ? View.VISIBLE : View.GONE}"
+                android:fontFamily="@font/dm_sans_regular"
+                android:textSize="@dimen/text_xs"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/seat_selected"
+                tools:text="View your booking history"/>
+        </LinearLayout>
 
         <include
             layout="@layout/badge_text_circle"
+            android:visibility="@{badge_text != null &amp;&amp; !badge_text.empty ? View.VISIBLE : View.GONE}"
             app:text="@{badge_text}" />
+
+        <ImageButton
+            android:background="@color/transparent"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/chevron_forward_24px" />
     </LinearLayout>
 </layout>

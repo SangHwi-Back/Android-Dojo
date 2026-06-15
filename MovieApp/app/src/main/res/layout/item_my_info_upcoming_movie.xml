@@ -5,21 +5,21 @@
     android:theme="@style/Widget.CineBook.CardView"
     android:background="@color/surface_card"
     android:layout_width="match_parent"
+    android:layout_marginBottom="7dp"
     android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
         android:orientation="horizontal">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/movie_image_view"
             android:layout_width="80dp"
-            android:layout_height="105dp"
+            android:layout_height="125dp"
             android:scaleType="centerCrop"
-            android:layout_marginStart="@dimen/text_sm"
-            android:layout_marginVertical="@dimen/text_sm"
+            android:layout_marginStart="10dp"
+            android:layout_marginVertical="10dp"
             app:shapeAppearance="@style/ShapeAppearance.CineBook.MediumComponent"
             tools:src="@tools:sample/avatars" />
 
@@ -35,7 +35,7 @@
                 android:id="@+id/name_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/TextAppearance.CineBook.VenueName"
+                android:textAppearance="@style/TextAppearance.CineBook.VenueName"
                 tools:text="Dune: Part Three" />
 
             <LinearLayout
@@ -55,7 +55,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:theme="@style/TextAppearance.CineBook.Body.Medium"
+                    android:textAppearance="@style/TextAppearance.CineBook.Body.Medium"
                     tools:text="9.2" />
             </LinearLayout>
 
@@ -76,7 +76,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:theme="@style/TextAppearance.CineBook.Body.Medium"
+                    android:textAppearance="@style/TextAppearance.CineBook.Body.Medium"
                     tools:text="2h 45m" />
             </LinearLayout>
 

@@ -71,7 +71,28 @@ class MyInfoFragment : Fragment() {
             MyInfoStatusSection(
                 getDrawable(R.drawable.confirmation_number_outlined_24px)!!,
                 "3",
-                "My Bookings")
+                "My Bookings"),
+            MyInfoStatusSection(
+                getDrawable(R.drawable.credit_card_24px)!!,
+                "",
+                "Payment Methods"),
+            MyInfoStatusSection(
+                getDrawable(R.drawable.notifications_24px)!!,
+                "5",
+                "Notifications"),
+            MyInfoStatusSection(
+                getDrawable(R.drawable.star_outlined_24px)!!,
+                "",
+                "Reward & Points",
+                "1,250 points"),
+            MyInfoStatusSection(
+                getDrawable(R.drawable.settings_24px)!!,
+                "",
+                "Settings"),
+            MyInfoStatusSection(
+                getDrawable(R.drawable.help_outlined_24px)!!,
+                "",
+                "Help & Support"),
         ))
     }
 
@@ -174,4 +195,5 @@ data class MyInfoStatusSection(
     val drawable: Drawable,
     val badge: String,
     val title: String,
+    val subTitle: String? = null,
 )
