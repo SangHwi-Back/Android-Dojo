@@ -37,8 +37,12 @@ class MovieBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.movieImageView.load(movie.posterRes ?: R.drawable.ic_launcher_background)
-        binding.tvRejectToday.setOnClickListener { dismiss() }
-        binding.tvClose.setOnClickListener { dismiss() }
+        binding.nameTextView.text = movie.title
+        binding.ratingTextView.text = movie.rating.toString()
+        binding.durationTextView.text = movie.duration
+        binding.releaseDateTextView.text = movie.releaseDate
+        binding.descriptionTextView.text = movie.description
+        binding.closeButton.setOnClickListener { dismiss() }
     }
 
     override fun onDestroyView() {
