@@ -17,7 +17,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:scaleType="centerCrop"
-            app:layout_constraintDimensionRatio="1:1.6"
+            app:layout_constraintDimensionRatio="1:1.4"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -25,30 +25,19 @@
             app:shapeAppearance="@style/ShapeAppearance.CineBook.MediumComponent"
             tools:src="@tools:sample/avatars" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/point_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
+            android:fontFamily="@font/dm_sans_semibold"
             android:layout_margin="8dp"
+            android:textSize="@dimen/text_xs"
+            android:textColor="@color/white"
+            app:drawableStartCompat="@drawable/star_fill_24px"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/star_fill_24px"
-                android:layout_marginEnd="4dp"
-                app:tint="@color/green_primary" />
-
-            <TextView
-                android:id="@+id/point_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/dm_sans_semibold"
-                android:textSize="@dimen/text_xs"
-                android:textColor="@color/white"
-                tools:text="9.2" />
-        </LinearLayout>
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="9.2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

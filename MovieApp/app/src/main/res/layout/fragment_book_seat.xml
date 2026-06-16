@@ -8,29 +8,17 @@
     tools:context=".BookSeatFragment">
 
     <!-- Select Date 헤더 -->
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:text="@string/label_select_date"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/text_lg"
+        app:drawableStartCompat="@drawable/calendar_today_outlined_24px"
         android:gravity="center_vertical"
-        android:layout_marginBottom="12dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/calendar_today_outlined_24px"
-            android:layout_marginEnd="8dp"
-            android:contentDescription="@string/screen_title_select_seats"
-            app:tint="@color/green_accent" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_select_date"
-            android:textColor="@color/text_primary"
-            android:textSize="@dimen/text_lg"
-            android:fontFamily="@font/dm_sans_bold" />
-    </LinearLayout>
+        android:fontFamily="@font/dm_sans_bold"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="12dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/theater_seat_recycler_view"

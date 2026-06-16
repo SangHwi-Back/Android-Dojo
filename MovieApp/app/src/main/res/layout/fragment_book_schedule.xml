@@ -9,29 +9,16 @@
     tools:context=".BookScheduleFragment">
 
     <!-- Select Date 헤더 -->
-    <LinearLayout
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:text="@string/label_select_date"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/text_lg"
+        app:drawableStartCompat="@drawable/calendar_today_outlined_24px"
         android:gravity="center_vertical"
-        android:layout_marginBottom="12dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/calendar_today_outlined_24px"
-            android:layout_marginEnd="8dp"
-            android:contentDescription="@string/label_select_date"
-            app:tint="@color/green_accent" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_select_date"
-            android:textColor="@color/text_primary"
-            android:textSize="@dimen/text_lg"
-            android:fontFamily="@font/dm_sans_bold" />
-    </LinearLayout>
+        android:fontFamily="@font/dm_sans_bold"
+        android:layout_marginBottom="12dp" />
 
     <!-- 날짜 선택 RecyclerView (가로 스크롤) -->
     <androidx.recyclerview.widget.RecyclerView
@@ -41,29 +28,17 @@
         android:layout_marginBottom="24dp" />
 
     <!-- Select Time 헤더 -->
-    <LinearLayout
+
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:text="@string/label_select_time"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/text_lg"
+        app:drawableStartCompat="@drawable/schedule_outlined_24px"
         android:gravity="center_vertical"
-        android:layout_marginBottom="12dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/schedule_outlined_24px"
-            android:layout_marginEnd="8dp"
-            android:contentDescription="@string/label_select_time"
-            app:tint="@color/green_accent" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_select_time"
-            android:textColor="@color/text_primary"
-            android:textSize="@dimen/text_lg"
-            android:fontFamily="@font/dm_sans_bold" />
-    </LinearLayout>
+        android:fontFamily="@font/dm_sans_bold"
+        android:layout_marginBottom="12dp" />
 
     <!-- 시간 선택 RecyclerView (3열 그리드) -->
     <androidx.recyclerview.widget.RecyclerView

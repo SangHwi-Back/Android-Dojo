@@ -6,12 +6,13 @@
     android:layout_height="wrap_content"
     android:padding="8dp">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/movie_image_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
+        app:shapeAppearance="@style/ShapeAppearance.CineBook.MediumComponent"
         app:layout_constraintDimensionRatio="1:1.4"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/info_layout"
@@ -41,51 +42,27 @@
             android:textSize="@dimen/text_lg"
             tools:text="Dune: Part Three" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/point_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:fontFamily="@font/dm_sans_semibold"
+            android:textSize="@dimen/text_sm"
+            android:textColor="@color/text_secondary"
+            android:gravity="center_vertical|start"
+            app:drawableStartCompat="@drawable/star_fill_24px"
+            tools:text="9.2" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/star_fill_24px"
-                android:layout_marginEnd="8dp"
-                app:tint="@color/green_accent" />
-
-            <TextView
-                android:id="@+id/point_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/dm_sans_semibold"
-                android:textSize="@dimen/text_sm"
-                android:textColor="@color/text_secondary"
-                tools:text="9.2" />
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/play_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/schedule_outlined_24px"
-                android:layout_marginEnd="8dp"
-                app:tint="@color/green_accent" />
-
-            <TextView
-                android:id="@+id/play_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/dm_sans_semibold"
-                android:textSize="@dimen/text_sm"
-                android:textColor="@color/text_secondary"
-                tools:text="2h 45m" />
-        </LinearLayout>
+            android:fontFamily="@font/dm_sans_semibold"
+            android:textSize="@dimen/text_sm"
+            android:textColor="@color/text_secondary"
+            android:gravity="center_vertical|start"
+            app:drawableStartCompat="@drawable/schedule_outlined_24px"
+            tools:text="2h 45m" />
 
     </LinearLayout>
 

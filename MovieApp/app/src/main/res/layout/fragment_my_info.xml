@@ -30,7 +30,7 @@
                     android:layout_height="60dp"
                     android:layout_margin="16dp"
                     android:background="@color/green_avatar_bg"
-                    android:contentDescription="User Thumbnail"
+                    android:contentDescription="@string/content_desc_profile_avatar"
                     android:src="@drawable/person_outlined_24px"
                     android:layout_gravity="center"
                     android:theme="@style/ShapeAppearance.CineBook.BottomNavIndicator"

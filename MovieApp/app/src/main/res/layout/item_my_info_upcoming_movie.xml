@@ -42,47 +42,25 @@
                 android:textAppearance="@style/TextAppearance.CineBook.VenueName"
                 tools:text="Dune: Part Three" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/point_text_view"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:textAppearance="@style/TextAppearance.CineBook.Body.Medium"
+                app:drawableStartCompat="@drawable/star_fill_24px"
+                app:drawableTint="@color/green_accent"
+                android:gravity="center_vertical"
+                tools:text="9.2" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/star_fill_24px"
-                    android:layout_marginEnd="8dp"
-                    app:tint="@color/green_accent" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/point_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textAppearance="@style/TextAppearance.CineBook.Body.Medium"
-                    tools:text="9.2" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/play_text_view"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/close_24px"
-                    android:layout_marginEnd="8dp"
-                    app:tint="@color/green_accent" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/play_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textAppearance="@style/TextAppearance.CineBook.Body.Medium"
-                    tools:text="2h 45m" />
-            </LinearLayout>
+                android:textAppearance="@style/TextAppearance.CineBook.Body.Medium"
+                app:drawableStartCompat="@drawable/close_24px"
+                app:drawableTint="@color/green_accent"
+                android:gravity="center_vertical"
+                tools:text="2h 45m" />
 
         </LinearLayout>
 
