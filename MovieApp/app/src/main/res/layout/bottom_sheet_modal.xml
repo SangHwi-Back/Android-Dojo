@@ -1,50 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="wrap_content">
 
-    <!-- 이 레이아웃은 여기서 투명하게 만들 필요가 없습니다 (애초에 불가능) -->
-    <!-- 코드상에서 직접 style을 적용해 줄 거예요 -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/tv_reject_today"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:text="@string/dismiss_today"
-            android:textColor="@color/white"
-            tools:textColor="@color/black"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_close"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:text="@string/close"
-            android:textColor="@color/white"
-            tools:textColor="@color/black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!-- 텍스트 아래에 들어갈 View의 background를 둥근 모서리로 지정해주세요 -->
-    <!-- 들어갈 View가 여러 개라면 layout이나 cardView로 감싸 모서리를 둥글게 해주세요 -->
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/movie_image_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintDimensionRatio="H,1:0.5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearance="@style/ShapeAppearance.CineBook.BottomSheet"
+        tools:src="@tools:sample/avatars" />
+
+    <ImageButton
+        android:id="@+id/play_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/rounded_icon_background"
+        app:layout_constraintBottom_toBottomOf="@id/movie_image_view"
+        app:layout_constraintEnd_toEndOf="@id/movie_image_view"
+        app:layout_constraintStart_toStartOf="@id/movie_image_view"
+        app:layout_constraintTop_toTopOf="@id/movie_image_view"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/content_desc_close_button"
+        android:src="@drawable/play_circle_24px"
+        android:tint="@color/icon_green" />
+
+    <LinearLayout
+        android:id="@+id/contents_linear_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:background="@drawable/round_top_border_20"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
-        app:srcCompat="@drawable/ic_launcher_background" />
+        android:layout_marginTop="30dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/play_button"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginHorizontal="12dp"
+            android:fontFamily="@font/dm_sans_bold"
+            android:textSize="@dimen/text_xl"
+            tools:text="Dune: Part Three" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="4dp"
+            android:layout_marginHorizontal="12dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:fontFamily="@font/dm_sans_bold"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_sm"
+                android:drawablePadding="2dp"
+                app:drawableStartCompat="@drawable/star_fill_24px"
+                app:drawableTint="@color/icon_green"
+                tools:text="9.2"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/dm_sans_semibold"
+                android:textSize="@dimen/text_xs"
+                tools:text=" / 10" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/dm_sans_semibold"
+                android:drawablePadding="2dp"
+                app:drawableStartCompat="@drawable/schedule_outlined_24px"
+                tools:text="2h 45m" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:fontFamily="@font/dm_sans_semibold"
+                android:drawablePadding="2dp"
+                app:drawableStartCompat="@drawable/calendar_today_outlined_24px"
+                tools:text="2026-03-15" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/category_chip_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:nestedScrollingEnabled="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="12dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            tools:text="The epic conclusion to the Dune saga follows Paul Atreides as he unites with the Fremen people of the desert planet Arrakis."/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp"
+            android:layout_marginHorizontal="12dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/user_sign_in_button"
+                android:theme="@style/Widget.CineBook.Button.SignIn"
+                android:backgroundTint="@color/green_accent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/action_book_now"
+                android:fontFamily="@font/dm_sans_extralight"
+                android:textColor="@color/badge_text"
+                android:layout_marginEnd="4dp"
+                app:strokeWidth="0dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/user_sign_in_button"
+                android:theme="@style/Widget.CineBook.Button.SignIn"
+                android:layout_width="0dp"
+                android:layout_weight="0.7"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/action_add_to_list"
+                android:fontFamily="@font/dm_sans_extralight"
+                android:textColor="@color/white"
+                android:minHeight="32dp"
+                android:layout_marginEnd="4dp"/>
+        </LinearLayout>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
