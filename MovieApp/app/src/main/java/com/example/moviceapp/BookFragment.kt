@@ -9,7 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.moviceapp.databinding.FragmentBookBinding
 
-class BookFragment : Fragment() {
+class BookFragment : Fragment(), ThumbnailOnClickListener {
     private var _binding: FragmentBookBinding? = null
     private val binding get() = _binding!!
 
@@ -27,9 +27,7 @@ class BookFragment : Fragment() {
         binding.bookRecyclerGridView.apply {
             layoutManager = GridLayoutManager(context, 3)
             addItemDecoration(GridSpanDecoration(3, 8))
-            adapter = ThumbnailAdapter { movie ->
-                findNavController().navigate(BookFragmentDirections.actionBookFragmentToBookTheaterFragment(movie))
-            }.apply {
+            adapter = ThumbnailAdapter(listener = this@BookFragment).apply {
                 this.submitList(MoviesMock.all)
             }
         }
@@ -38,5 +36,9 @@ class BookFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onClickMovieFromThumbnail(movie: Movie) {
+        findNavController().navigate(BookFragmentDirections.actionBookFragmentToBookTheaterFragment(movie))
     }
 }

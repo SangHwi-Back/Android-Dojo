@@ -45,7 +45,7 @@ class MovieBottomSheet(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.movieImageView.load(movie.posterRes ?: R.drawable.ic_launcher_background)
+        binding.movieImageView.load(movie.backdropURL ?: R.drawable.ic_launcher_background)
         binding.nameTextView.text = movie.title
         binding.ratingTextView.text = movie.rating.toString()
         binding.durationTextView.text = movie.duration

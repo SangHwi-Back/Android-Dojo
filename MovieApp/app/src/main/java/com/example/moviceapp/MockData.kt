@@ -16,8 +16,8 @@ data class Movie(
     val releaseDate: String,       // "2026-03-15"
     val genres: List<String>,
     val description: String,
-    val posterRes: Int? = null,    // R.drawable.xxx  (없으면 null → placeholder)
-    val backdropRes: Int? = null,
+    val posterURL: String? = null,
+    val backdropURL: String? = null,
 ) : Parcelable
 
 @Parcelize

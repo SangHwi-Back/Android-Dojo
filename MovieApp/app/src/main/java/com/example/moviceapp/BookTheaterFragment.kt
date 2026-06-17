@@ -32,7 +32,7 @@ class BookTheaterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.movieImageView.load(args.movie.posterRes ?: R.drawable.ic_launcher_background)
+        binding.movieImageView.load(args.movie.posterURL ?: R.drawable.ic_launcher_background)
         binding.movieNameTextView.text = args.movie.title
         binding.movieRuntimeTextView.text = args.movie.duration
         binding.moviePointTextView.text = args.movie.rating.toString()

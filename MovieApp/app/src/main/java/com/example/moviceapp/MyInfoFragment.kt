@@ -162,7 +162,7 @@ class MyInfoFragment : Fragment() {
         fun bind(movie: Movie) {
             binding.nameTextView.text = movie.title
             binding.pointTextView.text = movie.rating.toString()
-            binding.movieImageView.load(movie.posterRes ?: R.drawable.ic_launcher_background)
+            binding.movieImageView.load(movie.posterURL ?: R.drawable.ic_launcher_background)
         }
     }
 

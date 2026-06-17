@@ -115,7 +115,7 @@ class BookScheduleFragment : Fragment() {
             holder.bind(getItem(position), position == selectedIndex)
             holder.itemView.setOnClickListener {
                 val prev = selectedIndex
-                selectedIndex = holder.adapterPosition
+                selectedIndex = position
                 notifyItemChanged(prev)
                 notifyItemChanged(selectedIndex)
                 onDateSelected(getItem(selectedIndex))

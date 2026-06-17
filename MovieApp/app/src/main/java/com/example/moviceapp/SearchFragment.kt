@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.moviceapp.databinding.FragmentSearchBinding
 
-class SearchFragment : Fragment(), TrendingNowOnClickListener, BrowseOnClickListener {
+class SearchFragment : Fragment(), ThumbnailOnClickListener, BrowseOnClickListener {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
@@ -41,7 +41,7 @@ class SearchFragment : Fragment(), TrendingNowOnClickListener, BrowseOnClickList
         _binding = null
     }
 
-    override fun onClickMovieFromTrendingNow(movie: Movie) {
+    override fun onClickMovieFromThumbnail(movie: Movie) {
         TODO("Not yet implemented")
     }
 
@@ -50,8 +50,8 @@ class SearchFragment : Fragment(), TrendingNowOnClickListener, BrowseOnClickList
         modal.show(childFragmentManager, MovieBottomSheet.TAG)
     }
 }
-interface TrendingNowOnClickListener {
-    fun onClickMovieFromTrendingNow(movie: Movie)
+interface ThumbnailOnClickListener {
+    fun onClickMovieFromThumbnail(movie: Movie)
 }
 interface BrowseOnClickListener {
     fun onClickMovieFromBrowseAll(movie: Movie)

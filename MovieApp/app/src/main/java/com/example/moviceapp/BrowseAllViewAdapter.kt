@@ -34,7 +34,7 @@ class BrowseAllViewAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(movie: Movie) {
             binding.movieImageView.load(
-                movie.posterRes ?: R.drawable.ic_launcher_background)
+                movie.posterURL ?: R.drawable.ic_launcher_background)
             binding.nameTextView.text = movie.title
             binding.pointTextView.text = movie.rating.toString()
             binding.playTextView.text = movie.duration
