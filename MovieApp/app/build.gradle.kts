@@ -54,7 +54,9 @@ dependencies {
     // ViewPager2
     implementation(libs.androidx.viewpager2)
     // Retrofit (not currently used — commented out)
-    // implementation(libs.retrofit)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.converter.scalars)
     // Views/Fragments integration
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.ui)
