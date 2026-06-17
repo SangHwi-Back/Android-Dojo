@@ -30,11 +30,11 @@
         android:contentDescription="@string/content_desc_close_button"
         android:scaleType="centerCrop"
         android:src="@drawable/play_arrow_24px"
-        android:tint="@color/background_primary"
         app:layout_constraintBottom_toBottomOf="@id/movie_image_view"
         app:layout_constraintEnd_toEndOf="@id/movie_image_view"
         app:layout_constraintStart_toStartOf="@id/movie_image_view"
-        app:layout_constraintTop_toTopOf="@id/movie_image_view" />
+        app:layout_constraintTop_toTopOf="@id/movie_image_view"
+        app:tint="@color/background_primary" />
 
     <!-- 우상단 닫기 버튼 (시트 상단 위로 12dp 돌출) -->
     <ImageButton
@@ -46,10 +46,10 @@
         android:contentDescription="@string/content_desc_close_button"
         android:scaleType="center"
         android:src="@drawable/close_24px"
-        android:tint="@color/text_primary"
         android:translationY="-12dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/text_primary" />
 
     <!-- 이미지 아래 콘텐츠 영역 -->
     <LinearLayout
@@ -79,15 +79,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="12dp"
-            android:gravity="center_vertical"
             android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/star_fill_24px"
-                android:layout_marginEnd="4dp"
-                app:tint="@color/icon_green" />
 
             <TextView
                 android:id="@+id/rating_text_view"
@@ -96,23 +88,22 @@
                 android:fontFamily="@font/dm_sans_bold"
                 android:textColor="@color/text_primary"
                 android:textSize="@dimen/text_sm"
+                android:gravity="center"
+                android:drawablePadding="4dp"
+                app:drawableStartCompat="@drawable/star_fill_24px"
+                app:drawableTint="@color/icon_green"
                 tools:text="9.2" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="0.7dp"
                 android:fontFamily="@font/dm_sans_semibold"
                 android:textColor="@color/text_secondary"
-                android:textSize="@dimen/text_xs"
-                android:text=" /10" />
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/schedule_outlined_24px"
-                android:layout_marginEnd="4dp"
-                app:tint="@color/text_secondary" />
+                android:textSize="@dimen/text_sm"
+                tools:text=" / 10" />
 
             <TextView
                 android:id="@+id/duration_text_view"
@@ -122,14 +113,11 @@
                 android:fontFamily="@font/dm_sans_semibold"
                 android:textColor="@color/text_secondary"
                 android:textSize="@dimen/text_sm"
+                android:gravity="center"
+                android:drawablePadding="4dp"
+                app:drawableStartCompat="@drawable/schedule_outlined_24px"
+                app:drawableTint="@color/text_secondary"
                 tools:text="2h 45m" />
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/calendar_today_outlined_24px"
-                android:layout_marginEnd="4dp"
-                app:tint="@color/text_secondary" />
 
             <TextView
                 android:id="@+id/release_date_text_view"
@@ -138,6 +126,10 @@
                 android:fontFamily="@font/dm_sans_semibold"
                 android:textColor="@color/text_secondary"
                 android:textSize="@dimen/text_sm"
+                android:gravity="center"
+                android:drawablePadding="4dp"
+                app:drawableStartCompat="@drawable/calendar_today_outlined_24px"
+                app:drawableTint="@color/text_secondary"
                 tools:text="2026-03-15" />
         </LinearLayout>
 

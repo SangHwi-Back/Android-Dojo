@@ -9,7 +9,7 @@ import coil.load
 import com.example.moviceapp.databinding.ItemBrowseAllListBinding
 
 class BrowseAllViewAdapter(
-    private val onClickListener: (Movie) -> Unit,
+    val listener: BrowseOnClickListener,
 ) : ListAdapter<Movie, BrowseAllViewAdapter.BrowseAllViewHolder>(DiffCallback) {
 
     object DiffCallback : DiffUtil.ItemCallback<Movie>() {
@@ -22,7 +22,7 @@ class BrowseAllViewAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BrowseAllViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = ItemBrowseAllListBinding.inflate(layoutInflater, parent, false)
-        return BrowseAllViewHolder(binding, onClickListener)
+        return BrowseAllViewHolder(binding) { listener.onClickMovieFromBrowseAll(it) }
     }
 
     override fun onBindViewHolder(holder: BrowseAllViewHolder, position: Int) =

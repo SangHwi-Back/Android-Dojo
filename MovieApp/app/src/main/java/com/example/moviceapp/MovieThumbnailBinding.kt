@@ -12,7 +12,7 @@ import com.example.moviceapp.databinding.ItemMovieThumbnailCardBinding
 
 class ThumbnailAdapter(
     private val fixedWidth: Int = ViewGroup.LayoutParams.MATCH_PARENT,
-    private val setOnClickViewListener: (Movie) -> Unit,
+    private val listener: TrendingNowOnClickListener,
 ) : ListAdapter<Movie, ThumbnailViewHolder>(MovieDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ThumbnailViewHolder {
@@ -25,7 +25,9 @@ class ThumbnailAdapter(
                 width = fixedWidth
             }
         }
-        return ThumbnailViewHolder(binding, setOnClickViewListener)
+        return ThumbnailViewHolder(binding) {
+            listener.onClickMovieFromTrendingNow(it)
+        }
     }
 
     override fun onBindViewHolder(holder: ThumbnailViewHolder, position: Int) =
@@ -45,9 +47,7 @@ class ThumbnailViewHolder(
         binding.nameTextView.text = item.title
         binding.pointTextView.text = item.rating.toString()
         binding.movieImageView.load(item.posterRes ?: R.drawable.ic_launcher_background)
-        binding.root.setOnClickListener {
-            setOnClickViewListener(item)
-        }
+        binding.root.setOnClickListener { setOnClickViewListener(item) }
     }
 }
 

@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.moviceapp.databinding.FragmentSearchBinding
 
-class SearchFragment : Fragment() {
+class SearchFragment : Fragment(), TrendingNowOnClickListener, BrowseOnClickListener {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
@@ -26,14 +26,12 @@ class SearchFragment : Fragment() {
             submitList(listOf("Action movies", "Sci-rFi 2026", "Comedy"))
         }
 //        TRENDING NOW
-        binding.trendingNowRecyclerView.adapter = ThumbnailAdapter(
-            (screenWidth * 0.32).toInt()) {
-
-        }.apply {
+        val fixedWidth = (screenWidth * 0.32).toInt()
+        binding.trendingNowRecyclerView.adapter = ThumbnailAdapter(fixedWidth, this).apply {
             this.submitList(MoviesMock.all)
         }
 //        BROWSE ALL
-        binding.browseAllRecyclerView.adapter = BrowseAllViewAdapter { modalBottomSheet(it) }.apply {
+        binding.browseAllRecyclerView.adapter = BrowseAllViewAdapter(this).apply {
             submitList(MoviesMock.all)
         }
     }
@@ -43,8 +41,18 @@ class SearchFragment : Fragment() {
         _binding = null
     }
 
-    private fun modalBottomSheet(movie: Movie) {
+    override fun onClickMovieFromTrendingNow(movie: Movie) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onClickMovieFromBrowseAll(movie: Movie) {
         val modal = MovieBottomSheet.newInstance(movie)
         modal.show(childFragmentManager, MovieBottomSheet.TAG)
     }
+}
+interface TrendingNowOnClickListener {
+    fun onClickMovieFromTrendingNow(movie: Movie)
+}
+interface BrowseOnClickListener {
+    fun onClickMovieFromBrowseAll(movie: Movie)
 }
