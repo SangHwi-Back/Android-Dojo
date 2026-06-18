@@ -36,6 +36,10 @@ AI 에 전반적으로 작업을 진행 지시
 
 ```docker compose up -d```
 
+Mac 터미널에서 로컬 IP 확인
+
+```ipconfig getifaddr en0```
+
 ## 확인된 API 엔드포인트 목록
 
 |Method|URL|설명|
