@@ -5,20 +5,20 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
+object RetrofitModule {
     @Singleton
     @Provides
     fun provideOkHttpClient(): OkHttpClient {
-        val httpLoggingInterceptor = Interceptor.invoke { chain ->
-            chain.proceed(chain.request())
+        val httpLoggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
         }
         return OkHttpClient.Builder()
             .addInterceptor(httpLoggingInterceptor)
@@ -38,4 +38,14 @@ object AppModule {
     @Provides
     fun provideApiService(retrofit: Retrofit): MovieService =
         retrofit.create(MovieService::class.java)
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class RetrofitRepositoryModule {
+    @Binds
+    @Singleton
+    abstract fun bindMovieRepository(
+        impl: MovieRepositoryImpl
+    ) : MovieRepository
 }

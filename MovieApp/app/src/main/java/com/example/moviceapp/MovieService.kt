@@ -5,7 +5,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface MovieService {
-    @GET("/api/movie")
+    @GET("/api/movies")
     fun getMovies(): Call<List<Movie>>
 
     @GET("/api/{path}")

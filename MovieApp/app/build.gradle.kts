@@ -55,10 +55,11 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     // ViewPager2
     implementation(libs.androidx.viewpager2)
-    // Retrofit (not currently used — commented out)
+    // Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.converter.scalars)
+    implementation(libs.okhttp.logging.interceptor)
     // Views/Fragments integration
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.ui)

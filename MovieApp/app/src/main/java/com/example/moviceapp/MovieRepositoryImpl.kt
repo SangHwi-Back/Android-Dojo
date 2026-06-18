@@ -5,15 +5,17 @@ import retrofit2.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
+interface MovieRepository {
+    suspend fun getMovies(): List<Movie>
+}
+
 @Singleton
-class MovieRepository @Inject constructor(private val service: MovieService) {
-    suspend fun getMovies(): List<Movie> = when (val result = service.getMovies().toAPIResult()) {
-        is APIResult.Success -> {
-            result.data
-        }
-        is APIResult.Failure -> {
-            listOf()
-        }
+class MovieRepositoryImpl @Inject constructor(
+    private val service: MovieService
+) : MovieRepository {
+    override suspend fun getMovies(): List<Movie> = when (val result = service.getMovies().toAPIResult()) {
+        is APIResult.Success -> result.data
+        is APIResult.Failure -> throw result.error
     }
 }
 
