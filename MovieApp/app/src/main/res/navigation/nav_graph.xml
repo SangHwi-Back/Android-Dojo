@@ -7,7 +7,7 @@
     <!-- SEARCH TAB -->
     <fragment
         android:id="@+id/searchFragment"
-        android:name="com.example.moviceapp.SearchFragment"
+        android:name="com.example.moviceapp.search.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" >
         <action
@@ -21,7 +21,7 @@
     <!-- BOOK TAB -->
     <fragment
         android:id="@+id/bookFragment"
-        android:name="com.example.moviceapp.BookFragment"
+        android:name="com.example.moviceapp.book.BookFragment"
         android:label="fragment_book"
         tools:layout="@layout/fragment_book" >
         <action
@@ -30,12 +30,12 @@
     </fragment>
     <fragment
         android:id="@+id/bookTheaterFragment"
-        android:name="com.example.moviceapp.BookTheaterFragment"
+        android:name="com.example.moviceapp.book.BookTheaterFragment"
         android:label="fragment_book_theater"
         tools:layout="@layout/fragment_book_theater" >
         <argument
             android:name="movie"
-            app:argType="com.example.moviceapp.Movie" />
+            app:argType="com.example.moviceapp.repo.Movie" />
         <action
             android:id="@+id/action_bookTheaterFragment_to_bookScheduleFragment"
             app:destination="@id/bookScheduleFragment" />
@@ -44,7 +44,7 @@
     <!-- MY INFO TAB -->
     <fragment
         android:id="@+id/myInfoFragment"
-        android:name="com.example.moviceapp.MyInfoFragment"
+        android:name="com.example.moviceapp.myinfo.MyInfoFragment"
         android:label="fragment_my_info"
         tools:layout="@layout/fragment_my_info">
     </fragment>
@@ -63,33 +63,33 @@
     <!-- BOTTOM SHEET -->
     <dialog
         android:id="@+id/movieBottomSheet"
-        android:name="com.example.moviceapp.MovieBottomSheet"
+        android:name="com.example.moviceapp.search.MovieBottomSheet"
         android:label="MovieBottomSheet" />
     <fragment
         android:id="@+id/bookScheduleFragment"
-        android:name="com.example.moviceapp.BookScheduleFragment"
+        android:name="com.example.moviceapp.book.BookScheduleFragment"
         android:label="fragment_book_schedule"
         tools:layout="@layout/fragment_book_schedule" >
         <argument
             android:name="movie"
-            app:argType="com.example.moviceapp.Movie" />
+            app:argType="com.example.moviceapp.repo.Movie" />
         <argument
             android:name="theater"
-            app:argType="com.example.moviceapp.Theater" />
+            app:argType="com.example.moviceapp.repo.Theater" />
         <action
             android:id="@+id/action_bookScheduleFragment_to_bookSeatFragment"
             app:destination="@id/bookSeatFragment" />
     </fragment>
     <fragment
         android:id="@+id/bookSeatFragment"
-        android:name="com.example.moviceapp.BookSeatFragment"
+        android:name="com.example.moviceapp.book.BookSeatFragment"
         android:label="fragment_book_seat"
         tools:layout="@layout/fragment_book_seat" >
         <argument
             android:name="movie"
-            app:argType="com.example.moviceapp.Movie" />
+            app:argType="com.example.moviceapp.repo.Movie" />
         <argument
             android:name="theater"
-            app:argType="com.example.moviceapp.Theater" />
+            app:argType="com.example.moviceapp.repo.Theater" />
     </fragment>
 </navigation>

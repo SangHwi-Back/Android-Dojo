@@ -1,5 +1,6 @@
-package com.example.moviceapp
+package com.example.moviceapp.repo
 
+import com.example.moviceapp.repo.MovieService
 import retrofit2.Call
 import retrofit2.await
 import javax.inject.Inject

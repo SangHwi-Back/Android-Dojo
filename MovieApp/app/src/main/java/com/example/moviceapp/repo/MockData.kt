@@ -1,4 +1,4 @@
-package com.example.moviceapp
+package com.example.moviceapp.repo
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

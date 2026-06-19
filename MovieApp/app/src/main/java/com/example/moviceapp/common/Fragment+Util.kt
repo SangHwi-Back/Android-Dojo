@@ -1,4 +1,4 @@
-package com.example.moviceapp
+package com.example.moviceapp.common
 
 import android.app.Activity
 import android.os.Build

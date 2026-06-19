@@ -1,4 +1,4 @@
-package com.example.moviceapp
+package com.example.moviceapp.search
 
 import android.os.Build
 import android.os.Bundle
@@ -9,8 +9,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.example.moviceapp.R
 import com.example.moviceapp.databinding.BottomSheetModalBinding
 import com.example.moviceapp.databinding.SearchRecentListItemBinding
+import com.example.moviceapp.repo.Movie
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class MovieBottomSheet(

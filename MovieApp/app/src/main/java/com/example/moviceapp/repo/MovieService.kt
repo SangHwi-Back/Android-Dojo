@@ -1,4 +1,4 @@
-package com.example.moviceapp
+package com.example.moviceapp.repo
 
 import retrofit2.Call
 import retrofit2.http.GET

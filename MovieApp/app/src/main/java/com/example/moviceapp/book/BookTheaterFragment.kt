@@ -1,4 +1,4 @@
-package com.example.moviceapp
+package com.example.moviceapp.book
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,8 +12,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.example.moviceapp.BookTheaterFragmentArgs
+import com.example.moviceapp.BookTheaterFragmentDirections
+import com.example.moviceapp.R
 import com.example.moviceapp.databinding.FragmentBookTheaterBinding
 import com.example.moviceapp.databinding.ItemBookTheaterSelectTheaterBinding
+import com.example.moviceapp.repo.Theater
+import com.example.moviceapp.repo.TheatersMock
 
 class BookTheaterFragment : Fragment() {
     val args: BookTheaterFragmentArgs by navArgs()
@@ -42,7 +47,7 @@ class BookTheaterFragment : Fragment() {
             LinearLayoutManager.VERTICAL,
             false)
         adapter.onItemTouchListener = { theater ->
-            val action = BookTheaterFragmentDirections
+            val action = BookTheaterFragmentDirections.Companion
                 .actionBookTheaterFragmentToBookScheduleFragment(args.movie, theater)
             findNavController().navigate(action)
         }

@@ -1,4 +1,4 @@
-package com.example.moviceapp
+package com.example.moviceapp.common
 
 import android.graphics.Rect
 import android.view.LayoutInflater
@@ -8,7 +8,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.example.moviceapp.R
 import com.example.moviceapp.databinding.ItemMovieThumbnailCardBinding
+import com.example.moviceapp.repo.Movie
+import com.example.moviceapp.search.ThumbnailOnClickListener
 
 class ThumbnailAdapter(
     private val fixedWidth: Int = ViewGroup.LayoutParams.MATCH_PARENT,

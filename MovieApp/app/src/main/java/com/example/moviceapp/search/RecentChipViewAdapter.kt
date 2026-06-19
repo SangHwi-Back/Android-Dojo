@@ -1,4 +1,4 @@
-package com.example.moviceapp
+package com.example.moviceapp.search
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.moviceapp.R
 
 class RecentChipViewAdapter : ListAdapter<String, RecentChipViewAdapter.SearchRecentChipViewHolder>(DiffCallback) {
 

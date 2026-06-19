@@ -1,4 +1,4 @@
-package com.example.moviceapp
+package com.example.moviceapp.book
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,9 +13,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.moviceapp.BookScheduleFragmentArgs
+import com.example.moviceapp.BookScheduleFragmentDirections
+import com.example.moviceapp.R
 import com.example.moviceapp.databinding.FragmentBookScheduleBinding
 import com.example.moviceapp.databinding.ItemBookScheduleDateBinding
 import com.example.moviceapp.databinding.ItemBookScheduleTimeBinding
+import com.example.moviceapp.repo.ShowtimeMock
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -36,7 +40,8 @@ class BookScheduleFragment : Fragment() {
     private val timeAdapter = TimeAdapter { selectedTime ->
         this.selectedTime = selectedTime
         if (this.selectedDate != null)
-            findNavController().navigate(BookScheduleFragmentDirections
+            findNavController().navigate(
+                BookScheduleFragmentDirections.Companion
                 .actionBookScheduleFragmentToBookSeatFragment(args.movie, args.theater))
     }
 

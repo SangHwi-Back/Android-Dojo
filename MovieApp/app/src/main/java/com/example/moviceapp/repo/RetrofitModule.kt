@@ -1,5 +1,7 @@
-package com.example.moviceapp
+package com.example.moviceapp.repo
 
+import com.example.moviceapp.BuildConfig
+import com.example.moviceapp.repo.MovieService
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

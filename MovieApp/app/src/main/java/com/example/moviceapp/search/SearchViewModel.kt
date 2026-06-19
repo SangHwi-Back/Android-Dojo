@@ -1,6 +1,8 @@
-package com.example.moviceapp
+package com.example.moviceapp.search
 
 import androidx.lifecycle.ViewModel
+import com.example.moviceapp.repo.Movie
+import com.example.moviceapp.repo.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

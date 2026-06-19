@@ -1,4 +1,4 @@
-package com.example.moviceapp
+package com.example.moviceapp.myinfo
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -17,8 +17,10 @@ import com.example.moviceapp.databinding.FragmentMyInfoBinding
 import com.example.moviceapp.databinding.ItemMyInfoHistoryBinding
 import com.example.moviceapp.databinding.ItemMyInfoUpcomingMovieBinding
 import com.example.moviceapp.databinding.ItemMyInfoUserStatusSectionBinding
+import com.example.moviceapp.repo.Movie
+import com.example.moviceapp.repo.MoviesMock
 
-class MyInfoFragment : Fragment() {
+class MyInfoFragment : androidx.fragment.app.Fragment() {
     private var _binding: FragmentMyInfoBinding? = null
     private val binding get() = _binding!!
 
@@ -69,28 +71,28 @@ class MyInfoFragment : Fragment() {
         binding.myInfoUserStatusRecyclerView.adapter = statusAdapter
         statusAdapter.submitList(listOf(
             MyInfoStatusSection(
-                getDrawable(R.drawable.confirmation_number_outlined_24px)!!,
+                getDrawable(_root_ide_package_.com.example.moviceapp.R.drawable.confirmation_number_outlined_24px)!!,
                 "3",
                 "My Bookings"),
             MyInfoStatusSection(
-                getDrawable(R.drawable.credit_card_24px)!!,
+                getDrawable(_root_ide_package_.com.example.moviceapp.R.drawable.credit_card_24px)!!,
                 "",
                 "Payment Methods"),
             MyInfoStatusSection(
-                getDrawable(R.drawable.notifications_24px)!!,
+                getDrawable(_root_ide_package_.com.example.moviceapp.R.drawable.notifications_24px)!!,
                 "5",
                 "Notifications"),
             MyInfoStatusSection(
-                getDrawable(R.drawable.star_outlined_24px)!!,
+                getDrawable(_root_ide_package_.com.example.moviceapp.R.drawable.star_outlined_24px)!!,
                 "",
                 "Reward & Points",
                 "1,250 points"),
             MyInfoStatusSection(
-                getDrawable(R.drawable.settings_24px)!!,
+                getDrawable(_root_ide_package_.com.example.moviceapp.R.drawable.settings_24px)!!,
                 "",
                 "Settings"),
             MyInfoStatusSection(
-                getDrawable(R.drawable.help_outlined_24px)!!,
+                getDrawable(_root_ide_package_.com.example.moviceapp.R.drawable.help_outlined_24px)!!,
                 "",
                 "Help & Support"),
         ))
@@ -102,7 +104,7 @@ class MyInfoFragment : Fragment() {
     }
 
     // --- History ---
-    class HistoryListAdapter : ListAdapter<MyInfoHistory, HistoryViewHolder>(HistoryDiffCallback) {
+    class HistoryListAdapter : androidx.recyclerview.widget.ListAdapter<MyInfoHistory, HistoryViewHolder>(HistoryDiffCallback) {
         object HistoryDiffCallback : DiffUtil.ItemCallback<MyInfoHistory>() {
             override fun areItemsTheSame(oldItem: MyInfoHistory, newItem: MyInfoHistory): Boolean =
                 oldItem.name == newItem.name
@@ -125,7 +127,7 @@ class MyInfoFragment : Fragment() {
     }
 
     // --- Upcoming Movie ---
-    class UpcomingMovieListAdapter : ListAdapter<Movie, UpcomingMovieViewHolder>(MovieDiffCallback) {
+    class UpcomingMovieListAdapter : androidx.recyclerview.widget.ListAdapter<Movie, UpcomingMovieViewHolder>(MovieDiffCallback) {
         object MovieDiffCallback : DiffUtil.ItemCallback<Movie>() {
             override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean =
                 oldItem.title == newItem.title
@@ -141,7 +143,7 @@ class MyInfoFragment : Fragment() {
     }
 
     // --- User Status Section ---
-    class UserStatusSectionListAdapter : ListAdapter<MyInfoStatusSection, UserStatusSectionViewHolder>(StatusDiffCallback) {
+    class UserStatusSectionListAdapter : androidx.recyclerview.widget.ListAdapter<MyInfoStatusSection, UserStatusSectionViewHolder>(StatusDiffCallback) {
         object StatusDiffCallback : DiffUtil.ItemCallback<MyInfoStatusSection>() {
             override fun areItemsTheSame(oldItem: MyInfoStatusSection, newItem: MyInfoStatusSection): Boolean =
                 oldItem.title == newItem.title
@@ -162,7 +164,7 @@ class MyInfoFragment : Fragment() {
         fun bind(movie: Movie) {
             binding.nameTextView.text = movie.title
             binding.pointTextView.text = movie.rating.toString()
-            binding.movieImageView.load(movie.posterURL ?: R.drawable.ic_launcher_background)
+            binding.movieImageView.load(movie.posterURL ?: _root_ide_package_.com.example.moviceapp.R.drawable.ic_launcher_background)
         }
     }
 

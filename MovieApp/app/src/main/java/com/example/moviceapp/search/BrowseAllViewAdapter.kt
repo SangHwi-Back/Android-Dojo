@@ -1,4 +1,4 @@
-package com.example.moviceapp
+package com.example.moviceapp.search
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,7 +6,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.example.moviceapp.R
 import com.example.moviceapp.databinding.ItemBrowseAllListBinding
+import com.example.moviceapp.repo.Movie
 
 class BrowseAllViewAdapter(
     val listener: BrowseOnClickListener,

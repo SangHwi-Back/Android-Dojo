@@ -1,4 +1,4 @@
-package com.example.moviceapp
+package com.example.moviceapp.book
 
 import android.graphics.Rect
 import android.os.Bundle
