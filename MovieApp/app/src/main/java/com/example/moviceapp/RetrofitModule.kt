@@ -30,7 +30,7 @@ object RetrofitModule {
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl("http://10.0.2.2:3009/")
+            .baseUrl("https://${BuildConfig.IP_API_SERVER}:3000/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 

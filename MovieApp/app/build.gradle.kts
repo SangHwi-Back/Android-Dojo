@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -14,9 +16,13 @@ android {
         // dataBinding = true already implies viewBinding, so viewBinding is not needed separately
         viewBinding = true
         dataBinding = true
+        buildConfig = true
     }
 
     compileSdk = 36
+
+    val properties = Properties()
+    rootProject.file("local.properties").inputStream().use { properties.load(it) }
 
     defaultConfig {
         applicationId = "com.example.moviceapp"
@@ -26,6 +32,20 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        manifestPlaceholders["IP_API_SERVER"] = properties.getValue(
+            "network.ip.local").toString()
+        manifestPlaceholders["PORT_API_SERVER"] = properties.getValue(
+            "network.port.local").toString()
+
+        buildConfigField("String", "IP_API_SERVER", "\""+properties.getValue(
+            "network.ip.local").toString()+"\"")
+        buildConfigField("String", "PORT_API_SERVER", "\""+properties.getValue(
+            "network.port.local").toString()+"\"")
+        resValue("string", "IP_API_SERVER", properties.getValue(
+            "network.ip.local").toString())
+        resValue("string", "PORT_API_SERVER", properties.getValue(
+            "network.port.local").toString())
     }
 
     buildTypes {
