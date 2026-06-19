@@ -10,5 +10,34 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val repository: MovieRepository
 ): ViewModel() {
-    suspend fun getMovies(): List<Movie> = repository.getMovies()
+    /**
+     * 전체 영화 목록
+     * - GET
+     * - /api/movies
+     */
+    suspend fun getMovies() = repository.getMovies()
+    /**
+     * 현재 상영 중
+     * - GET
+     * - /api/movies/now-playing
+     */
+    suspend fun getNowPlayingMovies() = repository.getMovies("now-playing")
+    /**
+     * 곧 개봉
+     * - GET
+     * - /api/movies/coming-soon
+     */
+    suspend fun getComingSoonMovies() = repository.getMovies("coming-soon")
+    /**
+     * 피처드 배너용
+     * - GET
+     * - /api/movies/featured
+     */
+    suspend fun getFeaturedMovies() = repository.getMovies("featured")
+    /**
+     * 영화 상세
+     * - GET
+     * - /api/movies/:id
+     */
+    suspend fun getMovieDetail(id: String) = repository.getMovieDetail(id)
 }

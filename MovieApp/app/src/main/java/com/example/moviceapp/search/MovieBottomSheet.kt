@@ -20,6 +20,7 @@ class MovieBottomSheet(
 ) : BottomSheetDialogFragment() {
     private var _binding: BottomSheetModalBinding? = null
     private val binding get() = _binding!!
+    lateinit var adapter: MovieBottomSheetChipListAdapter
 
     private lateinit var movie: Movie
 
@@ -39,7 +40,7 @@ class MovieBottomSheet(
         savedInstanceState: Bundle?
     ): View {
         _binding = BottomSheetModalBinding.inflate(inflater, container, false)
-        val adapter = MovieBottomSheetChipListAdapter()
+        adapter = MovieBottomSheetChipListAdapter()
         binding.categoryChipRecyclerView.adapter = adapter
         adapter.submitList(genres)
         return binding.root

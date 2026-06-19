@@ -12,8 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.example.moviceapp.BookTheaterFragmentArgs
-import com.example.moviceapp.BookTheaterFragmentDirections
 import com.example.moviceapp.R
 import com.example.moviceapp.databinding.FragmentBookTheaterBinding
 import com.example.moviceapp.databinding.ItemBookTheaterSelectTheaterBinding

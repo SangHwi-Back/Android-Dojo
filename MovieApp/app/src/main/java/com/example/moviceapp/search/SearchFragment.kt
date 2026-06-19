@@ -7,12 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.example.moviceapp.search.RecentChipViewAdapter
 import com.example.moviceapp.common.ThumbnailAdapter
+import com.example.moviceapp.common.screenWidth
 import com.example.moviceapp.databinding.FragmentSearchBinding
 import com.example.moviceapp.repo.Movie
 import com.example.moviceapp.repo.MoviesMock
-import com.example.moviceapp.common.screenWidth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -21,6 +20,11 @@ class SearchFragment: Fragment(), ThumbnailOnClickListener, BrowseOnClickListene
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
     private val viewModel: SearchViewModel by viewModels()
+
+    // ADAPTERS
+    lateinit var recentChipAdapter: RecentChipViewAdapter
+    lateinit var thumbnailAdapter: ThumbnailAdapter
+    lateinit var browseAllViewAdapter: BrowseAllViewAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,22 +36,21 @@ class SearchFragment: Fragment(), ThumbnailOnClickListener, BrowseOnClickListene
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        RECENT SEARCHES
-        binding.recentSearchChipRecyclerView.adapter = RecentChipViewAdapter().apply {
-            submitList(listOf("Action movies", "Sci-rFi 2026", "Comedy"))
-        }
-//        TRENDING NOW
         val fixedWidth = (screenWidth * 0.32).toInt()
-        binding.trendingNowRecyclerView.adapter = ThumbnailAdapter(fixedWidth, this).apply {
-            this.submitList(MoviesMock.all)
-        }
+
+        thumbnailAdapter = ThumbnailAdapter(fixedWidth, this) // TRENDING NOW
+        browseAllViewAdapter = BrowseAllViewAdapter(this) // BROWSE ALL
+        recentChipAdapter = RecentChipViewAdapter().apply {
+            submitList(listOf("Action movies", "Sci-rFi 2026", "Comedy"))
+        } // RECENT SEARCHES
+
+        binding.recentSearchChipRecyclerView.adapter = recentChipAdapter
+        binding.trendingNowRecyclerView.adapter = thumbnailAdapter
+        binding.browseAllRecyclerView.adapter = browseAllViewAdapter
+
         lifecycleScope.launch {
-            val movies = viewModel.getMovies()
-            print("size of movies : ${movies.size}")
-        }
-//        BROWSE ALL
-        binding.browseAllRecyclerView.adapter = BrowseAllViewAdapter(this).apply {
-            submitList(MoviesMock.all)
+            thumbnailAdapter.submitList(viewModel.getFeaturedMovies())
+            browseAllViewAdapter.submitList(viewModel.getMovies())
         }
     }
 
@@ -61,8 +64,8 @@ class SearchFragment: Fragment(), ThumbnailOnClickListener, BrowseOnClickListene
     }
 
     override fun onClickMovieFromBrowseAll(movie: Movie) {
-        val modal = MovieBottomSheet.Companion.newInstance(movie)
-        modal.show(childFragmentManager, MovieBottomSheet.Companion.TAG)
+        val modal = MovieBottomSheet.newInstance(movie)
+        modal.show(childFragmentManager, MovieBottomSheet.TAG)
     }
 }
 interface ThumbnailOnClickListener {

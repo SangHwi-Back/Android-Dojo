@@ -1,5 +1,6 @@
 package com.example.moviceapp.book
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,8 +14,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.moviceapp.BookScheduleFragmentArgs
-import com.example.moviceapp.BookScheduleFragmentDirections
 import com.example.moviceapp.R
 import com.example.moviceapp.databinding.FragmentBookScheduleBinding
 import com.example.moviceapp.databinding.ItemBookScheduleDateBinding
@@ -116,7 +115,7 @@ class BookScheduleFragment : Fragment() {
             return DateViewHolder(binding)
         }
 
-        override fun onBindViewHolder(holder: DateViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: DateViewHolder, @SuppressLint("RecyclerView") position: Int) {
             holder.bind(getItem(position), position == selectedIndex)
             holder.itemView.setOnClickListener {
                 val prev = selectedIndex
