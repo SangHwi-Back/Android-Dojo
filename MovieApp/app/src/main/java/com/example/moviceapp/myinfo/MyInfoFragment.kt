@@ -1,18 +1,18 @@
 package com.example.moviceapp.myinfo
 
-import android.graphics.drawable.Drawable
+import android.graphics.Rect
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import android.graphics.Rect
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.example.moviceapp.R
 import com.example.moviceapp.databinding.FragmentMyInfoBinding
 import com.example.moviceapp.databinding.ItemMyInfoHistoryBinding
 import com.example.moviceapp.databinding.ItemMyInfoUpcomingMovieBinding
@@ -20,7 +20,7 @@ import com.example.moviceapp.databinding.ItemMyInfoUserStatusSectionBinding
 import com.example.moviceapp.repo.Movie
 import com.example.moviceapp.repo.MoviesMock
 
-class MyInfoFragment : androidx.fragment.app.Fragment() {
+class MyInfoFragment : Fragment() {
     private var _binding: FragmentMyInfoBinding? = null
     private val binding get() = _binding!!
 
@@ -64,37 +64,18 @@ class MyInfoFragment : androidx.fragment.app.Fragment() {
         upcomingAdapter.submitList(MoviesMock.comingSoon)
 
         // USER_STATUS_SECTION
-        fun getDrawable(id: Int) = ContextCompat.getDrawable(requireContext(), id)
         val statusAdapter = UserStatusSectionListAdapter()
         binding.myInfoUserStatusRecyclerView.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
         binding.myInfoUserStatusRecyclerView.adapter = statusAdapter
         statusAdapter.submitList(listOf(
-            MyInfoStatusSection(
-                getDrawable(_root_ide_package_.com.example.moviceapp.R.drawable.confirmation_number_outlined_24px)!!,
-                "3",
-                "My Bookings"),
-            MyInfoStatusSection(
-                getDrawable(_root_ide_package_.com.example.moviceapp.R.drawable.credit_card_24px)!!,
-                "",
-                "Payment Methods"),
-            MyInfoStatusSection(
-                getDrawable(_root_ide_package_.com.example.moviceapp.R.drawable.notifications_24px)!!,
-                "5",
-                "Notifications"),
-            MyInfoStatusSection(
-                getDrawable(_root_ide_package_.com.example.moviceapp.R.drawable.star_outlined_24px)!!,
-                "",
-                "Reward & Points",
+            MyInfoStatusSection(null, "3", "My Bookings"),
+            MyInfoStatusSection(null, "", "Payment Methods"),
+            MyInfoStatusSection(null, "5", "Notifications"),
+            MyInfoStatusSection(null, "", "Reward & Points",
                 "1,250 points"),
-            MyInfoStatusSection(
-                getDrawable(_root_ide_package_.com.example.moviceapp.R.drawable.settings_24px)!!,
-                "",
-                "Settings"),
-            MyInfoStatusSection(
-                getDrawable(_root_ide_package_.com.example.moviceapp.R.drawable.help_outlined_24px)!!,
-                "",
-                "Help & Support"),
+            MyInfoStatusSection(null, "", "Settings"),
+            MyInfoStatusSection(null, "", "Help & Support"),
         ))
     }
 
@@ -104,7 +85,7 @@ class MyInfoFragment : androidx.fragment.app.Fragment() {
     }
 
     // --- History ---
-    class HistoryListAdapter : androidx.recyclerview.widget.ListAdapter<MyInfoHistory, HistoryViewHolder>(HistoryDiffCallback) {
+    class HistoryListAdapter : ListAdapter<MyInfoHistory, HistoryViewHolder>(HistoryDiffCallback) {
         object HistoryDiffCallback : DiffUtil.ItemCallback<MyInfoHistory>() {
             override fun areItemsTheSame(oldItem: MyInfoHistory, newItem: MyInfoHistory): Boolean =
                 oldItem.name == newItem.name
@@ -127,7 +108,7 @@ class MyInfoFragment : androidx.fragment.app.Fragment() {
     }
 
     // --- Upcoming Movie ---
-    class UpcomingMovieListAdapter : androidx.recyclerview.widget.ListAdapter<Movie, UpcomingMovieViewHolder>(MovieDiffCallback) {
+    class UpcomingMovieListAdapter : ListAdapter<Movie, UpcomingMovieViewHolder>(MovieDiffCallback) {
         object MovieDiffCallback : DiffUtil.ItemCallback<Movie>() {
             override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean =
                 oldItem.title == newItem.title
@@ -143,7 +124,7 @@ class MyInfoFragment : androidx.fragment.app.Fragment() {
     }
 
     // --- User Status Section ---
-    class UserStatusSectionListAdapter : androidx.recyclerview.widget.ListAdapter<MyInfoStatusSection, UserStatusSectionViewHolder>(StatusDiffCallback) {
+    class UserStatusSectionListAdapter : ListAdapter<MyInfoStatusSection, UserStatusSectionViewHolder>(StatusDiffCallback) {
         object StatusDiffCallback : DiffUtil.ItemCallback<MyInfoStatusSection>() {
             override fun areItemsTheSame(oldItem: MyInfoStatusSection, newItem: MyInfoStatusSection): Boolean =
                 oldItem.title == newItem.title
@@ -164,7 +145,7 @@ class MyInfoFragment : androidx.fragment.app.Fragment() {
         fun bind(movie: Movie) {
             binding.nameTextView.text = movie.title
             binding.pointTextView.text = movie.rating.toString()
-            binding.movieImageView.load(movie.posterURL ?: _root_ide_package_.com.example.moviceapp.R.drawable.ic_launcher_background)
+            binding.movieImageView.load(movie.posterURL ?: R.drawable.ic_launcher_background)
         }
     }
 
@@ -181,7 +162,7 @@ class MyInfoFragment : androidx.fragment.app.Fragment() {
         val binding: ItemMyInfoUserStatusSectionBinding
     ): RecyclerView.ViewHolder(binding.root) {
         fun bind(section: MyInfoStatusSection) {
-            binding.iconSrc = section.drawable
+            binding.myInfoIcon.load(section.posterUrl ?: R.drawable.ic_launcher_foreground)
             binding.badgeText = section.badge
             binding.sectionTitle = section.title
             binding.executePendingBindings()
@@ -194,7 +175,7 @@ data class MyInfoHistory(
     val name: String,
 )
 data class MyInfoStatusSection(
-    val drawable: Drawable,
+    val posterUrl: String? = null,
     val badge: String,
     val title: String,
     val subTitle: String? = null,

@@ -31,9 +31,18 @@
         android:stateListAnimator="@animator/item_press_scale"
         tools:showIn="@layout/fragment_my_info">
 
-        <include
-            layout="@layout/icon_background_circle"
-            app:src="@{icon_src}" />
+        <FrameLayout android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/rounded_icon_background">
+
+            <ImageView
+                    android:id="@+id/my_info_icon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    app:tint="@color/text_primary"
+                    tools:src="@tools:sample/avatars"/>
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"
