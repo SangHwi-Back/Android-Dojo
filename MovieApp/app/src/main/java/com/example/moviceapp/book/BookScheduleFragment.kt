@@ -9,24 +9,19 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
 import com.example.moviceapp.R
 import com.example.moviceapp.databinding.FragmentBookScheduleBinding
 import com.example.moviceapp.databinding.ItemBookScheduleDateBinding
 import com.example.moviceapp.databinding.ItemBookScheduleTimeBinding
 import com.example.moviceapp.repo.ShowtimeMock
+import com.google.android.material.appbar.MaterialToolbar
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import java.util.*
 
 class BookScheduleFragment : Fragment() {
 
     private val args: BookScheduleFragmentArgs by navArgs()
-
     private var _binding: FragmentBookScheduleBinding? = null
     private val binding get() = _binding!!
     private var selectedDate: ShowtimeMock.ShowDate? = null
@@ -40,9 +35,10 @@ class BookScheduleFragment : Fragment() {
         this.selectedTime = selectedTime
         if (this.selectedDate != null)
             findNavController().navigate(
-                BookScheduleFragmentDirections.Companion
+                BookScheduleFragmentDirections
                 .actionBookScheduleFragmentToBookSeatFragment(args.movie, args.theater))
     }
+    lateinit var topAppBar: MaterialToolbar
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,6 +50,9 @@ class BookScheduleFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        topAppBar = view.findViewById(R.id.top_appBar)
+        topAppBar.title = args.movie.title
 
         // 날짜 RecyclerView (가로 스크롤)
         binding.dateRecyclerView.layoutManager = LinearLayoutManager(
@@ -76,6 +75,7 @@ class BookScheduleFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        topAppBar.title = getString(R.string.app_name)
     }
 
     // ── 오늘부터 count일 간의 DateItem 목록 생성 ──────────────────────

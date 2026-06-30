@@ -50,4 +50,10 @@ abstract class RetrofitRepositoryModule {
     abstract fun bindMovieRepository(
         impl: MovieRepositoryImpl
     ) : MovieRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindBookingRepository(
+        impl: BookingRepositoryImpl
+    ) : BookingRepository
 }

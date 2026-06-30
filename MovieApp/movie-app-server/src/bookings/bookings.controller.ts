@@ -20,7 +20,7 @@ export class BookingsController {
     return this.bookingsService.findPast();
   }
 
-  @Get('schedule')
+  @Get('schedules/date')
   findSchedule(
     @Query('movie_id') movieId?: string,
     @Query('start_date') startDate?: string,
@@ -30,5 +30,10 @@ export class BookingsController {
     if (startDate === null) throw new BadRequestException("start_date null");
     if (endDate === null)   throw new BadRequestException("end_date null");
     return this.bookingsService.findSchedules(movieId, startDate, endDate);
+  }
+
+  @Get('schedules')
+  findAllSchedules(@Query('movie_id') movieId?: string) {
+    return this.bookingsService.findSchedules(movieId, undefined, undefined);
   }
 }
