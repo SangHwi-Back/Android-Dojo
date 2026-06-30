@@ -22,4 +22,14 @@ export class ShowtimesService {
       order: { showDate: 'ASC', time: 'ASC' },
     });
   }
+
+  async findUniqueDates(movieId: number): Promise<string[]> {
+    const rows = await this.showtimesRepo
+      .createQueryBuilder('showtime')
+      .select('DISTINCT showtime.show_date', 'showDate')
+      .where('showtime.movie_id = :movieId', { movieId })
+      .orderBy('showtime.show_date', 'ASC')
+      .getRawMany();
+    return rows.map((r) => r.showDate);
+  }
 }
