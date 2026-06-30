@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { Booking } from './entities/booking.entity';
 
 @Injectable()
@@ -20,5 +20,12 @@ export class BookingsService {
 
   findPast(): Promise<Booking[]> {
     return this.bookingsRepo.find({ where: { isUpcoming: false } });
+  }
+
+  findSchedules(movieId: string, startDate: string, endDate: string): Promise<Booking[]> {
+    return this.bookingsRepo.find({ where: {
+        movie: { id: parseInt(movieId) },
+        date: Between(startDate, endDate)
+    }})
   }
 }
