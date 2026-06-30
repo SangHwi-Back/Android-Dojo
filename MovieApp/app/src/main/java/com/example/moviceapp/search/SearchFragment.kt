@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.moviceapp.common.ThumbnailAdapter
 import com.example.moviceapp.common.screenWidth
 import com.example.moviceapp.databinding.FragmentSearchBinding
+import com.example.moviceapp.repo.APIResult
 import com.example.moviceapp.repo.Movie
 import com.example.moviceapp.repo.MoviesMock
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,8 +50,14 @@ class SearchFragment: Fragment(), ThumbnailOnClickListener, BrowseOnClickListene
         binding.browseAllRecyclerView.adapter = browseAllViewAdapter
 
         lifecycleScope.launch {
-            thumbnailAdapter.submitList(viewModel.getFeaturedMovies())
-            browseAllViewAdapter.submitList(viewModel.getMovies())
+            thumbnailAdapter.submitList(when (val result = viewModel.getFeaturedMovies()) {
+                is APIResult.Success<List<Movie>> -> result.data
+                else -> emptyList<Movie>()
+            })
+            browseAllViewAdapter.submitList(when (val result = viewModel.getMovies()) {
+                is APIResult.Success<List<Movie>> -> result.data
+                else -> emptyList<Movie>()
+            })
         }
     }
 
