@@ -22,7 +22,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class BookScheduleFragment : Fragment() {
-
+    // TODO: 영화 List 가져오고 ViewPager2 로 스와이프하며 그리드로 된 스케줄 중 하나를 선택하도록 수정
+    // TODO: RecyclerView 그리드로 가로 3개 나오게 만들고 하나 선택하고 다음 버튼 활성화되어 넘어갈 수 있게 하기
     private val args: BookScheduleFragmentArgs by navArgs()
     private var _binding: FragmentBookScheduleBinding? = null
     private val binding get() = _binding!!
