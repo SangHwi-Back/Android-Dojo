@@ -14,13 +14,16 @@ import com.example.moviceapp.common.ThumbnailAdapter
 import com.example.moviceapp.databinding.FragmentBookBinding
 import com.example.moviceapp.repo.Movie
 import com.example.moviceapp.search.ThumbnailOnClickListener
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class BookFragment : Fragment(), ThumbnailOnClickListener {
     private var _binding: FragmentBookBinding? = null
     private val binding get() = _binding!!
     private val viewModel: BookViewModel by viewModels()
     private lateinit var adapter: ThumbnailAdapter
+    private var allMovies: List<Movie> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,8 +44,8 @@ class BookFragment : Fragment(), ThumbnailOnClickListener {
         }
 
         lifecycleScope.launch {
-            val movies = viewModel.getMovies()
-            this@BookFragment.adapter.submitList(movies)
+            allMovies = viewModel.getMovies()
+            adapter.submitList(allMovies)
         }
     }
 
@@ -52,6 +55,8 @@ class BookFragment : Fragment(), ThumbnailOnClickListener {
     }
 
     override fun onClickMovieFromThumbnail(movie: Movie) {
-        findNavController().navigate(BookFragmentDirections.actionBookFragmentToBookTheaterFragment(movie))
+        findNavController().navigate(
+            BookFragmentDirections.actionBookFragmentToBookTheaterFragment(allMovies.toTypedArray())
+        )
     }
 }

@@ -1,58 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
     tools:context=".book.BookScheduleFragment">
 
-    <TextView
-        android:id="@+id/movie_name_text_view"
-        android:textColor="@color/text_primary"
-        android:textSize="@dimen/text_2xl"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"/>
+        android:orientation="vertical">
 
-    <!-- Select Date 헤더 -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/label_select_date"
-        android:textColor="@color/text_primary"
-        android:textSize="@dimen/text_lg"
-        app:drawableStartCompat="@drawable/calendar_today_outlined_24px"
-        android:gravity="center_vertical"
-        android:fontFamily="@font/dm_sans_bold"
-        android:layout_marginBottom="12dp" />
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/movie_view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-    <!-- 날짜 선택 RecyclerView (가로 스크롤) -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/date_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/dm_sans_bold"
+            android:gravity="center_vertical"
+            android:text="@string/label_select_date"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_lg"
+            app:drawableStartCompat="@drawable/calendar_today_outlined_24px"
+            app:drawableTint="@color/green_accent" />
 
-    <!-- Select Time 헤더 -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/date_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:nestedScrollingEnabled="false" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/label_select_time"
-        android:textColor="@color/text_primary"
-        android:textSize="@dimen/text_lg"
-        app:drawableStartCompat="@drawable/schedule_outlined_24px"
-        android:gravity="center_vertical"
-        android:fontFamily="@font/dm_sans_bold"
-        android:layout_marginBottom="12dp" />
-
-    <!-- 시간 선택 RecyclerView (3열 그리드) -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/time_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false" />
-
-</LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

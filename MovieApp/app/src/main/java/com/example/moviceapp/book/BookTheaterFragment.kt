@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -11,18 +12,24 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
 import com.example.moviceapp.R
 import com.example.moviceapp.databinding.FragmentBookTheaterBinding
 import com.example.moviceapp.databinding.ItemBookTheaterSelectTheaterBinding
 import com.example.moviceapp.repo.Theater
 import com.example.moviceapp.repo.TheatersMock
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class BookTheaterFragment : Fragment() {
-    val args: BookTheaterFragmentArgs by navArgs()
-    val adapter: TheaterListAdapter = TheaterListAdapter()
+    private val args: BookTheaterFragmentArgs by navArgs()
     private var _binding: FragmentBookTheaterBinding? = null
     private val binding get() = _binding!!
+
+    private var selectedTheater: Theater? = null
+    private val theaterAdapter = TheaterListAdapter { theater ->
+        selectedTheater = theater
+        binding.nextButton.isEnabled = true
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,23 +42,22 @@ class BookTheaterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.movieImageView.load(args.movie.posterURL ?: R.drawable.ic_launcher_background)
-        binding.movieNameTextView.text = args.movie.title
-        binding.movieRuntimeTextView.text = args.movie.duration
-        binding.moviePointTextView.text = args.movie.rating.toString()
+        val movies = args.movies.toList()
 
-        binding.theaterRecyclerView.layoutManager = LinearLayoutManager(
-            requireActivity(),
-            LinearLayoutManager.VERTICAL,
-            false)
-        adapter.onItemTouchListener = { theater ->
-            val action = BookTheaterFragmentDirections.Companion
-                .actionBookTheaterFragmentToBookScheduleFragment(args.movie, theater)
-            findNavController().navigate(action)
+        binding.movieViewPager.adapter = MoviePagerAdapter(movies)
+
+        binding.theaterRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.theaterRecyclerView.adapter = theaterAdapter
+        theaterAdapter.submitList(TheatersMock.list)
+
+        binding.nextButton.setOnClickListener {
+            val theater = selectedTheater ?: return@setOnClickListener
+            findNavController().navigate(
+                BookTheaterFragmentDirections.actionBookTheaterFragmentToBookScheduleFragment(
+                    args.movies, theater
+                )
+            )
         }
-
-        binding.theaterRecyclerView.adapter = adapter
-        adapter.submitList(TheatersMock.list)
     }
 
     override fun onDestroyView() {
@@ -59,13 +65,16 @@ class BookTheaterFragment : Fragment() {
         _binding = null
     }
 
-    class TheaterListAdapter : ListAdapter<Theater, TheaterViewHolder>(TheaterDiffCallback) {
-        var onItemTouchListener: ((Theater) -> Unit)? = null
+    class TheaterListAdapter(
+        private val onSelected: (Theater) -> Unit
+    ) : ListAdapter<Theater, TheaterViewHolder>(TheaterDiffCallback) {
+
+        private var selectedPosition = RecyclerView.NO_ID.toInt()
 
         object TheaterDiffCallback : DiffUtil.ItemCallback<Theater>() {
-            override fun areItemsTheSame(oldItem: Theater, newItem: Theater): Boolean =
-                oldItem.name == newItem.name
-            override fun areContentsTheSame(oldItem: Theater, newItem: Theater): Boolean =
+            override fun areItemsTheSame(oldItem: Theater, newItem: Theater) =
+                oldItem.id == newItem.id
+            override fun areContentsTheSame(oldItem: Theater, newItem: Theater) =
                 oldItem == newItem
         }
 
@@ -77,22 +86,30 @@ class BookTheaterFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: TheaterViewHolder, position: Int) {
-            val theater = getItem(position)
-            holder.bind(theater)
+            holder.bind(getItem(position), position == selectedPosition)
             holder.itemView.setOnClickListener {
-                onItemTouchListener?.invoke(theater)
+                val prev = selectedPosition
+                selectedPosition = position
+                if (prev != RecyclerView.NO_ID.toInt()) notifyItemChanged(prev)
+                notifyItemChanged(selectedPosition)
+                onSelected(getItem(position))
             }
         }
     }
 
     class TheaterViewHolder(
-        val binding: ItemBookTheaterSelectTheaterBinding
-    ): RecyclerView.ViewHolder(binding.root) {
-        fun bind(theater: Theater) {
+        private val binding: ItemBookTheaterSelectTheaterBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(theater: Theater, isSelected: Boolean) {
             binding.nameTextView.text = theater.name
             binding.addressTextView.text = theater.address
             binding.distanceTextView.text =
                 binding.root.context.getString(R.string.label_distance_format, theater.distanceKm)
+
+            val bgColor = if (isSelected) R.color.green_accent else R.color.surface_card
+            binding.root.setBackgroundColor(
+                ContextCompat.getColor(binding.root.context, bgColor)
+            )
         }
     }
 }

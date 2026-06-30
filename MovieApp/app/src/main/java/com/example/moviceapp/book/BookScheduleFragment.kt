@@ -1,48 +1,35 @@
 package com.example.moviceapp.book
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.*
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.example.moviceapp.R
 import com.example.moviceapp.databinding.FragmentBookScheduleBinding
 import com.example.moviceapp.databinding.ItemBookScheduleDateBinding
-import com.example.moviceapp.databinding.ItemBookScheduleTimeBinding
-import com.example.moviceapp.repo.ShowtimeMock
-import com.google.android.material.appbar.MaterialToolbar
-import java.text.SimpleDateFormat
-import java.util.*
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
+@AndroidEntryPoint
 class BookScheduleFragment : Fragment() {
-    // TODO: 영화 List 가져오고 ViewPager2 로 스와이프하며 그리드로 된 스케줄 중 하나를 선택하도록 수정
-    // TODO: RecyclerView 그리드로 가로 3개 나오게 만들고 하나 선택하고 다음 버튼 활성화되어 넘어갈 수 있게 하기
     private val args: BookScheduleFragmentArgs by navArgs()
     private var _binding: FragmentBookScheduleBinding? = null
     private val binding get() = _binding!!
-    private var selectedDate: ShowtimeMock.ShowDate? = null
-    private var selectedTime: ShowtimeMock.Showtime? = null
     private val viewModel: BookScheduleViewModel by viewModels()
 
-    private val dateAdapter = DateAdapter { selectedDate ->
-        timeAdapter.submitList(ShowtimeMock.timesForDate(selectedDate.isoDate))
-        this.selectedDate = ShowtimeMock.ShowDate(selectedDate.dayNum.toString(), selectedDate.isoDate)
-    }
-    private val timeAdapter = TimeAdapter { selectedTime ->
-        this.selectedTime = selectedTime
-        if (this.selectedDate != null)
-            findNavController().navigate(
-                BookScheduleFragmentDirections
-                .actionBookScheduleFragmentToBookSeatFragment(args.movie, args.theater))
-    }
-    lateinit var topAppBar: MaterialToolbar
+    private val dateAdapter = DateGridAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,62 +42,50 @@ class BookScheduleFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        topAppBar = view.findViewById(R.id.top_appBar)
-        topAppBar.title = args.movie.title
+        val movies = args.movies.toList()
 
-        // 날짜 RecyclerView (가로 스크롤)
-        binding.dateRecyclerView.layoutManager = LinearLayoutManager(
-            requireContext(), LinearLayoutManager.HORIZONTAL, false
-        )
+        binding.movieViewPager.adapter = MoviePagerAdapter(movies)
+        binding.movieViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                loadDates(movies[position].id)
+            }
+        })
+
+        binding.dateRecyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
         binding.dateRecyclerView.adapter = dateAdapter
 
-        // 시간 RecyclerView (3열 그리드)
-        binding.timeRecyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
-        binding.timeRecyclerView.adapter = timeAdapter
+        if (movies.isNotEmpty()) loadDates(movies[0].id)
+    }
 
-        // 오늘부터 7일 날짜 생성
-        val dates = generateDates(7)
-        dateAdapter.submitList(dates)
+    private fun loadDates(movieId: Int) {
+        lifecycleScope.launch {
+            val dates = viewModel.getShowtimeDates(movieId)
+            dateAdapter.submitList(dates.map { formatDate(it) })
+        }
+    }
 
-        // 첫 번째 날짜의 시간표 기본 로드
-        timeAdapter.submitList(ShowtimeMock.timesForDate(dates.first().isoDate))
+    private fun formatDate(isoDate: String): String {
+        return try {
+            val date = LocalDate.parse(isoDate, DateTimeFormatter.ISO_LOCAL_DATE)
+            date.format(DateTimeFormatter.ofPattern("MMM d", Locale.ENGLISH))
+        } catch (e: Exception) {
+            isoDate
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        topAppBar.title = getString(R.string.app_name)
     }
 
-    // ── 오늘부터 count일 간의 DateItem 목록 생성 ──────────────────────
-    private fun generateDates(count: Int): List<DateItem> {
-        val dayOfWeekFmt = SimpleDateFormat("EEE", Locale.ENGLISH)
-        val isoFmt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return (0 until count).map { offset ->
-            val cal = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, offset) }
-            DateItem(
-                dayOfWeek  = dayOfWeekFmt.format(cal.time),
-                dayNum     = cal.get(Calendar.DAY_OF_MONTH),
-                isoDate    = isoFmt.format(cal.time),
-                isSelected = offset == 0
-            )
+    class DateGridAdapter : ListAdapter<String, DateGridAdapter.DateViewHolder>(DateDiffCallback) {
+
+        private var selectedPosition = RecyclerView.NO_ID.toInt()
+
+        object DateDiffCallback : DiffUtil.ItemCallback<String>() {
+            override fun areItemsTheSame(oldItem: String, newItem: String) = oldItem == newItem
+            override fun areContentsTheSame(oldItem: String, newItem: String) = oldItem == newItem
         }
-    }
-
-    // ── 데이터 모델 ───────────────────────────────────────────────────
-    data class DateItem(
-        val dayOfWeek: String,
-        val dayNum: Int,
-        val isoDate: String,
-        val isSelected: Boolean = false,
-    )
-
-    // ── 날짜 Adapter ──────────────────────────────────────────────────
-    class DateAdapter(
-        private val onDateSelected: (DateItem) -> Unit,
-    ) : ListAdapter<DateItem, DateAdapter.DateViewHolder>(DateDiffCallback) {
-
-        private var selectedIndex = 0
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DateViewHolder {
             val binding = ItemBookScheduleDateBinding.inflate(
@@ -119,93 +94,28 @@ class BookScheduleFragment : Fragment() {
             return DateViewHolder(binding)
         }
 
-        override fun onBindViewHolder(holder: DateViewHolder, @SuppressLint("RecyclerView") position: Int) {
-            holder.bind(getItem(position), position == selectedIndex)
+        override fun onBindViewHolder(holder: DateViewHolder, position: Int) {
+            holder.bind(getItem(position), position == selectedPosition)
             holder.itemView.setOnClickListener {
-                val prev = selectedIndex
-                selectedIndex = position
-                notifyItemChanged(prev)
-                notifyItemChanged(selectedIndex)
-                onDateSelected(getItem(selectedIndex))
+                val prev = selectedPosition
+                selectedPosition = position
+                if (prev != RecyclerView.NO_ID.toInt()) notifyItemChanged(prev)
+                notifyItemChanged(selectedPosition)
             }
-        }
-
-        object DateDiffCallback : DiffUtil.ItemCallback<DateItem>() {
-            override fun areItemsTheSame(oldItem: DateItem, newItem: DateItem) =
-                oldItem.isoDate == newItem.isoDate
-            override fun areContentsTheSame(oldItem: DateItem, newItem: DateItem) =
-                oldItem == newItem
         }
 
         class DateViewHolder(
             private val binding: ItemBookScheduleDateBinding
         ) : RecyclerView.ViewHolder(binding.root) {
-
-            fun bind(item: DateItem, isSelected: Boolean) {
-                binding.dayOfWeekTextView.text = item.dayOfWeek
-                binding.dayNumberTextView.text = item.dayNum.toString()
-
-                val context = binding.root.context
-                if (isSelected) {
-                    binding.root.background =
-                        ContextCompat.getDrawable(context, R.drawable.bg_date_chip_selected)
-                    binding.dayOfWeekTextView.setTextColor(
-                        ContextCompat.getColor(context, R.color.background_primary)
-                    )
-                    binding.dayNumberTextView.setTextColor(
-                        ContextCompat.getColor(context, R.color.background_primary)
-                    )
-                } else {
-                    binding.root.background =
-                        ContextCompat.getDrawable(context, R.drawable.bg_date_chip_unselected)
-                    binding.dayOfWeekTextView.setTextColor(
-                        ContextCompat.getColor(context, R.color.text_secondary)
-                    )
-                    binding.dayNumberTextView.setTextColor(
-                        ContextCompat.getColor(context, R.color.text_primary)
-                    )
-                }
-            }
-        }
-    }
-
-    // ── 시간 Adapter ──────────────────────────────────────────────────
-    class TimeAdapter(
-        val onTimeSelected: (ShowtimeMock.Showtime) -> Unit
-    ) : ListAdapter<ShowtimeMock.Showtime, TimeAdapter.TimeViewHolder>(TimeDiffCallback) {
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeViewHolder {
-            val binding = ItemBookScheduleTimeBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
-            )
-            return TimeViewHolder(binding)
-        }
-
-        override fun onBindViewHolder(holder: TimeViewHolder, position: Int) {
-            holder.bind(getItem(position))
-            holder.itemView.setOnClickListener {
-                onTimeSelected(getItem(position))
-            }
-        }
-
-        object TimeDiffCallback : DiffUtil.ItemCallback<ShowtimeMock.Showtime>() {
-            override fun areItemsTheSame(
-                oldItem: ShowtimeMock.Showtime,
-                newItem: ShowtimeMock.Showtime
-            ) = oldItem.time == newItem.time
-
-            override fun areContentsTheSame(
-                oldItem: ShowtimeMock.Showtime,
-                newItem: ShowtimeMock.Showtime
-            ) = oldItem == newItem
-        }
-
-        class TimeViewHolder(
-            private val binding: ItemBookScheduleTimeBinding
-        ) : RecyclerView.ViewHolder(binding.root) {
-
-            fun bind(item: ShowtimeMock.Showtime) {
-                binding.timeTextView.text = item.time
+            fun bind(label: String, isSelected: Boolean) {
+                binding.dateButton.text = label
+                val tint = if (isSelected) R.color.green_accent else R.color.background_secondary
+                binding.dateButton.backgroundTintList =
+                    binding.root.context.getColorStateList(tint)
+                val textColor = if (isSelected) R.color.badge_text else R.color.text_primary
+                binding.dateButton.setTextColor(
+                    binding.root.context.getColor(textColor)
+                )
             }
         }
     }

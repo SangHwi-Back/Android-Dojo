@@ -11,9 +11,6 @@
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" >
         <action
-            android:id="@+id/action_searchFragment_to_bookTheaterFragment"
-            app:destination="@id/bookTheaterFragment" />
-        <action
             android:id="@+id/action_searchFragment_to_movieBottomSheet"
             app:destination="@id/movieBottomSheet" />
     </fragment>
@@ -34,8 +31,8 @@
         android:label="fragment_book_theater"
         tools:layout="@layout/fragment_book_theater" >
         <argument
-            android:name="movie"
-            app:argType="com.example.moviceapp.repo.Movie" />
+            android:name="movies"
+            app:argType="com.example.moviceapp.repo.Movie[]" />
         <action
             android:id="@+id/action_bookTheaterFragment_to_bookScheduleFragment"
             app:destination="@id/bookScheduleFragment" />
@@ -71,8 +68,8 @@
         android:label="fragment_book_schedule"
         tools:layout="@layout/fragment_book_schedule" >
         <argument
-            android:name="movie"
-            app:argType="com.example.moviceapp.repo.Movie" />
+            android:name="movies"
+            app:argType="com.example.moviceapp.repo.Movie[]" />
         <argument
             android:name="theater"
             app:argType="com.example.moviceapp.repo.Theater" />
