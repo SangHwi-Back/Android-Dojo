@@ -40,6 +40,11 @@ object RetrofitModule {
     @Provides
     fun provideApiService(retrofit: Retrofit): MovieService =
         retrofit.create(MovieService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideBookingService(retrofit: Retrofit): BookingService =
+        retrofit.create(BookingService::class.java)
 }
 
 @Module
