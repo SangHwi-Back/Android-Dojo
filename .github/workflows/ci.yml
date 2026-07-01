@@ -24,7 +24,10 @@ jobs:
           distribution: 'temurin'
 
       - name: Create local.properties
-        run: echo "sdk.dir=$ANDROID_HOME" > local.properties
+        run: |
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
+          echo "network.ip.local=127.0.0.1" >> local.properties
+          echo "network.port.local=3009" >> local.properties
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
