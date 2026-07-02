@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -14,19 +15,18 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.example.moviceapp.R
 import com.example.moviceapp.databinding.FragmentBookTheaterBinding
 import com.example.moviceapp.databinding.ItemBookTheaterSelectTheaterBinding
 import com.example.moviceapp.repo.Theater
-import com.example.moviceapp.repo.TheatersMock
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class BookTheaterFragment(
-    private val viewModel: BookTheaterViewModel
-) : Fragment() {
+class BookTheaterFragment : Fragment() {
     private val args: BookTheaterFragmentArgs by navArgs()
+    private val viewModel: BookTheaterViewModel by viewModels()
     private var _binding: FragmentBookTheaterBinding? = null
     private val binding get() = _binding!!
 
@@ -49,16 +49,17 @@ class BookTheaterFragment(
 
         val movies = args.movies.toList()
 
-        binding.movieViewPager.adapter = MoviePagerAdapter(movies) {
-            lifecycleScope.launch {
-                val theater = viewModel.getTheater(it.id)
-                theaterAdapter.submitList(listOf(theater))
+        binding.movieViewPager.adapter = MoviePagerAdapter(movies)
+        binding.movieViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                loadTheaters(movies[position].id)
             }
-        }
+        })
 
         binding.theaterRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.theaterRecyclerView.adapter = theaterAdapter
-        theaterAdapter.submitList(TheatersMock.list)
+
+        if (movies.isNotEmpty()) loadTheaters(movies[0].id)
 
         binding.nextButton.setOnClickListener {
             val theater = selectedTheater ?: return@setOnClickListener
@@ -67,6 +68,15 @@ class BookTheaterFragment(
                     args.movies, theater
                 )
             )
+        }
+    }
+
+    private fun loadTheaters(movieId: Int) {
+        selectedTheater = null
+        binding.nextButton.isEnabled = false
+        lifecycleScope.launch {
+            val theaters = viewModel.getTheaters(movieId)
+            theaterAdapter.submitList(theaters)
         }
     }
 
@@ -86,6 +96,11 @@ class BookTheaterFragment(
                 oldItem.id == newItem.id
             override fun areContentsTheSame(oldItem: Theater, newItem: Theater) =
                 oldItem == newItem
+        }
+
+        override fun submitList(list: List<Theater>?) {
+            selectedPosition = RecyclerView.NO_ID.toInt()
+            super.submitList(list)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TheaterViewHolder {

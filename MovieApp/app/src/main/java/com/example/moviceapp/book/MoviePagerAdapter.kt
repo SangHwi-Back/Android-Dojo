@@ -10,7 +10,6 @@ import com.example.moviceapp.repo.Movie
 
 class MoviePagerAdapter(
     private val movies: List<Movie>,
-    private val onMovieBind: ((movie: Movie) -> Unit)? = null,
 ) : RecyclerView.Adapter<MoviePagerAdapter.MovieViewHolder>() {
 
     override fun getItemCount(): Int = movies.size
@@ -24,7 +23,6 @@ class MoviePagerAdapter(
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         holder.bind(movies[position])
-        onMovieBind?.invoke(movies[position])
     }
 
     class MovieViewHolder(

@@ -1163,3 +1163,132 @@ class BookFragment : Fragment() {
 - 예매 플로우 미완성
 
 **다음 스텝**: Week 1 Critical Issues부터 시작 권장
+
+# MovieApp 추가수정 진행
+
+현재 코드베이스 전체를 점검하겠습니다.
+
+코드베이스를 점검한 결과, 문제를 정확히 짚어드리면 **애초에 프레이밍이 살짝 다릅니다.**
+
+## 현재 구조 재확인
+
+**Showtime 엔티티는 이미 정상입니다.** `movieId + theaterId + showDate + time + hall`을 각각 행으로 가지고 있고, seeder도 이미 모든 영화 × 모든 극장 × 모든 날짜 × 모든 시간 조합을 채워 넣고 있습니다. "한 영화가 여러 극장에서, 각 극장마다 여러 시간에 상영된다"는 요구사항은 Showtime 테이블 구조상 이미 지원됩니다.
+
+**진짜 문제는 두 곳입니다:**
+
+### 1. 극장 선택 스텝이 잘못된 테이블을 조회하고 있음
+
+[bookings.controller.ts:35-41](movie-app-server/src/bookings/bookings.controller.ts#L35)의 `findTheater()` → [bookings.service.ts:32-39](movie-app-server/src/bookings/bookings.service.ts#L32)를 보면:
+
+```ts
+findTheater(movieId: string): Promise<Theater> {
+  const bookPromise = this.bookingsRepo.findOne({ where: { movie: { id: parseInt(movieId) } } });
+  return bookPromise.then(booking => booking.theater)
+}
+```
+
+`Booking`(과거/예정된 실제 예매 내역) 테이블에서 movie로 아무 예매 1건을 찾아 그 예매에 딸린 극장 하나만 반환합니다. `Booking`은 "누가 언제 어느 극장 어느 좌석을 예매했는가"를 기록하는 테이블이지, "이 영화가 어느 극장들에서 상영 중인가"를 답하는 테이블이 아닙니다. 극장 목록은 **Showtime 테이블**에서 가져와야 합니다 — 이미 구현된 `findUniqueDates()`([showtimes.service.ts:26](movie-app-server/src/showtimes/showtimes.service.ts#L26))와 동일한 패턴으로, DISTINCT theater를 뽑으면 됩니다.
+
+즉 "하나의 Booking에 여러 Theater가 반환되어야 한다"가 아니라, **"극장 목록 조회는 Booking이 아니라 Showtime에서 해야 한다"**가 맞는 진단입니다. 완료된 예매(Booking) 한 건은 실제로 극장 하나·날짜 하나·시간 하나로 확정되는 게 맞으므로 Booking 엔티티 자체는 지금처럼 단수 관계로 두는 게 맞습니다.
+
+### 2. 시간 선택 단계가 통째로 빠져있음
+
+현재 [BookScheduleFragment.kt](app/src/main/java/com/example/moviceapp/book/BookScheduleFragment.kt)는 날짜 그리드만 있고, 날짜를 고르자마자 `confirm_button`으로 바로 `BookSeatFragment`로 넘어갑니다. 시간(예: "6:45 PM", "9:00 PM")을 고르는 UI/로직이 없습니다. 다행히 서버 쪽 `GET /api/showtimes?movieId=&theaterId=&date=`([showtimes.controller.ts:14](movie-app-server/src/showtimes/showtimes.controller.ts#L14))는 이미 movie+theater+date로 필터링된 Showtime 리스트(시간 포함)를 반환하므로, **서버 신규 작업 없이** 이 엔드포인트로 시간 목록을 가져오면 됩니다.
+
+## 발견한 버그 (별개, 하지만 지금 작업과 직결)
+
+[BookTheaterFragment.kt:26-28](app/src/main/java/com/example/moviceapp/book/BookTheaterFragment.kt#L26):
+
+```kotlin
+class BookTheaterFragment(
+    private val viewModel: BookTheaterViewModel
+) : Fragment() {}
+```
+
+Fragment를 생성자 파라미터가 있는 형태로 만들면 Navigation Component가 리플렉션으로 인스턴스화할 때 기본 생성자(no-arg)를 찾지 못해 **크래시**가 납니다. Hilt를 쓰는 Fragment는 `by viewModels()` 위임으로 주입받아야지 생성자 주입은 불가합니다 (다른 Fragment들처럼). 지금 당장 BookTheaterFragment로 진입하면 바로 죽을 가능성이 높습니다.
+
+## 작업 목록
+
+**서버 (movie-app-server)**
+1. `ShowtimesService`에 `findUniqueTheaters(movieId)` 추가 — `findUniqueDates`와 동일 패턴, DISTINCT theater 반환 (Theater 전체 객체 필요하므로 join 필요)
+2. `ShowtimesController`에 `GET /api/showtimes/theaters?movieId=` 추가
+3. `bookings.controller.ts`의 `findTheater`/`GET /bookings/theater`, `bookings.service.ts`의 `findTheater` 삭제 (더 이상 필요 없음, TODO였던 부분)
+
+**안드로이드**
+4. `BookTheaterFragment` 생성자 버그 수정 — `by viewModels()`로 전환
+5. `BookingService.kt`: `getTheaters(movieId): Call<Theater>` → `Call<List<Theater>>`로 변경, 엔드포인트를 `/api/showtimes/theaters`로 교체
+6. `BookingRepository`/`BookingRepositoryImpl`: `getTheater(): Theater?` → `getTheaters(): List<Theater>`
+7. `BookTheaterViewModel`: 리스트 반환하도록 수정
+8. `BookTheaterFragment`: `MoviePagerAdapter`의 `onMovieBind` 콜백에서 `theaterAdapter.submitList(listOf(theater))` → `submitList(theaters)`로 변경 (지금은 리스트를 만들어놓고 항상 1개짜리로 덮어쓰고 있음)
+9. `BookScheduleFragment`: 날짜 그리드 아래에 시간 선택 RecyclerView 추가 — 날짜 선택 시 `GET /api/showtimes?movieId=&theaterId=&date=`로 시간 목록 조회, 시간까지 선택해야 `confirm_button` 활성화되도록 변경
+10. 관련 레이아웃(`fragment_book_schedule.xml`)에 시간 선택 섹션 추가, `item_book_schedule_time.xml`(과거 스키마 참고) 재사용 또는 재작성
+
+작은 것 하나 더: [fragment_book_theater.xml:17](app/src/main/res/layout/fragment_book_theater.xml#L17)에서 ViewPager2가 `app:layout_constraintBottom_toTopOf="@id/movie_view_pager"`로 자기 자신을 참조하고 있어 제약이 무효합니다. 시간 선택 UI 추가하면서 같이 정리하겠습니다.
+
+바로 구현 진행하겠습니다.
+
+**서버 작업부터 시작합니다.**
+
+`/theaters`가 `/:id` 라우트보다 먼저 매칭돼야 합니다. Theaters 컨트롤러는 별개지만, showtimes 컨트롤러 순서는 `dates`, `theaters`, 그다음 `@Get()`(빈 경로) 순이라 문제없습니다. 이제 `bookings.controller.ts`/`bookings.service.ts`에서 TODO였던 부분을 제거합니다.
+
+서버 빌드 확인합니다.
+
+빌드 성공입니다. 실제로 동작하는지 서버를 띄워 테스트합니다.
+
+`distinctOn` 정상 동작합니다. showtimes 필터 엔드포인트도 확인합니다.
+
+이 엔드포인트로 시간까지 확보됩니다. 서버를 정리하고 안드로이드 작업으로 넘어갑니다.
+
+**안드로이드 작업 시작.** BookingService/Repository/ViewModel부터 수정합니다.
+
+`ShowtimeSlot` 데이터 클래스를 추가합니다.
+
+BookingService.kt를 업데이트합니다.
+
+BookingRepositoryImpl.kt를 업데이트합니다.
+
+BookTheaterViewModel.kt를 업데이트합니다.
+
+**BookTheaterFragment.kt** — 생성자 버그 수정 + 극장 리스트 반영.
+
+`nextButton`이 극장 선택 후에도 비활성화될 일이 없도록, ViewPager2로 영화가 바뀌면 극장 목록도 초기화되니 selectedTheater와 버튼 상태도 리셋해야 합니다. 이를 반영해서 재작성합니다.
+
+`onMovieBind` 콜백은 ViewPager2가 인접 페이지를 미리 바인딩할 때도 호출되어 실제 "현재 보이는 페이지"와 어긋날 수 있습니다. `BookScheduleFragment`가 쓰는 `registerOnPageChangeCallback` 패턴으로 통일하는 게 안전합니다.
+
+BookTheaterFragment.kt를 registerOnPageChangeCallback 방식으로 수정합니다.
+
+**BookScheduleFragment.kt** — 시간 선택 UI 추가.
+
+기존 레이아웃이 있습니다. 날짜 버튼과 통일감 있게 `MaterialButton`으로 바꿉니다.
+
+`fragment_book_schedule.xml`에 시간 그리드 섹션을 추가합니다.
+
+date_recycler_view와 confirm_button 사이에 시간 선택 헤더+그리드를 스크롤 영역 안에 넣습니다.
+
+BookScheduleViewModel에 시간 조회 함수를 추가합니다.
+
+`select_time_title_text_view`가 문자열 리소스와 뷰 바인딩 ID로 잘 잡히는지 확인하고, `strings.xml`에 `label_select_time`이 있는지 확인합니다.
+
+이제 안드로이드 빌드로 전체 검증합니다.
+
+빌드 성공입니다. 서버도 최종 확인합니다.
+
+모두 정상 동작합니다.
+
+---
+
+## 완료된 작업
+
+**서버**
+- `GET /api/showtimes/theaters?movieId=` 추가 — Showtime 테이블에서 DISTINCT 극장 목록 반환
+- `bookings.controller.ts`/`bookings.service.ts`의 TODO였던 `findTheater` 로직 제거 (Booking 테이블을 극장 조회에 쓰던 잘못된 코드)
+
+**안드로이드**
+- `BookTheaterFragment` 생성자 주입 버그 수정 — `by viewModels()`로 전환 (그대로 뒀으면 진입 시 크래시)
+- `BookingService`/`BookingRepository`/`BookTheaterViewModel`: 극장 단수 → 복수(`List<Theater>`) 반환으로 변경
+- `MoviePagerAdapter`의 불안정한 `onMovieBind` 콜백 제거, `BookScheduleFragment`와 동일한 `registerOnPageChangeCallback` 패턴으로 통일 (ViewPager2가 인접 페이지를 미리 바인딩하면서 잘못된 극장 목록이 뜨는 버그를 사전 차단)
+- `BookTheaterFragment`: 영화 페이지 전환 시 극장 목록 재조회 + 선택 상태·Next 버튼 초기화
+- `BookScheduleFragment`: 날짜 선택 후 서버에서 실제 상영 시간 조회, 3열 그리드로 표시. 날짜와 시간을 모두 선택해야 Confirm 버튼 활성화
+- `ShowtimeSlot` 데이터 클래스, `item_book_schedule_time.xml`(MaterialButton 통일), `fragment_book_schedule.xml`에 시간 섹션 레이아웃 추가
+
+두 프로젝트 모두 빌드 성공, 신규 엔드포인트 3개(`theaters`, 필터링된 `showtimes`, `dates`) 실제 호출로 검증 완료했습니다.

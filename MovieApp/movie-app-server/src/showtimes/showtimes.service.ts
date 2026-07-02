@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Showtime } from './entities/showtime.entity';
+import { Theater } from '../theaters/entities/theater.entity';
 
 @Injectable()
 export class ShowtimesService {
@@ -31,5 +32,16 @@ export class ShowtimesService {
       .orderBy('showtime.show_date', 'ASC')
       .getRawMany();
     return rows.map((r) => r.showDate);
+  }
+
+  async findUniqueTheaters(movieId: number): Promise<Theater[]> {
+    const rows = await this.showtimesRepo
+      .createQueryBuilder('showtime')
+      .leftJoinAndSelect('showtime.theater', 'theater')
+      .where('showtime.movie_id = :movieId', { movieId })
+      .distinctOn(['theater.id'])
+      .orderBy('theater.id', 'ASC')
+      .getMany();
+    return rows.map((r) => r.theater);
   }
 }

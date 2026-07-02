@@ -11,6 +11,12 @@ export class ShowtimesController {
     return this.showtimesService.findUniqueDates(parseInt(movieId));
   }
 
+  // GET /api/showtimes/theaters?movieId=1
+  @Get('theaters')
+  findUniqueTheaters(@Query('movieId') movieId: string) {
+    return this.showtimesService.findUniqueTheaters(parseInt(movieId));
+  }
+
   // GET /api/showtimes?date=2026-05-15&movieId=1&theaterId=1
   @Get()
   findAll(

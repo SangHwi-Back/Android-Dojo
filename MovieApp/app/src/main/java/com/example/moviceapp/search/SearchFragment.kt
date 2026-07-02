@@ -12,7 +12,6 @@ import com.example.moviceapp.common.screenWidth
 import com.example.moviceapp.databinding.FragmentSearchBinding
 import com.example.moviceapp.repo.APIResult
 import com.example.moviceapp.repo.Movie
-import com.example.moviceapp.repo.MoviesMock
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -66,11 +65,13 @@ class SearchFragment: Fragment(), ThumbnailOnClickListener, BrowseOnClickListene
         _binding = null
     }
 
-    override fun onClickMovieFromThumbnail(movie: Movie) {
-        TODO("Not yet implemented")
-    }
+    override fun onClickMovieFromThumbnail(movie: Movie) =
+        onClickMovie(movie)
 
-    override fun onClickMovieFromBrowseAll(movie: Movie) {
+    override fun onClickMovieFromBrowseAll(movie: Movie) =
+        onClickMovie(movie)
+
+    private fun onClickMovie(movie: Movie) {
         val modal = MovieBottomSheet.newInstance(movie)
         modal.show(childFragmentManager, MovieBottomSheet.TAG)
     }

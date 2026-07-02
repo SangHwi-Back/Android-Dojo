@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.button.MaterialButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/time_text_view"
+    android:id="@+id/time_button"
     android:layout_width="match_parent"
     android:layout_height="48dp"
-    android:gravity="center"
-    android:background="@drawable/bg_time_slot"
-    android:textColor="@color/text_primary"
-    android:textSize="@dimen/text_sm"
-    android:fontFamily="@font/dm_sans_medium"
     android:layout_margin="4dp"
-    tools:text="10:30 AM" />
+    android:fontFamily="@font/dm_sans_semibold"
+    android:textSize="@dimen/text_sm"
+    android:textColor="@color/text_primary"
+    app:backgroundTint="@color/background_secondary"
+    app:cornerRadius="12dp"
+    app:strokeWidth="0dp"
+    tools:text="6:45 PM" />

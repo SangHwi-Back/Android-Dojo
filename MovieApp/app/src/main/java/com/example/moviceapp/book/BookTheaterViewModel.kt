@@ -9,11 +9,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookTheaterViewModel @Inject constructor(
-    val repository: BookingRepository
+    private val repository: BookingRepository
 ) : ViewModel() {
-    suspend fun getTheater(movieId: Int): Theater? =
-        when (val result = repository.getTheater(movieId)) {
+    suspend fun getTheaters(movieId: Int): List<Theater> =
+        when (val result = repository.getTheaters(movieId)) {
             is APIResult.Success -> result.data
-            is APIResult.Failure -> null
+            is APIResult.Failure -> emptyList()
         }
 }

@@ -37,6 +37,15 @@ data class Booking(
     val seats: List<String>,       // ["D4", "D5"]
 )
 
+// GET /api/showtimes 응답 매핑용 — 특정 movie+theater+date 의 상영 시간 슬롯
+data class ShowtimeSlot(
+    val id: Int,
+    val showDate: String,
+    val time: String,
+    val hall: String,
+    val availableSeats: Int,
+)
+
 data class UserStats(
     val moviesCount: Int,
     val points: String,            // "1.2K"

@@ -32,15 +32,6 @@ export class BookingsController {
     return this.bookingsService.findSchedules(movieId, startDate, endDate);
   }
 
-  // TODO: 하나의 Booking 에 다수의 Theater 가 연결되도록 DB 구조가 다시 구축되어야 함
-  @Get('theater')
-  findTheater(
-      @Query('movie_id') movieId?: string
-  ) {
-    if (movieId === null) throw new BadRequestException("movie_id null");
-    return this.bookingsService.findTheater(movieId)
-  }
-
   @Get('schedules')
   findAllSchedules(@Query('movie_id') movieId?: string) {
     return this.bookingsService.findSchedules(movieId, undefined, undefined);
