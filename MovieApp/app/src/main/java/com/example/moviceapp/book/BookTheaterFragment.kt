@@ -1,11 +1,13 @@
 package com.example.moviceapp.book
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
@@ -18,9 +20,12 @@ import com.example.moviceapp.databinding.ItemBookTheaterSelectTheaterBinding
 import com.example.moviceapp.repo.Theater
 import com.example.moviceapp.repo.TheatersMock
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class BookTheaterFragment : Fragment() {
+class BookTheaterFragment(
+    private val viewModel: BookTheaterViewModel
+) : Fragment() {
     private val args: BookTheaterFragmentArgs by navArgs()
     private var _binding: FragmentBookTheaterBinding? = null
     private val binding get() = _binding!!
@@ -44,7 +49,12 @@ class BookTheaterFragment : Fragment() {
 
         val movies = args.movies.toList()
 
-        binding.movieViewPager.adapter = MoviePagerAdapter(movies)
+        binding.movieViewPager.adapter = MoviePagerAdapter(movies) {
+            lifecycleScope.launch {
+                val theater = viewModel.getTheater(it.id)
+                theaterAdapter.submitList(listOf(theater))
+            }
+        }
 
         binding.theaterRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.theaterRecyclerView.adapter = theaterAdapter
@@ -85,7 +95,10 @@ class BookTheaterFragment : Fragment() {
             )
         }
 
-        override fun onBindViewHolder(holder: TheaterViewHolder, position: Int) {
+        override fun onBindViewHolder(
+            holder: TheaterViewHolder,
+            @SuppressLint("RecyclerView") position: Int
+        ) {
             holder.bind(getItem(position), position == selectedPosition)
             holder.itemView.setOnClickListener {
                 val prev = selectedPosition

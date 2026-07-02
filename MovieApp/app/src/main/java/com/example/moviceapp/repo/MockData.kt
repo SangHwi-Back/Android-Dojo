@@ -204,150 +204,16 @@ object TheatersMock {
 // ----------------------------------------------------------------
 
 /**
- * 예매 내역 (MyInfoFragment — Upcoming Bookings)
- *
- * 사용 예:
- *   val bookings = BookingsMock.upcoming
- *   val past     = BookingsMock.past
- */
-object BookingsMock {
-
-    val booking1 = Booking(
-        id = 1001,
-        movie = MoviesMock.dunePartThree,
-        theater = TheatersMock.imaxCineplexDowntown,
-        date = "May 15, 2026",
-        time = "6:45 PM",
-        seats = listOf("D4", "D5"),
-    )
-
-    val booking2 = Booking(
-        id = 1002,
-        movie = MoviesMock.neonKnights,
-        theater = TheatersMock.galaxyMultiplex,
-        date = "May 20, 2026",
-        time = "9:30 PM",
-        seats = listOf("E2", "E3", "E4"),
-    )
-
-    val booking3 = Booking(
-        id = 1003,
-        movie = MoviesMock.oceansElevenLegacy,
-        theater = TheatersMock.starlightCinema,
-        date = "May 28, 2026",
-        time = "7:00 PM",
-        seats = listOf("B1", "B2"),
-    )
-
-    val booking4 = Booking(
-        id = 1004,
-        movie = MoviesMock.starfallChronicles,
-        theater = TheatersMock.imaxCineplexDowntown,
-        date = "April 5, 2026",
-        time = "3:00 PM",
-        seats = listOf("F5", "F6", "F7"),
-    )
-
-    /** 다가오는 예매 (MyInfoFragment 상단 카드) */
-    val upcoming: List<Booking> = listOf(booking1, booking2, booking3)
-
-    /** 지난 예매 (My Bookings 전체 목록) */
-    val past: List<Booking> = listOf(booking4)
-
-    /** 전체 */
-    val all: List<Booking> = upcoming + past
-}
-
-// ----------------------------------------------------------------
-
-/**
- * 유저 프로필 (MyInfoFragment 상단 프로필 카드 + 통계)
- *
- * 사용 예:
- *   val profile = UserMock.profile
- *   val stats   = UserMock.profile.stats
- */
-object UserMock {
-
-    val profile = UserProfile(
-        name = "Guest User",
-        isGuest = true,
-        stats = UserStats(
-            moviesCount = 12,
-            points = "1.2K",
-            saved = 89,
-        ),
-        upcomingBookings = BookingsMock.upcoming,
-    )
-}
-
-// ----------------------------------------------------------------
-
-/**
- * 영화 상세 Bottom Sheet (MovieDetailSheet)
- * — MoviesMock.all 에서 id로 찾거나 아래 헬퍼 사용
- *
- * 사용 예:
- *   val movie = MovieDetailMock.find(1)   // Dune: Part Three
- */
-object MovieDetailMock {
-
-    fun find(id: Int): Movie? = MoviesMock.all.find { it.id == id }
-
-    /** Sheet 에 바로 넘길 수 있는 샘플 */
-    val sample: Movie = MoviesMock.dunePartThree
-}
-
-// ----------------------------------------------------------------
-
-/**
  * 예매 플로우 — 날짜 / 시간표 선택 (BookMovieFragment Step 2)
  *
  * 사용 예:
  *   val dates     = ShowtimeMock.dates
  *   val showtimes = ShowtimeMock.timesForDate("2026-05-15")
  */
-object ShowtimeMock {
-
-    data class ShowDate(val label: String, val isoDate: String)
-    data class Showtime(val time: String, val hall: String, val availableSeats: Int)
-
-    val dates: List<ShowDate> = listOf(
-        ShowDate("Today",  "2026-05-14"),
-        ShowDate("Thu 15", "2026-05-15"),
-        ShowDate("Fri 16", "2026-05-16"),
-        ShowDate("Sat 17", "2026-05-17"),
-        ShowDate("Sun 18", "2026-05-18"),
-        ShowDate("Mon 19", "2026-05-19"),
-        ShowDate("Tue 20", "2026-05-20"),
-    )
-
-    private val showtimeMap: Map<String, List<Showtime>> = mapOf(
-        "2026-05-14" to listOf(
-            Showtime("12:00 PM", "IMAX Hall 1", 42),
-            Showtime("3:30 PM",  "Hall 2",      28),
-            Showtime("6:45 PM",  "IMAX Hall 1", 15),
-            Showtime("9:30 PM",  "Hall 3",      60),
-        ),
-        "2026-05-15" to listOf(
-            Showtime("11:00 AM", "Hall 2",      50),
-            Showtime("2:15 PM",  "IMAX Hall 1", 33),
-            Showtime("6:45 PM",  "IMAX Hall 1", 8),
-            Showtime("9:00 PM",  "Hall 3",      45),
-        ),
-        "2026-05-16" to listOf(
-            Showtime("1:00 PM",  "Hall 2",      55),
-            Showtime("4:30 PM",  "IMAX Hall 1", 20),
-            Showtime("7:45 PM",  "IMAX Hall 1", 12),
-        ),
-        "2026-05-17" to listOf(
-            Showtime("10:30 AM", "Hall 3",      70),
-            Showtime("1:45 PM",  "IMAX Hall 1", 40),
-            Showtime("5:00 PM",  "Hall 2",      25),
-            Showtime("8:15 PM",  "IMAX Hall 1", 18),
-        ),
-    )
-
-    fun timesForDate(isoDate: String): List<Showtime> =
-        showtimeMap[isoDate] ?: showtimeMap.values.first()
+@Parcelize
+object Showtime : Parcelable {
+    @Parcelize
+    data class ShowDate(val label: String, val isoDate: String) : Parcelable
+    @Parcelize
+    data class Showtime(val time: String, val hall: String, val availableSeats: Int) : Parcelable
 }

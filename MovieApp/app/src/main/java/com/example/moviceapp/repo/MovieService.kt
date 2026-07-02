@@ -16,4 +16,6 @@ interface MovieService {
 
     @GET("/api/{path}")
     fun <T> getAPI(@Path("path") path: String): Call<List<T>>
+
+
 }

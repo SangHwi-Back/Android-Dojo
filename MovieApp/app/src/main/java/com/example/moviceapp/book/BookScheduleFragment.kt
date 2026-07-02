@@ -1,12 +1,16 @@
 package com.example.moviceapp.book
 
+import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
@@ -20,16 +24,17 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Locale
+import java.util.*
 
+@RequiresApi(Build.VERSION_CODES.O)
 @AndroidEntryPoint
 class BookScheduleFragment : Fragment() {
     private val args: BookScheduleFragmentArgs by navArgs()
     private var _binding: FragmentBookScheduleBinding? = null
     private val binding get() = _binding!!
     private val viewModel: BookScheduleViewModel by viewModels()
-
     private val dateAdapter = DateGridAdapter()
+    private var currentMovieId: Int = -1
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,11 +60,21 @@ class BookScheduleFragment : Fragment() {
         binding.dateRecyclerView.adapter = dateAdapter
 
         if (movies.isNotEmpty()) loadDates(movies[0].id)
+
+        binding.confirmButton.setOnClickListener {
+            val movie = args.movies.first { it.id == currentMovieId }
+            val theater = args.theater
+
+            findNavController().navigate(BookScheduleFragmentDirections
+                .actionBookScheduleFragmentToBookSeatFragment(movie, theater)
+            )
+        }
     }
 
     private fun loadDates(movieId: Int) {
         lifecycleScope.launch {
             val dates = viewModel.getShowtimeDates(movieId)
+            currentMovieId = movieId
             dateAdapter.submitList(dates.map { formatDate(it) })
         }
     }
@@ -68,7 +83,7 @@ class BookScheduleFragment : Fragment() {
         return try {
             val date = LocalDate.parse(isoDate, DateTimeFormatter.ISO_LOCAL_DATE)
             date.format(DateTimeFormatter.ofPattern("MMM d", Locale.ENGLISH))
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             isoDate
         }
     }
@@ -94,7 +109,10 @@ class BookScheduleFragment : Fragment() {
             return DateViewHolder(binding)
         }
 
-        override fun onBindViewHolder(holder: DateViewHolder, position: Int) {
+        override fun onBindViewHolder(
+            holder: DateViewHolder,
+            @SuppressLint("RecyclerView") position: Int
+        ) {
             holder.bind(getItem(position), position == selectedPosition)
             holder.itemView.setOnClickListener {
                 val prev = selectedPosition
