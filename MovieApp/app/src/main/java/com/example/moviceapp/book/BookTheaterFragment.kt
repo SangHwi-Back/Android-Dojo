@@ -19,6 +19,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.moviceapp.R
 import com.example.moviceapp.databinding.FragmentBookTheaterBinding
 import com.example.moviceapp.databinding.ItemBookTheaterSelectTheaterBinding
+import com.example.moviceapp.repo.Movie
 import com.example.moviceapp.repo.Theater
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -29,7 +30,7 @@ class BookTheaterFragment : Fragment() {
     private val viewModel: BookTheaterViewModel by viewModels()
     private var _binding: FragmentBookTheaterBinding? = null
     private val binding get() = _binding!!
-
+    private lateinit var selectedMovie: Movie
     private var selectedTheater: Theater? = null
     private val theaterAdapter = TheaterListAdapter { theater ->
         selectedTheater = theater
@@ -48,34 +49,38 @@ class BookTheaterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val movies = args.movies.toList()
+        this.selectedMovie = args.selectedMovie
 
         binding.movieViewPager.adapter = MoviePagerAdapter(movies)
+        binding.movieViewPager.setCurrentItem(args.movies.indexOf(selectedMovie), false)
         binding.movieViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                loadTheaters(movies[position].id)
+                super.onPageSelected(position)
+                selectedMovie = args.movies[position]
+                loadTheaters()
             }
         })
 
         binding.theaterRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.theaterRecyclerView.adapter = theaterAdapter
 
-        if (movies.isNotEmpty()) loadTheaters(movies[0].id)
+        if (movies.isNotEmpty()) loadTheaters()
 
         binding.nextButton.setOnClickListener {
             val theater = selectedTheater ?: return@setOnClickListener
             findNavController().navigate(
                 BookTheaterFragmentDirections.actionBookTheaterFragmentToBookScheduleFragment(
-                    args.movies, theater
+                    args.movies, theater, selectedMovie
                 )
             )
         }
     }
 
-    private fun loadTheaters(movieId: Int) {
+    private fun loadTheaters() {
         selectedTheater = null
         binding.nextButton.isEnabled = false
         lifecycleScope.launch {
-            val theaters = viewModel.getTheaters(movieId)
+            val theaters = viewModel.getTheaters(selectedMovie.id)
             theaterAdapter.submitList(theaters)
         }
     }

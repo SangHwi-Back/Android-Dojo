@@ -1,6 +1,7 @@
 package com.example.moviceapp.book
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,6 +22,8 @@ import com.example.moviceapp.R
 import com.example.moviceapp.databinding.FragmentBookScheduleBinding
 import com.example.moviceapp.databinding.ItemBookScheduleDateBinding
 import com.example.moviceapp.databinding.ItemBookScheduleTimeBinding
+import com.example.moviceapp.repo.Movie
+import com.example.moviceapp.repo.Theater
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -34,20 +37,24 @@ class BookScheduleFragment : Fragment() {
     private var _binding: FragmentBookScheduleBinding? = null
     private val binding get() = _binding!!
     private val viewModel: BookScheduleViewModel by viewModels()
-
     private var selectedDate: String? = null
+        set(value) {
+            field = value
+            updateConfirmButtonState()
+        }
     private var selectedTime: String? = null
+        set(value) {
+            field = value
+            updateConfirmButtonState()
+        }
+    private lateinit var selectedMovie: Movie
+    private lateinit var selectedTheater: Theater
 
     private val dateAdapter = DateGridAdapter { dateItem ->
         selectedDate = dateItem.isoDate
-        loadTimes(currentMovieId, args.theater.id, dateItem.isoDate)
+        loadTimes()
     }
-    private val timeAdapter = TimeGridAdapter { time ->
-        selectedTime = time
-        updateConfirmButtonState()
-    }
-
-    private var currentMovieId: Int = -1
+    private val timeAdapter = TimeGridAdapter { selectedTime = it }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,11 +68,15 @@ class BookScheduleFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val movies = args.movies.toList()
+        this.selectedMovie = args.selectedMovie
+        this.selectedTheater = args.theater
 
         binding.movieViewPager.adapter = MoviePagerAdapter(movies)
+        binding.movieViewPager.setCurrentItem(args.movies.indexOf(args.selectedMovie), false)
         binding.movieViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                loadDates(movies[position].id)
+                super.onPageSelected(position)
+                loadDates()
             }
         })
 
@@ -75,38 +86,36 @@ class BookScheduleFragment : Fragment() {
         binding.timeRecyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
         binding.timeRecyclerView.adapter = timeAdapter
 
-        if (movies.isNotEmpty()) loadDates(movies[0].id)
+        if (movies.isNotEmpty()) loadDates()
 
         binding.confirmButton.setOnClickListener {
-            val movie = args.movies.first { it.id == currentMovieId }
-            val theater = args.theater
-
             findNavController().navigate(BookScheduleFragmentDirections
-                .actionBookScheduleFragmentToBookSeatFragment(movie, theater)
+                .actionBookScheduleFragmentToBookSeatFragment(selectedMovie, selectedTheater)
             )
         }
     }
 
-    private fun loadDates(movieId: Int) {
-        currentMovieId = movieId
+    private fun loadDates() {
         selectedDate = null
         selectedTime = null
         binding.selectTimeTitleTextView.visibility = View.GONE
         timeAdapter.submitList(emptyList())
-        updateConfirmButtonState()
 
         lifecycleScope.launch {
-            val dates = viewModel.getShowtimeDates(movieId)
+            val dates = viewModel.getShowtimeDates(selectedMovie.id)
             dateAdapter.submitList(dates.map { DateItem(it, formatDate(it)) })
         }
     }
 
-    private fun loadTimes(movieId: Int, theaterId: Int, date: String) {
+    private fun loadTimes() {
         selectedTime = null
-        updateConfirmButtonState()
 
         lifecycleScope.launch {
-            val slots = viewModel.getShowtimeSlots(movieId, theaterId, date)
+            val selectedDate = selectedDate ?: return@launch
+            val slots = viewModel.getShowtimeSlots(
+                selectedMovie.id,
+                selectedTheater.id,
+                selectedDate)
             binding.selectTimeTitleTextView.visibility =
                 if (slots.isEmpty()) View.GONE else View.VISIBLE
             timeAdapter.submitList(slots.map { it.time })
@@ -176,9 +185,8 @@ class BookScheduleFragment : Fragment() {
         ) : RecyclerView.ViewHolder(binding.root) {
             fun bind(item: DateItem, isSelected: Boolean) {
                 binding.dateButton.text = item.label
-                val tint = if (isSelected) R.color.green_accent else R.color.background_secondary
                 binding.dateButton.backgroundTintList =
-                    binding.root.context.getColorStateList(tint)
+                    binding.root.context.getColorStateList(backgroundTint(isSelected))
                 val textColor = if (isSelected) R.color.badge_text else R.color.text_primary
                 binding.dateButton.setTextColor(
                     binding.root.context.getColor(textColor)
@@ -229,9 +237,8 @@ class BookScheduleFragment : Fragment() {
         ) : RecyclerView.ViewHolder(binding.root) {
             fun bind(time: String, isSelected: Boolean) {
                 binding.timeButton.text = time
-                val tint = if (isSelected) R.color.green_accent else R.color.background_secondary
                 binding.timeButton.backgroundTintList =
-                    binding.root.context.getColorStateList(tint)
+                    binding.root.context.getColorStateList(backgroundTint(isSelected))
                 val textColor = if (isSelected) R.color.badge_text else R.color.text_primary
                 binding.timeButton.setTextColor(
                     binding.root.context.getColor(textColor)
@@ -240,3 +247,6 @@ class BookScheduleFragment : Fragment() {
         }
     }
 }
+
+fun backgroundTint(isSelected: Boolean): Int
+    = if (isSelected) R.color.green_accent else R.color.background_secondary

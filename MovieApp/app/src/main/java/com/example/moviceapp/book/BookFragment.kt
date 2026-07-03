@@ -56,7 +56,7 @@ class BookFragment : Fragment(), ThumbnailOnClickListener {
 
     override fun onClickMovieFromThumbnail(movie: Movie) {
         findNavController().navigate(
-            BookFragmentDirections.actionBookFragmentToBookTheaterFragment(allMovies.toTypedArray())
+            BookFragmentDirections.actionBookFragmentToBookTheaterFragment(allMovies.toTypedArray(), movie)
         )
     }
 }
