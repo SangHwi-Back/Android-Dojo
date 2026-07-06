@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moviceapp.databinding.FragmentBookSeatBinding
-import com.example.moviceapp.databinding.ItemBookSeatSelectBinding
+import com.example.moviceapp.databinding.ItemBookChooseItemSeatBinding
 
 class BookSeatFragment : Fragment() {
     private var _binding: FragmentBookSeatBinding? = null
@@ -62,7 +62,7 @@ class TheaterSeatListAdapter: ListAdapter<String, TheaterSeatViewHolder>(Theater
         viewType: Int
     ): TheaterSeatViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ItemBookSeatSelectBinding.inflate(
+        val binding = ItemBookChooseItemSeatBinding.inflate(
             inflater, parent, false)
         return TheaterSeatViewHolder(binding)
     }
@@ -72,38 +72,12 @@ class TheaterSeatListAdapter: ListAdapter<String, TheaterSeatViewHolder>(Theater
 }
 
 class TheaterSeatViewHolder(
-    val binding: ItemBookSeatSelectBinding
+    val binding: ItemBookChooseItemSeatBinding
 ): RecyclerView.ViewHolder(binding.root) {
     fun bind(seat: String) {
         binding.seatNumber.text = seat
     }
 }
-
-// MADE BY ME
-//class TwoColumnGridSpanDecoration(
-//    private val columnCount: Int = 1,
-//    private val countPerColumn: Int,
-//    private val columnSpacingPx: Int,
-//    private val itemSpacingPx: Int,
-//) : RecyclerView.ItemDecoration() {
-//    override fun getItemOffsets(
-//        outRect: Rect,
-//        view: View,
-//        parent: RecyclerView,
-//        state: RecyclerView.State
-//    ) {
-//        val position = parent.getChildAdapterPosition(view)
-//        val parentColumn = position % (columnCount * countPerColumn)
-//        val childColumn = position % countPerColumn
-//        val paddingBetweenParentColumn = if (parentColumn > 1) parentColumn * columnSpacingPx else 0
-//        val spanCount = columnCount * countPerColumn
-//        val spacingPx = childColumn * itemSpacingPx + paddingBetweenParentColumn * columnSpacingPx
-//        val column = childColumn + (paddingBetweenParentColumn * childColumn)
-//        outRect.left = column * spacingPx / spanCount
-//        outRect.right = spacingPx - (column + 1) * spacingPx / spanCount
-//        outRect.bottom = spacingPx
-//    }
-//}
 
 // MADE BY AI
 class TheaterSeatDecoration(

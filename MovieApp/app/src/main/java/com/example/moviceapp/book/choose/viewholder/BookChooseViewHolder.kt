@@ -1,4 +1,4 @@
-package com.example.moviceapp.book.choose.adapter
+package com.example.moviceapp.book.choose.viewholder
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,9 +9,6 @@ import androidx.viewbinding.ViewBinding
 import com.example.moviceapp.R
 import com.example.moviceapp.book.BookChooseInfoModel
 import com.example.moviceapp.book.BookInfo
-import com.example.moviceapp.book.choose.viewholder.BookChooseSeatViewHolder
-import com.example.moviceapp.book.choose.viewholder.BookChooseShowtimeViewHolder
-import com.example.moviceapp.book.choose.viewholder.BookChooseTheaterViewHolder
 import com.example.moviceapp.book.currentItem
 
 abstract class BookChooseViewHolder(
@@ -23,11 +20,11 @@ abstract class BookChooseViewHolder(
 object BookChooseViewHolderFactory {
     fun createViewHolder(parent: ViewGroup, viewType: Int): BookChooseViewHolder {
         return when(viewType) {
-            BookInfo.THEATER.currentItem -> BookChooseTheaterViewHolder(getViewDataBinding(parent,
+            BookInfo.THEATER.currentItem -> BookChooseTheaterViewHolder(parent, getViewDataBinding(parent,
                 R.layout.item_book_choose_theater))
-            BookInfo.SHOWTIME.currentItem -> BookChooseShowtimeViewHolder(getViewDataBinding(parent,
+            BookInfo.SHOWTIME.currentItem -> BookChooseShowtimeViewHolder(parent, getViewDataBinding(parent,
                 R.layout.item_book_choose_showtime))
-            else -> BookChooseSeatViewHolder(getViewDataBinding(parent,
+            else -> BookChooseSeatViewHolder(parent, getViewDataBinding(parent,
                 R.layout.item_book_choose_seat))
         }
     }

@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.moviceapp.R
-import com.example.moviceapp.databinding.ItemBookScheduleMovieInfoBinding
+import com.example.moviceapp.databinding.ItemBookChooseItemMovieInfoBinding
 import com.example.moviceapp.repo.Movie
 
 class MoviePagerAdapter(
@@ -15,7 +15,7 @@ class MoviePagerAdapter(
     override fun getItemCount(): Int = movies.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
-        val binding = ItemBookScheduleMovieInfoBinding.inflate(
+        val binding = ItemBookChooseItemMovieInfoBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
         return MovieViewHolder(binding)
@@ -26,7 +26,7 @@ class MoviePagerAdapter(
     }
 
     class MovieViewHolder(
-        private val binding: ItemBookScheduleMovieInfoBinding
+        private val binding: ItemBookChooseItemMovieInfoBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(movie: Movie) {
             binding.movieImageView.load(movie.posterURL ?: R.drawable.ic_launcher_background)

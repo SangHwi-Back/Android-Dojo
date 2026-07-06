@@ -1,7 +1,6 @@
 package com.example.moviceapp.book
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,8 +10,6 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -20,15 +17,15 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.moviceapp.R
 import com.example.moviceapp.databinding.FragmentBookScheduleBinding
-import com.example.moviceapp.databinding.ItemBookScheduleDateBinding
-import com.example.moviceapp.databinding.ItemBookScheduleTimeBinding
+import com.example.moviceapp.databinding.ItemBookChooseItemShowtimeDateBinding
+import com.example.moviceapp.databinding.ItemBookChooseItemShowtimeTimeBinding
 import com.example.moviceapp.repo.Movie
 import com.example.moviceapp.repo.Theater
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @AndroidEntryPoint
@@ -160,7 +157,7 @@ class BookScheduleFragment : Fragment() {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DateViewHolder {
-            val binding = ItemBookScheduleDateBinding.inflate(
+            val binding = ItemBookChooseItemShowtimeDateBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
             return DateViewHolder(binding)
@@ -181,7 +178,7 @@ class BookScheduleFragment : Fragment() {
         }
 
         class DateViewHolder(
-            private val binding: ItemBookScheduleDateBinding
+            private val binding: ItemBookChooseItemShowtimeDateBinding
         ) : RecyclerView.ViewHolder(binding.root) {
             fun bind(item: DateItem, isSelected: Boolean) {
                 binding.dateButton.text = item.label
@@ -212,7 +209,7 @@ class BookScheduleFragment : Fragment() {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeViewHolder {
-            val binding = ItemBookScheduleTimeBinding.inflate(
+            val binding = ItemBookChooseItemShowtimeTimeBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
             return TimeViewHolder(binding)
@@ -233,7 +230,7 @@ class BookScheduleFragment : Fragment() {
         }
 
         class TimeViewHolder(
-            private val binding: ItemBookScheduleTimeBinding
+            private val binding: ItemBookChooseItemShowtimeTimeBinding
         ) : RecyclerView.ViewHolder(binding.root) {
             fun bind(time: String, isSelected: Boolean) {
                 binding.timeButton.text = time

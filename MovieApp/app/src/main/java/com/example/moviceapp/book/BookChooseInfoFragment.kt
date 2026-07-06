@@ -14,9 +14,8 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.moviceapp.book.BookInfo.SEAT
 import com.example.moviceapp.book.BookInfo.SHOWTIME
 import com.example.moviceapp.book.BookInfo.THEATER
+import com.example.moviceapp.book.choose.adapter.BookChooseInformationAdapter
 import com.example.moviceapp.databinding.FragmentBookChooseInfoBinding
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -92,7 +91,9 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
             }
         })
 
-        binding.movieChooseInfoViewPager.adapter
+        binding.movieChooseInfoViewPager.adapter = BookChooseInformationAdapter(viewModel)
+        binding.movieChooseInfoViewPager.currentItem = 0
+        binding.movieChooseInfoViewPager.isEnabled = false
     }
 
     override fun goNextAnimated(
