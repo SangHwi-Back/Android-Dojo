@@ -46,6 +46,7 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
     private val args: BookChooseInfoFragmentArgs by navArgs()
     @Inject
     lateinit var movieAssistedFactory: BookChooseInfoViewModel.MovieAssistedFactory
+    private lateinit var chooseInformationAdapter: BookChooseInformationAdapter
     private val viewModel: BookChooseInfoViewModel by viewModels {
         BookChooseInfoViewModel.provideFactory(
             movieAssistedFactory, args.selectedMovie)
@@ -62,6 +63,7 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        chooseInformationAdapter = BookChooseInformationAdapter(viewModel)
         lifecycleScope.launch {
             viewModel.model.collect { model ->
                 binding.goNextButton.isEnabled = when (model.currentBookInfo) {
@@ -69,6 +71,26 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
                     SHOWTIME -> (model.selectedShowtime?.selectedShowtimeSlot != null)
                     SEAT -> (model.selectedSeat != null)
                 }
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.theaterList.collect {
+                chooseInformationAdapter.theaters = it
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.showDateList.collect {
+                chooseInformationAdapter.showDateList = it
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.showTimeList.collect {
+                chooseInformationAdapter.showTimeList = it
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.seatList.collect {
+                chooseInformationAdapter.seats = it
             }
         }
 
@@ -91,7 +113,7 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
             }
         })
 
-        binding.movieChooseInfoViewPager.adapter = BookChooseInformationAdapter(viewModel)
+        binding.movieChooseInfoViewPager.adapter = chooseInformationAdapter
         binding.movieChooseInfoViewPager.currentItem = 0
         binding.movieChooseInfoViewPager.isEnabled = false
     }

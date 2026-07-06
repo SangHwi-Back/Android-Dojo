@@ -21,6 +21,117 @@ class BookChooseInfoViewModel @AssistedInject constructor(
     @Assisted private val initialMovie: Movie,
     @Assisted private val initialBookInfo: BookInfo = BookInfo.THEATER
 ) : ViewModel() {
+    private var _model = MutableStateFlow(BookChooseInfoModel(initialBookInfo, initialMovie))
+    val model: StateFlow<BookChooseInfoModel>
+        get() = _model.asStateFlow()
+    private var _theaterList = MutableStateFlow<List<Theater>>(listOf())
+    val theaterList: StateFlow<List<Theater>>
+        get() = _theaterList.asStateFlow()
+    private var _showTimeList = MutableStateFlow<List<ShowtimeSlot>>(listOf())
+    val showTimeList: StateFlow<List<ShowtimeSlot>>
+        get() = _showTimeList.asStateFlow()
+    private var _showDateList = MutableStateFlow<List<String>>(listOf())
+    val showDateList: StateFlow<List<String>>
+        get() = _showDateList.asStateFlow()
+    private var _seatList = MutableStateFlow<List<String>>(listOf())
+    val seatList: StateFlow<List<String>>
+        get() = _seatList.asStateFlow()
+    var chooseHandler: BookChooseHandler? = null
+    /**
+     * Change movie model
+     */
+    fun setMovieAndRefresh(movie: Movie) {
+        _model.value = BookChooseInfoModel(BookInfo.THEATER, movie) }
+    /**
+     * Change theater model
+     */
+    fun selectTheater(theater: Theater) {
+        _model.value.selectedTheater = theater }
+    /**
+     * Change showtime date model
+     */
+    fun selectShowDate(date: String) {
+        _model.value.selectedShowtime = BookShowtime(date)
+        // Go next when time is set
+    }
+    /**
+     * Change showtime time model
+     */
+    fun selectShowtime(date: String, showtime: ShowtimeSlot) {
+        _model.value.selectedShowtime = BookShowtime(date, showtime) }
+    /**
+     * Change seat model
+     */
+    fun selectSeat(seat: String) {
+        _model.value.selectedSeat = seat
+    }
+    fun getNextBookInfo(): BookInfo = when (model.value.currentBookInfo) {
+        BookInfo.THEATER -> BookInfo.SHOWTIME
+        BookInfo.SHOWTIME -> BookInfo.SEAT
+        else -> BookInfo.THEATER
+    }
+    fun goBookInfo(bookInfo: BookInfo? = null) {
+        _model.value.currentBookInfo = bookInfo ?: getNextBookInfo()
+        chooseHandler?.goNextAnimated(
+            _model.value.currentBookInfo)
+    }
+    fun loadMovieInfo(info: BookInfo, isShowDate: Boolean = false) {
+        model.value.currentBookInfo = info
+        val id = model.value.selectedMovie.id
+        viewModelScope.launch {
+            when (info) {
+                BookInfo.THEATER -> {
+                    _theaterList.value = getTheaters(id)
+                }
+                BookInfo.SHOWTIME -> {
+                    if (isShowDate) {
+                        _showDateList.value = getShowtimeDates(id)
+                        _showTimeList.value = listOf()
+                    } else {
+                        val theater = model.value.selectedTheater
+                        val date = model.value.selectedShowtime?.selectedShowDate
+                        if (theater != null && date != null) {
+                            _showTimeList.value = getShowtimeSlots(
+                                id, theater.id, date)
+                        }
+                    }
+                }
+                BookInfo.SEAT -> {
+                    // TODO: Fetch seats from repository
+                    _seatList.value = listOf("Wait", "For", "A", "While")
+                }
+            }
+        }
+    }
+    fun refreshMovieInfo(info: BookInfo, isShowDate: Boolean = false) {
+        when (info) {
+            BookInfo.THEATER -> {
+                _model.value.selectedTheater = null
+            }
+            BookInfo.SHOWTIME -> {
+                if (isShowDate) _model.value.selectedShowtime = null
+                else _model.value.selectedShowtime?.selectedShowtimeSlot = null
+            }
+            BookInfo.SEAT -> {
+                _model.value.selectedSeat = null
+            }
+        }
+    }
+    private suspend fun getShowtimeDates(movieId: Int): List<String> =
+        when (val result = repository.getShowtimeDates(movieId)) {
+            is APIResult.Success -> result.data
+            is APIResult.Failure -> emptyList()
+        }
+    private suspend fun getShowtimeSlots(movieId: Int, theaterId: Int, date: String): List<ShowtimeSlot> =
+        when (val result = repository.getShowtimeSlots(movieId, theaterId, date)) {
+            is APIResult.Success -> result.data
+            is APIResult.Failure -> emptyList()
+        }
+    private suspend fun getTheaters(movieId: Int): List<Theater> =
+        when (val result = repository.getTheaters(movieId)) {
+            is APIResult.Success -> result.data
+            is APIResult.Failure -> emptyList()
+        }
     @AssistedFactory
     interface MovieAssistedFactory {
         fun create(
@@ -41,112 +152,6 @@ class BookChooseInfoViewModel @AssistedInject constructor(
             }
         }
     }
-    private var _model = MutableStateFlow(BookChooseInfoModel(initialBookInfo, initialMovie))
-    val model: StateFlow<BookChooseInfoModel>
-        get() = _model.asStateFlow()
-    var theaterList = MutableStateFlow<List<Theater>>(listOf())
-    var showTimeList = MutableStateFlow<List<ShowtimeSlot>>(listOf())
-    var showDateList = MutableStateFlow<List<String>>(listOf())
-    var seatList = MutableStateFlow<List<String>>(listOf())
-    var chooseHandler: BookChooseHandler? = null
-    /**
-     * Change movie model
-     */
-    fun setMovieAndRefresh(movie: Movie) {
-        _model.value = BookChooseInfoModel(BookInfo.THEATER, movie)
-    }
-    /**
-     * Change theater model
-     */
-    fun selectTheater(theater: Theater) {
-        _model.value.selectedTheater = theater
-    }
-    /**
-     * Change showtime date model
-     */
-    fun selectShowDate(date: String) {
-        _model.value.selectedShowtime = BookShowtime(date)
-        // Go next when time is set
-    }
-    /**
-     * Change showtime time model
-     */
-    fun selectShowtime(date: String, showtime: ShowtimeSlot) {
-        _model.value.selectedShowtime = BookShowtime(date, showtime)
-    }
-    fun selectSeat(seat: String) {
-        _model.value.selectedSeat = seat
-    }
-    fun getNextBookInfo(): BookInfo = when (model.value.currentBookInfo) {
-        BookInfo.THEATER -> BookInfo.SHOWTIME
-        BookInfo.SHOWTIME -> BookInfo.SEAT
-        else -> BookInfo.THEATER
-    }
-    fun goBookInfo(bookInfo: BookInfo? = null) {
-        _model.value.currentBookInfo = bookInfo ?: getNextBookInfo()
-        chooseHandler?.goNextAnimated(
-            _model.value.currentBookInfo)
-    }
-    fun loadMovieInfo(info: BookInfo, isShowDate: Boolean = false) {
-        model.value.currentBookInfo = info
-        val id = model.value.selectedMovie.id
-        viewModelScope.launch {
-            when (info) {
-                BookInfo.THEATER -> {
-                    theaterList.value = getTheaters(id)
-                }
-                BookInfo.SHOWTIME -> {
-                    if (isShowDate) {
-                        showDateList.value = getShowtimeDates(id)
-                        showTimeList.value = listOf()
-                    } else {
-                        val theater = model.value.selectedTheater
-                        val date = model.value.selectedShowtime?.selectedShowDate
-                        if (theater != null && date != null) {
-                            showTimeList.value = getShowtimeSlots(
-                                id, theater.id, date)
-                        }
-                    }
-                }
-                BookInfo.SEAT -> {
-                    // TODO: Fetch seats from repository
-                    seatList.value = listOf("Wait", "For", "A", "While")
-                }
-            }
-        }
-    }
-    fun refreshMovieInfo(info: BookInfo, isShowDate: Boolean = false) {
-        when (info) {
-            BookInfo.THEATER -> {
-                _model.value.selectedTheater = null
-            }
-            BookInfo.SHOWTIME -> {
-                if (isShowDate) _model.value.selectedShowtime = null
-                else _model.value.selectedShowtime?.selectedShowtimeSlot = null
-            }
-            BookInfo.SEAT -> {
-                _model.value.selectedSeat = null
-            }
-        }
-    }
-
-    private suspend fun getShowtimeDates(movieId: Int): List<String> =
-        when (val result = repository.getShowtimeDates(movieId)) {
-            is APIResult.Success -> result.data
-            is APIResult.Failure -> emptyList()
-        }
-
-    private suspend fun getShowtimeSlots(movieId: Int, theaterId: Int, date: String): List<ShowtimeSlot> =
-        when (val result = repository.getShowtimeSlots(movieId, theaterId, date)) {
-            is APIResult.Success -> result.data
-            is APIResult.Failure -> emptyList()
-        }
-
-    private suspend fun getTheaters(movieId: Int): List<Theater> =
-        when (val result = repository.getTheaters(movieId)) {
-            is APIResult.Success -> result.data
-            is APIResult.Failure -> emptyList()
-        }
 }
 
 data class BookChooseInfoModel(

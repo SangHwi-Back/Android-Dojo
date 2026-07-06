@@ -8,8 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.example.moviceapp.R
 import com.example.moviceapp.book.BookChooseInfoModel
-import com.example.moviceapp.book.BookInfo
-import com.example.moviceapp.book.currentItem
+import com.example.moviceapp.book.choose.adapter.BookChooseViewHolderEntity
 
 abstract class BookChooseViewHolder(
     binding: ViewBinding
@@ -18,14 +17,21 @@ abstract class BookChooseViewHolder(
 }
 
 object BookChooseViewHolderFactory {
-    fun createViewHolder(parent: ViewGroup, viewType: Int): BookChooseViewHolder {
-        return when(viewType) {
-            BookInfo.THEATER.currentItem -> BookChooseTheaterViewHolder(parent, getViewDataBinding(parent,
-                R.layout.item_book_choose_theater))
-            BookInfo.SHOWTIME.currentItem -> BookChooseShowtimeViewHolder(parent, getViewDataBinding(parent,
-                R.layout.item_book_choose_showtime))
-            else -> BookChooseSeatViewHolder(parent, getViewDataBinding(parent,
-                R.layout.item_book_choose_seat))
+    fun createViewHolder(parent: ViewGroup, entity: BookChooseViewHolderEntity): BookChooseViewHolder {
+        return when (entity) {
+            is BookChooseViewHolderEntity.TheaterEntity -> BookChooseTheaterViewHolder(parent, getViewDataBinding(parent,
+                R.layout.item_book_choose_theater)).apply {
+                    setTheaters(entity.theaters)
+            }
+            is BookChooseViewHolderEntity.Showtime -> BookChooseShowtimeViewHolder(parent, getViewDataBinding(parent,
+                R.layout.item_book_choose_showtime)).apply {
+                    setShowtimeList(entity.showTimeList)
+                    setShowDateList(entity.showDateList)
+            }
+            is BookChooseViewHolderEntity.Seat -> BookChooseSeatViewHolder(parent, getViewDataBinding(parent,
+                R.layout.item_book_choose_seat)).apply {
+                    setSeats(entity.seats)
+            }
         }
     }
 

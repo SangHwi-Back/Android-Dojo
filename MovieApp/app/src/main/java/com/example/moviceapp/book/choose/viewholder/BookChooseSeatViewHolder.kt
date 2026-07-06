@@ -11,4 +11,7 @@ class BookChooseSeatViewHolder(
     override fun bind(model: BookChooseInfoModel) {
         TODO("Not yet implemented")
     }
+    fun setSeats(seats: List<String>) {
+
+    }
 }
