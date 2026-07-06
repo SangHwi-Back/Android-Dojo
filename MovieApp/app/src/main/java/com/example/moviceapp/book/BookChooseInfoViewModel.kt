@@ -14,6 +14,7 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class BookChooseInfoViewModel @AssistedInject constructor(
@@ -41,29 +42,31 @@ class BookChooseInfoViewModel @AssistedInject constructor(
      * Change movie model
      */
     fun setMovieAndRefresh(movie: Movie) {
-        _model.value = BookChooseInfoModel(BookInfo.THEATER, movie) }
+        _model.value = BookChooseInfoModel(BookInfo.THEATER, movie)
+    }
     /**
      * Change theater model
      */
     fun selectTheater(theater: Theater) {
-        _model.value.selectedTheater = theater }
+        _model.update { it.copy(selectedTheater = theater) }
+    }
     /**
      * Change showtime date model
      */
     fun selectShowDate(date: String) {
-        _model.value.selectedShowtime = BookShowtime(date)
-        // Go next when time is set
+        _model.update { it.copy(selectedShowtime = BookShowtime(date)) }
     }
     /**
      * Change showtime time model
      */
     fun selectShowtime(date: String, showtime: ShowtimeSlot) {
-        _model.value.selectedShowtime = BookShowtime(date, showtime) }
+        _model.update { it.copy(selectedShowtime = BookShowtime(date, showtime)) }
+    }
     /**
      * Change seat model
      */
     fun selectSeat(seat: String) {
-        _model.value.selectedSeat = seat
+        _model.update { it.copy(selectedSeat = seat) }
     }
     fun getNextBookInfo(): BookInfo = when (model.value.currentBookInfo) {
         BookInfo.THEATER -> BookInfo.SHOWTIME
@@ -71,12 +74,12 @@ class BookChooseInfoViewModel @AssistedInject constructor(
         else -> BookInfo.THEATER
     }
     fun goBookInfo(bookInfo: BookInfo? = null) {
-        _model.value.currentBookInfo = bookInfo ?: getNextBookInfo()
-        chooseHandler?.goNextAnimated(
-            _model.value.currentBookInfo)
+        val target = bookInfo ?: getNextBookInfo()
+        _model.update { it.copy(currentBookInfo = target) }
+        chooseHandler?.goNextAnimated(target)
     }
     fun loadMovieInfo(info: BookInfo, isShowDate: Boolean = false) {
-        model.value.currentBookInfo = info
+        _model.update { it.copy(currentBookInfo = info) }
         val id = model.value.selectedMovie.id
         viewModelScope.launch {
             when (info) {
@@ -104,16 +107,15 @@ class BookChooseInfoViewModel @AssistedInject constructor(
         }
     }
     fun refreshMovieInfo(info: BookInfo, isShowDate: Boolean = false) {
-        when (info) {
-            BookInfo.THEATER -> {
-                _model.value.selectedTheater = null
-            }
-            BookInfo.SHOWTIME -> {
-                if (isShowDate) _model.value.selectedShowtime = null
-                else _model.value.selectedShowtime?.selectedShowtimeSlot = null
-            }
-            BookInfo.SEAT -> {
-                _model.value.selectedSeat = null
+        _model.update { current ->
+            when (info) {
+                BookInfo.THEATER -> current.copy(selectedTheater = null)
+                BookInfo.SHOWTIME -> if (isShowDate) {
+                    current.copy(selectedShowtime = null)
+                } else {
+                    current.copy(selectedShowtime = current.selectedShowtime?.copy(selectedShowtimeSlot = null))
+                }
+                BookInfo.SEAT -> current.copy(selectedSeat = null)
             }
         }
     }

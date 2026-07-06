@@ -1164,131 +1164,122 @@ class BookFragment : Fragment() {
 
 **다음 스텝**: Week 1 Critical Issues부터 시작 권장
 
-# MovieApp 추가수정 진행
+---
 
-현재 코드베이스 전체를 점검하겠습니다.
+# BookChooseInfoFragment 리팩토링 점검 (예매 플로우 재설계)
 
-코드베이스를 점검한 결과, 문제를 정확히 짚어드리면 **애초에 프레이밍이 살짝 다릅니다.**
+> 이전 섹션의 `BookTheaterFragment` / `BookScheduleFragment` / `BookSeatFragment` 3-Fragment 구조는 이후 **단일 `BookChooseInfoFragment` + ViewPager2 2단** 구조로 완전히 교체되었습니다. `nav_graph.xml`에서 세 Fragment 관련 destination이 모두 제거되고 `bookChooseInfoFragment` 하나로 대체된 것을 확인했습니다. 위 섹션의 해당 파일 관련 작업 항목(4~10번)은 더 이상 유효하지 않으며, 이 섹션이 최신 상태입니다.
 
-## 현재 구조 재확인
+## 구조 요약
 
-**Showtime 엔티티는 이미 정상입니다.** `movieId + theaterId + showDate + time + hall`을 각각 행으로 가지고 있고, seeder도 이미 모든 영화 × 모든 극장 × 모든 날짜 × 모든 시간 조합을 채워 넣고 있습니다. "한 영화가 여러 극장에서, 각 극장마다 여러 시간에 상영된다"는 요구사항은 Showtime 테이블 구조상 이미 지원됩니다.
+- **상단 ViewPager2** (`movie_view_pager`): 영화 배열을 스와이프로 넘기는 캐러셀. `MoviePagerAdapter` 사용.
+- **하단 ViewPager2** (`movie_choose_info_view_pager`): `isEnabled = false`로 스와이프 잠금, `BookChooseInformationAdapter`가 페이지 3개(`THEATER`/`SHOWTIME`/`SEAT`, `item_book_choose_theater.xml` / `item_book_choose_showtime.xml` / `item_book_choose_seat.xml`)를 고정 개수(`getItemCount() = 3`)로 관리. 페이지 이동은 `BookChooseInfoFragment.goNextAnimated()`가 스냅샷+애니메이션으로 수행.
+- **상태 관리**: `BookChooseInfoViewModel`이 `BookChooseInfoModel`을 `MutableStateFlow`로 보관, 극장/날짜/시간/좌석 리스트는 각각 별도 `StateFlow`로 분리.
 
-**진짜 문제는 두 곳입니다:**
+## 🔴 Critical — 지금 실행하면 즉시 문제가 되는 것들
 
-### 1. 극장 선택 스텝이 잘못된 테이블을 조회하고 있음
+### 1. StateFlow 갱신이 실제로 발생하지 않음 (가장 근본적인 버그)
 
-[bookings.controller.ts:35-41](movie-app-server/src/bookings/bookings.controller.ts#L35)의 `findTheater()` → [bookings.service.ts:32-39](movie-app-server/src/bookings/bookings.service.ts#L32)를 보면:
-
-```ts
-findTheater(movieId: string): Promise<Theater> {
-  const bookPromise = this.bookingsRepo.findOne({ where: { movie: { id: parseInt(movieId) } } });
-  return bookPromise.then(booking => booking.theater)
-}
-```
-
-`Booking`(과거/예정된 실제 예매 내역) 테이블에서 movie로 아무 예매 1건을 찾아 그 예매에 딸린 극장 하나만 반환합니다. `Booking`은 "누가 언제 어느 극장 어느 좌석을 예매했는가"를 기록하는 테이블이지, "이 영화가 어느 극장들에서 상영 중인가"를 답하는 테이블이 아닙니다. 극장 목록은 **Showtime 테이블**에서 가져와야 합니다 — 이미 구현된 `findUniqueDates()`([showtimes.service.ts:26](movie-app-server/src/showtimes/showtimes.service.ts#L26))와 동일한 패턴으로, DISTINCT theater를 뽑으면 됩니다.
-
-즉 "하나의 Booking에 여러 Theater가 반환되어야 한다"가 아니라, **"극장 목록 조회는 Booking이 아니라 Showtime에서 해야 한다"**가 맞는 진단입니다. 완료된 예매(Booking) 한 건은 실제로 극장 하나·날짜 하나·시간 하나로 확정되는 게 맞으므로 Booking 엔티티 자체는 지금처럼 단수 관계로 두는 게 맞습니다.
-
-### 2. 시간 선택 단계가 통째로 빠져있음
-
-현재 [BookScheduleFragment.kt](app/src/main/java/com/example/moviceapp/book/BookScheduleFragment.kt)는 날짜 그리드만 있고, 날짜를 고르자마자 `confirm_button`으로 바로 `BookSeatFragment`로 넘어갑니다. 시간(예: "6:45 PM", "9:00 PM")을 고르는 UI/로직이 없습니다. 다행히 서버 쪽 `GET /api/showtimes?movieId=&theaterId=&date=`([showtimes.controller.ts:14](movie-app-server/src/showtimes/showtimes.controller.ts#L14))는 이미 movie+theater+date로 필터링된 Showtime 리스트(시간 포함)를 반환하므로, **서버 신규 작업 없이** 이 엔드포인트로 시간 목록을 가져오면 됩니다.
-
-## 발견한 버그 (별개, 하지만 지금 작업과 직결)
-
-[BookTheaterFragment.kt:26-28](app/src/main/java/com/example/moviceapp/book/BookTheaterFragment.kt#L26):
+`BookChooseInfoViewModel.kt`의 아래 함수들이 전부 같은 패턴의 버그를 가지고 있습니다:
 
 ```kotlin
-class BookTheaterFragment(
-    private val viewModel: BookTheaterViewModel
-) : Fragment() {}
+fun selectTheater(theater: Theater) {
+    _model.value.selectedTheater = theater }   // ❌ 기존 객체를 in-place mutation
 ```
 
-Fragment를 생성자 파라미터가 있는 형태로 만들면 Navigation Component가 리플렉션으로 인스턴스화할 때 기본 생성자(no-arg)를 찾지 못해 **크래시**가 납니다. Hilt를 쓰는 Fragment는 `by viewModels()` 위임으로 주입받아야지 생성자 주입은 불가합니다 (다른 Fragment들처럼). 지금 당장 BookTheaterFragment로 진입하면 바로 죽을 가능성이 높습니다.
+`selectTheater`, `selectShowDate`, `selectShowtime`, `selectSeat`, `goBookInfo`(`_model.value.currentBookInfo = ...`), `refreshMovieInfo`, `loadMovieInfo`(`model.value.currentBookInfo = info`) 전부 `_model.value`가 가리키는 **동일한 객체의 필드만 변경**하고 있습니다. `MutableStateFlow`는 새 참조가 할당되어야(`_model.value = 새_객체`) 구독자에게 재방출하므로, 위 함수들을 호출해도 `BookChooseInfoFragment`의 `viewModel.model.collect { ... }`(→ `goNextButton.isEnabled` 갱신)나 `BookChooseInformationAdapter`의 리바인딩이 전혀 트리거되지 않습니다. `setMovieAndRefresh`만 유일하게 `_model.value = BookChooseInfoModel(...)`로 새 객체를 할당해서 정상 동작합니다.
 
-## 작업 목록
+**해결 방향**: 나머지 함수들도 `_model.value = _model.value.copy(selectedTheater = theater)` 형태로 바꿔야 함.
 
-**서버 (movie-app-server)**
-1. `ShowtimesService`에 `findUniqueTheaters(movieId)` 추가 — `findUniqueDates`와 동일 패턴, DISTINCT theater 반환 (Theater 전체 객체 필요하므로 join 필요)
-2. `ShowtimesController`에 `GET /api/showtimes/theaters?movieId=` 추가
-3. `bookings.controller.ts`의 `findTheater`/`GET /bookings/theater`, `bookings.service.ts`의 `findTheater` 삭제 (더 이상 필요 없음, TODO였던 부분)
+### 2. `ShowtimeViewHolder`·`BookChooseSeatViewHolder`의 `bind()`가 `TODO()`
 
-**안드로이드**
-4. `BookTheaterFragment` 생성자 버그 수정 — `by viewModels()`로 전환
-5. `BookingService.kt`: `getTheaters(movieId): Call<Theater>` → `Call<List<Theater>>`로 변경, 엔드포인트를 `/api/showtimes/theaters`로 교체
-6. `BookingRepository`/`BookingRepositoryImpl`: `getTheater(): Theater?` → `getTheaters(): List<Theater>`
-7. `BookTheaterViewModel`: 리스트 반환하도록 수정
-8. `BookTheaterFragment`: `MoviePagerAdapter`의 `onMovieBind` 콜백에서 `theaterAdapter.submitList(listOf(theater))` → `submitList(theaters)`로 변경 (지금은 리스트를 만들어놓고 항상 1개짜리로 덮어쓰고 있음)
-9. `BookScheduleFragment`: 날짜 그리드 아래에 시간 선택 RecyclerView 추가 — 날짜 선택 시 `GET /api/showtimes?movieId=&theaterId=&date=`로 시간 목록 조회, 시간까지 선택해야 `confirm_button` 활성화되도록 변경
-10. 관련 레이아웃(`fragment_book_schedule.xml`)에 시간 선택 섹션 추가, `item_book_schedule_time.xml`(과거 스키마 참고) 재사용 또는 재작성
+- `ShowtimeDateViewHolder`/`ShowtimeTimeViewHolder`는 정상 구현되어 있지만, 상위 추상 클래스를 보면 헷갈릴 수 있어 확인 필요 — 실제로는 두 서브클래스 모두 구현되어 있어 문제 없음.
+- 반면 `BookChooseShowtimeViewHolder.kt:25`와 `BookChooseSeatViewHolder.kt:11`의 `bind()`는 **`TODO("Not yet implemented")`를 던짐**. `BookChooseInformationAdapter.onBindViewHolder`가 이 `bind()`를 호출하므로, SHOWTIME/SEAT 페이지가 화면에 붙는 순간 `NotImplementedError`로 **크래시**.
 
-작은 것 하나 더: [fragment_book_theater.xml:17](app/src/main/res/layout/fragment_book_theater.xml#L17)에서 ViewPager2가 `app:layout_constraintBottom_toTopOf="@id/movie_view_pager"`로 자기 자신을 참조하고 있어 제약이 무효합니다. 시간 선택 UI 추가하면서 같이 정리하겠습니다.
+### 3. 클릭 이벤트가 사실상 전부 비어있음 (사용자가 언급한 부분)
 
-바로 구현 진행하겠습니다.
+| 위치 | 현재 상태 |
+|---|---|
+| `BookChooseTheaterViewHolder.kt:19` | `TheaterListAdapter {}` — 극장 클릭 콜백이 빈 람다. `viewModel.selectTheater(...)` 호출 누락 |
+| `ShowtimeAdapter.kt:32` | `onClickListener(date: String) { TODO(...) }` — 날짜/시간 버튼 클릭 처리 미구현 |
+| `BookChooseSeatViewHolder.kt:13` | `setSeats(seats: List<String>) {}` — 완전히 빈 함수. 어댑터·LayoutManager 생성 자체가 없음 (Theater/Showtime과 달리 RecyclerView가 아예 세팅 안 됨) |
+| `BookChooseInfoFragment.kt` | `binding.goNextButton`에 `setOnClickListener`가 **아예 없음** — 버튼을 눌러도 `viewModel.goBookInfo()`가 호출되지 않아 다음 화면으로 못 넘어감 |
 
-**서버 작업부터 시작합니다.**
+### 4. `ShowtimeClickHandler.onClickListener(date: String)` 시그니처가 날짜/시간 클릭을 구분 못 함
 
-`/theaters`가 `/:id` 라우트보다 먼저 매칭돼야 합니다. Theaters 컨트롤러는 별개지만, showtimes 컨트롤러 순서는 `dates`, `theaters`, 그다음 `@Get()`(빈 경로) 순이라 문제없습니다. 이제 `bookings.controller.ts`/`bookings.service.ts`에서 TODO였던 부분을 제거합니다.
+`ShowtimeDateViewHolder`와 `ShowtimeTimeViewHolder`가 동일한 `handler.onClickListener(model)`을 호출합니다. `model`은 버튼에 표시된 문자열(`"May 15"` 또는 `"6:45 PM"`)일 뿐이라, 어댑터(`ShowtimeAdapter`, 곧 handler)가 이 콜백만으로는 "날짜를 누른 것인지 시간을 누른 것인지" 구분할 근거가 약함(문자열 형식으로 추측 가능하지만 취약). 인터페이스를 `onClickDate(date: String)` / `onClickTime(slot: ShowtimeSlot)`로 분리하거나, `viewType`을 같이 넘기는 방식으로 재설계 필요.
 
-서버 빌드 확인합니다.
+## 🟡 누락된 기능
 
-빌드 성공입니다. 실제로 동작하는지 서버를 띄워 테스트합니다.
+### 5. 좌석 데이터가 실제 API 연동이 안 되고 하드코딩
 
-`distinctOn` 정상 동작합니다. showtimes 필터 엔드포인트도 확인합니다.
+`BookChooseInfoViewModel.loadMovieInfo`의 `BookInfo.SEAT` 분기:
+```kotlin
+BookInfo.SEAT -> {
+    // TODO: Fetch seats from repository
+    _seatList.value = listOf("Wait", "For", "A", "While")
+}
+```
+서버에 좌석 조회 엔드포인트 자체가 없는 상태로 보입니다 (Showtime에는 `availableSeats: number` 카운트만 있고 좌석별 상세 정보/점유 여부가 없음). 좌석 단위 데이터 모델을 서버에 추가할지, 클라이언트에서 `availableSeats` 개수만큼 임의 생성할지 결정 필요.
 
-이 엔드포인트로 시간까지 확보됩니다. 서버를 정리하고 안드로이드 작업으로 넘어갑니다.
+### 6. 날짜 선택 후 시간 목록 재조회 트리거가 없음
 
-**안드로이드 작업 시작.** BookingService/Repository/ViewModel부터 수정합니다.
+`selectShowDate(date)`가 모델만 바꾸고 끝나며, 주석으로 `// Go next when time is set`만 남아있습니다. 실제로는 날짜 선택 시 `loadMovieInfo(SHOWTIME, isShowDate = false)`를 호출해 그 날짜의 시간 슬롯을 다시 불러와야 하는데 이 연결이 빠져있습니다. (3번의 `ShowtimeAdapter.onClickListener` 미구현과 맞물린 문제 — 날짜 클릭 시 `viewModel.selectShowDate(date)` + `viewModel.loadMovieInfo(SHOWTIME)`를 함께 호출해야 함)
 
-`ShowtimeSlot` 데이터 클래스를 추가합니다.
+### 7. 선택 상태 하이라이트가 Theater에만 있고 Showtime/Seat엔 없음
 
-BookingService.kt를 업데이트합니다.
+`BookChooseTheaterViewHolder`의 내부 `TheaterListAdapter`는 `selectedPosition`을 추적해 선택된 극장을 색으로 구분합니다. 반면 `ShowtimeAdapter`(날짜/시간 버튼)와 `BookChooseSeatViewHolder`(좌석)에는 이런 선택 상태 추적이 전혀 없어 사용자가 뭘 선택했는지 시각적으로 알 수 없습니다.
 
-BookingRepositoryImpl.kt를 업데이트합니다.
+## 🔵 설계 확인이 필요한 부분 (구현 전에 확정 필요)
 
-BookTheaterViewModel.kt를 업데이트합니다.
+### 8. ~~상단 3버튼(`button_theater`/`button_showtime`/`button_seat`)의 용도가 불명확~~ → 제외 결정
 
-**BookTheaterFragment.kt** — 생성자 버그 수정 + 극장 리스트 반영.
+~~극장보다 상영시간을 먼저 고를 수 있게 하는 자유 이동 탭으로 고려됐던 버튼들.~~ 논의 결과 이론적으로 맞지 않아(시간 선택은 극장이 정해져야 의미가 있는 종속 관계) **제외하기로 결정**. `fragment_book_choose_info.xml`의 `button_theater`/`button_showtime`/`button_seat` 3개 `MaterialButton`과 관련 클릭 리스너(`viewModel.loadMovieInfo(THEATER/SHOWTIME/SEAT)` 호출부)를 제거 대상으로 표시.
 
-`nextButton`이 극장 선택 후에도 비활성화될 일이 없도록, ViewPager2로 영화가 바뀌면 극장 목록도 초기화되니 selectedTheater와 버튼 상태도 리셋해야 합니다. 이를 반영해서 재작성합니다.
+### 9. 좌석 선택 이후 플로우가 정의되어 있지 않음
 
-`onMovieBind` 콜백은 ViewPager2가 인접 페이지를 미리 바인딩할 때도 호출되어 실제 "현재 보이는 페이지"와 어긋날 수 있습니다. `BookScheduleFragment`가 쓰는 `registerOnPageChangeCallback` 패턴으로 통일하는 게 안전합니다.
+`BookChooseInfoViewModel.getNextBookInfo()`는 `SEAT` 다음을 다시 `THEATER`로 되돌립니다(`else -> BookInfo.THEATER`). 좌석까지 선택하고 "다음"을 누르면 예매가 확정되어야 할 텐데, 예매 확정/결제 화면에 대한 설계가 없습니다. (이전 섹션 "Week 2: 예매 확정 화면" 항목과 동일한 이슈가 여전히 남아있음)
 
-BookTheaterFragment.kt를 registerOnPageChangeCallback 방식으로 수정합니다.
+## ⚪ 마이너 / 정리 대상
 
-**BookScheduleFragment.kt** — 시간 선택 UI 추가.
+- `item_book_choose_movie.xml` — 빈 ConstraintLayout이며 코드베이스 어디서도 참조되지 않음 (`ItemBookChooseMovieBinding` 사용처 없음). 안 쓰면 삭제 검토.
+- `ShowtimeTimeViewHolder.kt:6` — 주석 처리된 죽은 코드 `// NO USE` / `//const val SHOWTIME_TIME_VIEW_HOLDER_TYPE = 1` 정리.
+- `BookChooseTheaterViewHolder.bind()`가 호출될 때마다 `layoutManager`/`adapter`를 재할당함 — 뷰홀더가 재사용될 경우 불필요한 재작업 (치명적이진 않음).
 
-기존 레이아웃이 있습니다. 날짜 버튼과 통일감 있게 `MaterialButton`으로 바꿉니다.
+## 권장 작업 순서
 
-`fragment_book_schedule.xml`에 시간 그리드 섹션을 추가합니다.
+1. **StateFlow 재할당 패턴으로 전면 수정** (1번) — 이게 선행되지 않으면 이후 클릭 이벤트를 다 연결해도 화면이 반응하지 않음
+2. **TODO() 크래시 두 곳 제거** (2번) — `bind()` 구현 필수, 최소한 앱이 죽지 않게
+3. **상단 3버튼 제거** (8번) — 자유 이동 탭 설계 폐기 확정, 관련 클릭 리스너 및 버튼 UI 정리
+4. **클릭 콜백 연결** (3, 4번) — 극장 선택, 날짜/시간 선택 분리, 좌석 어댑터 신설, `goNextButton` 클릭 리스너 추가
+5. **날짜→시간 재조회 연결** (6번)
+6. **선택 하이라이트 통일** (7번)
+7. 설계 확인 필요한 9번은 구현 전에 먼저 답을 정하고 진행
+8. 좌석 API(5번)는 서버 작업이 선행되어야 하므로 별도 트랙으로 분리 가능
 
-date_recycler_view와 confirm_button 사이에 시간 선택 헤더+그리드를 스크롤 영역 안에 넣습니다.
-
-BookScheduleViewModel에 시간 조회 함수를 추가합니다.
-
-`select_time_title_text_view`가 문자열 리소스와 뷰 바인딩 ID로 잘 잡히는지 확인하고, `strings.xml`에 `label_select_time`이 있는지 확인합니다.
-
-이제 안드로이드 빌드로 전체 검증합니다.
-
-빌드 성공입니다. 서버도 최종 확인합니다.
-
-모두 정상 동작합니다.
+이 섹션은 리뷰 전용이며 아직 어떤 코드도 수정하지 않았습니다. 우선순위 확인 후 순서대로 작업을 진행할 예정입니다.
 
 ---
 
-## 완료된 작업
+## 완료된 작업 (BookChooseInfoFragment 구현)
 
-**서버**
-- `GET /api/showtimes/theaters?movieId=` 추가 — Showtime 테이블에서 DISTINCT 극장 목록 반환
-- `bookings.controller.ts`/`bookings.service.ts`의 TODO였던 `findTheater` 로직 제거 (Booking 테이블을 극장 조회에 쓰던 잘못된 코드)
+**1~8번 항목 구현 완료, 빌드 성공 확인.**
 
-**안드로이드**
-- `BookTheaterFragment` 생성자 주입 버그 수정 — `by viewModels()`로 전환 (그대로 뒀으면 진입 시 크래시)
-- `BookingService`/`BookingRepository`/`BookTheaterViewModel`: 극장 단수 → 복수(`List<Theater>`) 반환으로 변경
-- `MoviePagerAdapter`의 불안정한 `onMovieBind` 콜백 제거, `BookScheduleFragment`와 동일한 `registerOnPageChangeCallback` 패턴으로 통일 (ViewPager2가 인접 페이지를 미리 바인딩하면서 잘못된 극장 목록이 뜨는 버그를 사전 차단)
-- `BookTheaterFragment`: 영화 페이지 전환 시 극장 목록 재조회 + 선택 상태·Next 버튼 초기화
-- `BookScheduleFragment`: 날짜 선택 후 서버에서 실제 상영 시간 조회, 3열 그리드로 표시. 날짜와 시간을 모두 선택해야 Confirm 버튼 활성화
-- `ShowtimeSlot` 데이터 클래스, `item_book_schedule_time.xml`(MaterialButton 통일), `fragment_book_schedule.xml`에 시간 섹션 레이아웃 추가
+- **StateFlow 갱신 방식 수정** — `BookChooseInfoViewModel`의 `selectTheater`/`selectShowDate`/`selectShowtime`/`selectSeat`/`goBookInfo`/`loadMovieInfo`/`refreshMovieInfo`를 전부 `_model.update { it.copy(...) }` 패턴으로 교체. `MutableStateFlow.update{}`는 CAS 루프라 동시성 문제도 함께 방지.
+- **크래시 유발 `TODO()` 제거** — `BookChooseShowtimeViewHolder.bind()`/`BookChooseSeatViewHolder.bind()`가 더 이상 예외를 던지지 않음.
+- **상단 3버튼 제거** — `fragment_book_choose_info.xml`에서 `info_choose_linear_layout`(button_theater/showtime/seat) 삭제, `movie_view_pager` 상단 제약을 parent로 재연결. `BookChooseInfoFragment.kt`의 관련 클릭 리스너도 함께 제거.
+- **클릭 콜백 전면 연결**
+  - 극장 선택: `TheaterListAdapter`의 콜백이 `viewModel.selectTheater(theater)` 호출
+  - 날짜/시간 선택: `ShowtimeClickHandler`를 `onClickDate`/`onClickTime` 두 메서드로 분리(기존엔 문자열 하나로 뭉쳐 있어 구분 불가능했던 부분), `ShowtimeAdapter`가 각각 `viewModel.selectShowDate(date)` + `viewModel.loadMovieInfo(SHOWTIME, isShowDate=false)`, `viewModel.selectShowtime(date, slot)` 호출로 연결
+  - 좌석 선택: `BookChooseSeatViewHolder`에 `SeatListAdapter` 신규 구현(레이아웃매니저/어댑터 세팅 자체가 없던 상태였음), 클릭 시 `viewModel.selectSeat(seat)` 호출
+  - `go_next_button`: 이제까지 클릭 리스너가 아예 없었음 → `viewModel.getNextBookInfo()`로 다음 단계를 계산하고 `viewModel.goBookInfo(next)` + 해당 단계의 데이터 `loadMovieInfo` 호출을 연결. 레이아웃의 잘못된 제약(`layout_constraintTop_toBottomOf="parent"`로 버튼이 화면 밖으로 밀려나 있던 문제)도 함께 수정.
+- **날짜→시간 재조회 연결** — 날짜 클릭 시 `loadMovieInfo(SHOWTIME, isShowDate=false)`를 호출해 그 날짜의 실제 시간 슬롯을 다시 받아오도록 연결.
+- **선택 상태 하이라이트 통일** — `ShowtimeAdapter`(날짜/시간), `SeatListAdapter`(좌석) 모두 `TheaterListAdapter`와 동일하게 내부 selectedIndex 추적 + 색상 반전(`green_accent`/`background_secondary`, 좌석은 `seat_selected`/`seat_available`) 방식으로 통일.
+- **어댑터가 데이터 갱신을 아예 받지 못하던 잠재 버그 수정** — 구현 중 발견: `BookChooseInformationAdapter`의 `theaters`/`showDateList`/`showTimeList`/`seats`는 `onCreateViewHolder`가 딱 1번 호출될 때만 초기값으로 소비되고, 이후 Fragment의 `collect`가 받아온 새 데이터는 이미 생성된 ViewHolder에 전달할 경로가 없었음(`onBindViewHolder`가 `holder.bind(model)`만 호출하고 `setTheaters`/`setShowDateList` 등을 다시 부르지 않았음). `theaters`/`showDateList`/`showTimeList`/`seats`에 커스텀 setter를 추가해 값이 바뀔 때마다 `notifyItemChanged`를 호출하도록 하고, `onBindViewHolder`에서 ViewHolder 타입별로 최신 리스트를 다시 주입하도록 수정. 이게 없으면 클릭 이벤트를 다 연결해도 실제 화면 데이터가 절대 갱신되지 않았을 것.
+- **최초 진입 시 극장 목록 로드 추가** — 버튼 제거로 인해 극장 목록을 처음 트리거할 방법이 사라져서, `onViewCreated` 끝에 `viewModel.loadMovieInfo(THEATER)` 최초 호출을 추가.
+- **`ShowtimeAdapter`의 인덱싱 버그 수정** — 기존 `timeSlots[position].time`이 절대 position을 그대로 시간 리스트 인덱스로 써서 날짜 개수만큼 어긋나 있었음(`position - dates.size`로 수정).
+- **마이너 정리** — `item_book_choose_movie.xml`(미사용 빈 레이아웃) 삭제, `ShowtimeTimeViewHolder.kt`의 죽은 주석 코드 제거(실제 상수는 `ShowtimeAdapter.kt`로 이동).
 
-두 프로젝트 모두 빌드 성공, 신규 엔드포인트 3개(`theaters`, 필터링된 `showtimes`, `dates`) 실제 호출로 검증 완료했습니다.
+**의도적으로 보류한 항목**
+- 9번(좌석 선택 이후 플로우/예매 확정 화면) — 설계 미확정 상태라 손대지 않음. 현재는 좌석까지 선택 후 "다음"을 누르면 `getNextBookInfo()`가 다시 `THEATER`로 순환하는 기존 동작이 그대로 유지됨.
+- 5번(좌석 API 서버 연동) — `BookChooseInfoViewModel.loadMovieInfo`의 SEAT 분기는 여전히 `listOf("Wait", "For", "A", "While")` 하드코딩. 클릭/선택/하이라이트는 이 placeholder 데이터로 전부 정상 동작하도록 만들어뒀으므로, 서버에 실제 좌석 엔드포인트가 추가되면 이 부분만 교체하면 됨.

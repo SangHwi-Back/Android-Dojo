@@ -5,38 +5,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <LinearLayout
-            android:id="@+id/info_choose_linear_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_theater"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-        <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_showtime"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-        <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_seat"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-    </LinearLayout>
-
     <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/movie_view_pager"
             android:layout_width="match_parent"
             android:layout_height="330dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/info_choose_linear_layout" />
+            app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
             android:id="@+id/book_choose_info_title_text_view"
@@ -76,8 +51,11 @@
             android:id="@+id/go_next_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:enabled="false"
             android:text="@string/action_next"
+            app:cornerRadius="24dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,7 +12,7 @@ abstract class ShowtimeViewHolder(
     binding: ViewBinding,
     handler: ShowtimeClickHandler,
 ) : RecyclerView.ViewHolder(binding.root) {
-    abstract fun bind(model: String)
+    abstract fun bind(model: String, isSelected: Boolean)
 }
 
 object ShowtimeViewHolderFactory {
@@ -35,5 +35,6 @@ object ShowtimeViewHolderFactory {
 }
 
 interface ShowtimeClickHandler {
-    fun onClickListener(date: String)
+    fun onClickDate(date: String)
+    fun onClickTime(time: String)
 }

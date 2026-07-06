@@ -3,7 +3,6 @@ package com.example.moviceapp.book.choose.viewholder
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,15 +10,19 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moviceapp.R
 import com.example.moviceapp.book.BookChooseInfoModel
+import com.example.moviceapp.book.BookChooseInfoViewModel
 import com.example.moviceapp.databinding.ItemBookChooseTheaterBinding
 import com.example.moviceapp.databinding.ItemBookTheaterSelectTheaterBinding
 import com.example.moviceapp.repo.Theater
 
 class BookChooseTheaterViewHolder(
     val parent: ViewGroup,
-    val binding: ItemBookChooseTheaterBinding
+    val binding: ItemBookChooseTheaterBinding,
+    private val viewModel: BookChooseInfoViewModel,
 ) : BookChooseViewHolder(binding) {
-    private val adapter = TheaterListAdapter {}
+    private val adapter = TheaterListAdapter { theater ->
+        viewModel.selectTheater(theater)
+    }
     override fun bind(model: BookChooseInfoModel) {
         binding.theaterRecyclerView.layoutManager = LinearLayoutManager(parent.context)
         binding.theaterRecyclerView.adapter = adapter

@@ -96,12 +96,15 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
 
         viewModel.chooseHandler = this
 
-        binding.buttonTheater.setOnClickListener {
-            viewModel.loadMovieInfo(THEATER) }
-        binding.buttonShowtime.setOnClickListener {
-            viewModel.loadMovieInfo(SHOWTIME) }
-        binding.buttonSeat.setOnClickListener {
-            viewModel.loadMovieInfo(SEAT) }
+        binding.goNextButton.setOnClickListener {
+            val next = viewModel.getNextBookInfo()
+            viewModel.goBookInfo(next)
+            when (next) {
+                THEATER -> viewModel.loadMovieInfo(THEATER)
+                SHOWTIME -> viewModel.loadMovieInfo(SHOWTIME, isShowDate = true)
+                SEAT -> viewModel.loadMovieInfo(SEAT)
+            }
+        }
 
         binding.movieViewPager.adapter = MoviePagerAdapter(args.movies.toList())
         binding.movieViewPager.setCurrentItem(args.movies.indexOf(args.selectedMovie), false)
@@ -116,6 +119,9 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
         binding.movieChooseInfoViewPager.adapter = chooseInformationAdapter
         binding.movieChooseInfoViewPager.currentItem = 0
         binding.movieChooseInfoViewPager.isEnabled = false
+
+        // 최초 진입 시 극장 목록 로드 (기존에는 button_theater 클릭이 이 역할을 했음)
+        viewModel.loadMovieInfo(THEATER)
     }
 
     override fun goNextAnimated(
