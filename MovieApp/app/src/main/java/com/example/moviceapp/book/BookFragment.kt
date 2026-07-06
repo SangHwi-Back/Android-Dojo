@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.moviceapp.book.BookViewModel
 import com.example.moviceapp.common.GridSpanDecoration
 import com.example.moviceapp.common.ThumbnailAdapter
 import com.example.moviceapp.databinding.FragmentBookBinding
@@ -56,7 +57,7 @@ class BookFragment : Fragment(), ThumbnailOnClickListener {
 
     override fun onClickMovieFromThumbnail(movie: Movie) {
         findNavController().navigate(
-            BookFragmentDirections.actionBookFragmentToBookTheaterFragment(allMovies.toTypedArray(), movie)
+            BookFragmentDirections.actionBookFragmentToBookChooseInfoFragment(allMovies.toTypedArray(), movie)
         )
     }
 }

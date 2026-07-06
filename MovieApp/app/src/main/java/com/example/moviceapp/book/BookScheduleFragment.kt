@@ -33,7 +33,7 @@ import java.util.*
 @RequiresApi(Build.VERSION_CODES.O)
 @AndroidEntryPoint
 class BookScheduleFragment : Fragment() {
-    private val args: BookScheduleFragmentArgs by navArgs()
+//    private val args: BookScheduleFragmentArgs by navArgs()
     private var _binding: FragmentBookScheduleBinding? = null
     private val binding get() = _binding!!
     private val viewModel: BookScheduleViewModel by viewModels()
@@ -67,12 +67,12 @@ class BookScheduleFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val movies = args.movies.toList()
-        this.selectedMovie = args.selectedMovie
-        this.selectedTheater = args.theater
-
-        binding.movieViewPager.adapter = MoviePagerAdapter(movies)
-        binding.movieViewPager.setCurrentItem(args.movies.indexOf(args.selectedMovie), false)
+//        val movies = args.movies.toList()
+//        this.selectedMovie = args.selectedMovie
+//        this.selectedTheater = args.theater
+//
+//        binding.movieViewPager.adapter = MoviePagerAdapter(movies)
+//        binding.movieViewPager.setCurrentItem(args.movies.indexOf(args.selectedMovie), false)
         binding.movieViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
@@ -86,12 +86,12 @@ class BookScheduleFragment : Fragment() {
         binding.timeRecyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
         binding.timeRecyclerView.adapter = timeAdapter
 
-        if (movies.isNotEmpty()) loadDates()
+//        if (movies.isNotEmpty()) loadDates()
 
         binding.confirmButton.setOnClickListener {
-            findNavController().navigate(BookScheduleFragmentDirections
-                .actionBookScheduleFragmentToBookSeatFragment(selectedMovie, selectedTheater)
-            )
+//            findNavController().navigate(BookScheduleFragmentDirections
+//                .actionBookScheduleFragmentToBookSeatFragment(selectedMovie, selectedTheater)
+//            )
         }
     }
 

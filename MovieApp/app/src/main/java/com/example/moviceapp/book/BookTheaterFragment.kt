@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class BookTheaterFragment : Fragment() {
-    private val args: BookTheaterFragmentArgs by navArgs()
+//    private val args: BookTheaterFragmentArgs by navArgs()
     private val viewModel: BookTheaterViewModel by viewModels()
     private var _binding: FragmentBookTheaterBinding? = null
     private val binding get() = _binding!!
@@ -48,15 +48,15 @@ class BookTheaterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val movies = args.movies.toList()
-        this.selectedMovie = args.selectedMovie
+//        val movies = args.movies.toList()
+//        this.selectedMovie = args.selectedMovie
 
-        binding.movieViewPager.adapter = MoviePagerAdapter(movies)
-        binding.movieViewPager.setCurrentItem(args.movies.indexOf(selectedMovie), false)
+//        binding.movieViewPager.adapter = MoviePagerAdapter(movies)
+//        binding.movieViewPager.setCurrentItem(args.movies.indexOf(selectedMovie), false)
         binding.movieViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                selectedMovie = args.movies[position]
+//                selectedMovie = args.movies[position]
                 loadTheaters()
             }
         })
@@ -64,15 +64,15 @@ class BookTheaterFragment : Fragment() {
         binding.theaterRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.theaterRecyclerView.adapter = theaterAdapter
 
-        if (movies.isNotEmpty()) loadTheaters()
+//        if (movies.isNotEmpty()) loadTheaters()
 
         binding.nextButton.setOnClickListener {
             val theater = selectedTheater ?: return@setOnClickListener
-            findNavController().navigate(
-                BookTheaterFragmentDirections.actionBookTheaterFragmentToBookScheduleFragment(
-                    args.movies, theater, selectedMovie
-                )
-            )
+//            findNavController().navigate(
+//                BookTheaterFragmentDirections.actionBookTheaterFragmentToBookScheduleFragment(
+//                    args.movies, theater, selectedMovie
+//                )
+//            )
         }
     }
 
