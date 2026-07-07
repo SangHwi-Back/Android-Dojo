@@ -1,5 +1,6 @@
-import {BadRequestException, Controller, Get, Query} from '@nestjs/common';
+import {BadRequestException, Body, Controller, Get, Post, Query} from '@nestjs/common';
 import { BookingsService } from './bookings.service';
+import {Booking} from "./entities/booking.entity";
 
 @Controller('bookings')
 export class BookingsController {
@@ -35,5 +36,10 @@ export class BookingsController {
   @Get('schedules')
   findAllSchedules(@Query('movie_id') movieId?: string) {
     return this.bookingsService.findSchedules(movieId, undefined, undefined);
+  }
+
+  @Post()
+  bookMovie(@Body('booking') booking: Booking) {
+    return this.bookingsService.saveBooking(booking)
   }
 }

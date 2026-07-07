@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository } from 'typeorm';
-import { Booking } from './entities/booking.entity';
+import {Injectable} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import {Between, Repository} from 'typeorm';
+import {Booking} from './entities/booking.entity';
 
 @Injectable()
 export class BookingsService {
@@ -27,5 +27,15 @@ export class BookingsService {
         movie: { id: parseInt(movieId) },
         date: Between(startDate, endDate)
       }})
+  }
+
+  async saveBooking(booking: Booking): Promise<Booking> {
+    let duplicate = await this.bookingsRepo.findOne({
+      where: { id: booking.id }
+    })
+    if (duplicate === null)
+      return null
+    else
+      return await this.bookingsRepo.save(booking)
   }
 }
