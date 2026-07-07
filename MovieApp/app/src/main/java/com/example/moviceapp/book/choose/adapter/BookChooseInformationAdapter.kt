@@ -46,12 +46,12 @@ class BookChooseInformationAdapter(
         val model = viewModel.model.value
         // viewType range is 0~2. viewType.toBookInfo shouldn't be null.
         return BookChooseViewHolderFactory.createViewHolder(parent, viewModel, when (viewType.toBookInfo) {
-            BookInfo.THEATER -> BookChooseViewHolderEntity
-                .TheaterEntity(model.selectedTheater, theaters)
-            BookInfo.SHOWTIME -> BookChooseViewHolderEntity
-                .Showtime(model.selectedShowtime, showDateList, showTimeList)
-            else -> BookChooseViewHolderEntity
-                .Seat(model.selectedSeat, seats)
+            BookInfo.THEATER ->  BookChooseViewHolderEntity.TheaterEntity(
+                model.selectedTheater, theaters)
+            BookInfo.SHOWTIME -> BookChooseViewHolderEntity.Showtime(
+                model.selectedShowtime, showDateList, showTimeList)
+            else ->              BookChooseViewHolderEntity.Seat(
+                model.selectedSeat, seats)
         })
     }
     override fun onBindViewHolder(
@@ -60,12 +60,14 @@ class BookChooseInformationAdapter(
     ) {
         // 데이터가 새로 도착할 때마다 실제 화면에 반영 (onCreateViewHolder 는 최초 1회만 호출됨)
         when (holder) {
-            is BookChooseTheaterViewHolder -> holder.setTheaters(theaters)
+            is BookChooseTheaterViewHolder ->
+                holder.setTheaters(theaters)
             is BookChooseShowtimeViewHolder -> {
                 holder.setShowDateList(showDateList)
                 holder.setShowtimeList(showTimeList)
             }
-            is BookChooseSeatViewHolder -> holder.setSeats(seats)
+            is BookChooseSeatViewHolder ->
+                holder.setSeats(seats)
         }
         holder.bind(viewModel.model.value)
     }

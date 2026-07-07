@@ -15,14 +15,8 @@ class BookChooseShowtimeViewHolder(
     val binding: ItemBookChooseShowtimeBinding,
 ) : BookChooseViewHolder(binding) {
     private val dateAdapter = ShowtimeAdapter(
-        onDateSelected = { date ->
-            viewModel.selectShowDate(date)
-            viewModel.loadMovieInfo(BookInfo.SHOWTIME, isShowDate = false)
-        },
-        onTimeSelected = { slot ->
-            val date = viewModel.model.value.selectedShowtime?.selectedShowDate
-            if (date != null) viewModel.selectShowtime(date, slot)
-        }
+        onDateSelected = { date -> viewModel.actionSetDateButton(date) },
+        onTimeSelected = { slot -> viewModel.actionSetTimeButton(slot) }
     )
     init {
         binding.showtimeRecyclerView.layoutManager = GridLayoutManager(parent.context, 3)

@@ -5,12 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.core.view.drawToBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
+import com.example.moviceapp.R
 import com.example.moviceapp.book.BookInfo.SEAT
 import com.example.moviceapp.book.BookInfo.SHOWTIME
 import com.example.moviceapp.book.BookInfo.THEATER
@@ -21,27 +23,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-enum class BookInfo { THEATER, SHOWTIME, SEAT }
-val BookInfo.currentItem: Int
-    get() = when (this) {
-        THEATER -> 0
-        SHOWTIME -> 1
-        SEAT -> 2
-    }
-val Int.toBookInfo: BookInfo?
-    get() = when (this) {
-        0 -> THEATER
-        1 -> SHOWTIME
-        2 -> SEAT
-        else -> null
-    }
-
-interface BookChooseHandler {
-    fun goNextAnimated(
-        targetPosition: BookInfo,
-        duration: Long = 300
-    )
-}
 @AndroidEntryPoint
 class BookChooseInfoFragment : Fragment(), BookChooseHandler {
     private var _binding: FragmentBookChooseInfoBinding? = null
@@ -50,12 +31,12 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
     private val args: BookChooseInfoFragmentArgs by navArgs()
     @Inject
     lateinit var movieAssistedFactory: BookChooseInfoViewModel.MovieAssistedFactory
-    private lateinit var chooseInformationAdapter: BookChooseInformationAdapter
+    private lateinit var movieAdapter: MoviePagerAdapter
+    private lateinit var chooseInfoAdapter: BookChooseInformationAdapter
     private val viewModel: BookChooseInfoViewModel by viewModels {
         BookChooseInfoViewModel.provideFactory(
             movieAssistedFactory, args.selectedMovie)
     }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -63,49 +44,15 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
     ): View {
         _binding = FragmentBookChooseInfoBinding.inflate(
             inflater, container, false)
+        chooseInfoAdapter = BookChooseInformationAdapter(viewModel)
+        movieAdapter = MoviePagerAdapter(args.movies.toList())
+        viewModel.chooseHandler = this
         return binding.root
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        chooseInformationAdapter = BookChooseInformationAdapter(viewModel)
-        lifecycleScope.launch {
-            viewModel.model.collect { model ->
-                binding.goNextButton.isEnabled = when (model.currentBookInfo) {
-                    THEATER -> model.selectedTheater != null
-                    SHOWTIME -> (model.selectedShowtime?.selectedShowtimeSlot != null)
-                    SEAT -> (model.selectedSeat != null)
-                }
-            }
-        }
-        lifecycleScope.launch {
-            viewModel.theaterList.collect {
-                chooseInformationAdapter.theaters = it
-            }
-        }
-        lifecycleScope.launch {
-            viewModel.showDateList.collect {
-                chooseInformationAdapter.showDateList = it
-            }
-        }
-        lifecycleScope.launch {
-            viewModel.showTimeList.collect {
-                chooseInformationAdapter.showTimeList = it
-            }
-        }
-        lifecycleScope.launch {
-            viewModel.seatList.collect {
-                chooseInformationAdapter.seats = it
-            }
-        }
-
-        viewModel.chooseHandler = this
-
-        binding.goNextButton.setOnClickListener {
-            viewModel.actionGoNextButton()
-        }
-
-        binding.movieViewPager.adapter = MoviePagerAdapter(args.movies.toList())
+        // Movie ViewPager2
+        binding.movieViewPager.adapter = movieAdapter
         binding.movieViewPager.setCurrentItem(args.movies.indexOf(args.selectedMovie), false)
         binding.movieViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -113,12 +60,45 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
                 viewModel.actionMoviePageMoved(args.movies[position])
             }
         })
-
-        binding.movieChooseInfoViewPager.adapter = chooseInformationAdapter
+        // Booking ChooseInfo ViewPager2
+        binding.movieChooseInfoViewPager.adapter = chooseInfoAdapter
         binding.movieChooseInfoViewPager.currentItem = 0
         binding.movieChooseInfoViewPager.isEnabled = false
-
-        // 최초 진입 시 극장 목록 로드 (기존에는 button_theater 클릭이 이 역할을 했음)
+        // Go Next Button
+        binding.goNextButton.setOnClickListener { viewModel.actionGoNextButton() }
+        // Subscribe viewModel
+        lifecycleScope.launch {
+            viewModel.model.collect { model ->
+                val isEnabled = when (model.currentBookInfo) {
+                    THEATER ->   model.selectedTheater != null
+                    SHOWTIME -> (model.selectedShowtime?.selectedShowtimeSlot != null)
+                    SEAT ->     (model.selectedSeat != null)
+                }
+                // Go Next Button Status
+                binding.goNextButton.isEnabled = isEnabled
+                // Go Next Button Background color
+                val tint = if (isEnabled) R.color.green_accent else R.color.background_secondary
+                binding.goNextButton.backgroundTintList = ContextCompat.getColorStateList(
+                    requireContext(), tint)
+                // Go Next Button Text color
+                val textColor = if (isEnabled) R.color.badge_text else R.color.text_primary
+                binding.goNextButton.setTextColor(ContextCompat.getColor(
+                    requireContext(), textColor))
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.theaterList.collect { chooseInfoAdapter.theaters = it }
+        }
+        lifecycleScope.launch {
+            viewModel.showDateList.collect { chooseInfoAdapter.showDateList = it }
+        }
+        lifecycleScope.launch {
+            viewModel.showTimeList.collect { chooseInfoAdapter.showTimeList = it }
+        }
+        lifecycleScope.launch {
+            viewModel.seatList.collect { chooseInfoAdapter.seats = it }
+        }
+        // Action on viewCreated using ViewModel
         viewModel.actionOnViewCreated()
     }
 
@@ -170,4 +150,24 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
                 .start()
         }
     }
+}
+enum class BookInfo { THEATER, SHOWTIME, SEAT }
+val BookInfo.currentItem: Int
+    get() = when (this) {
+        THEATER -> 0
+        SHOWTIME -> 1
+        SEAT -> 2
+    }
+val Int.toBookInfo: BookInfo?
+    get() = when (this) {
+        0 -> THEATER
+        1 -> SHOWTIME
+        2 -> SEAT
+        else -> null
+    }
+interface BookChooseHandler {
+    fun goNextAnimated(
+        targetPosition: BookInfo,
+        duration: Long = 300
+    )
 }

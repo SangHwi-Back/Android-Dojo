@@ -26,24 +26,18 @@ object BookChooseViewHolderFactory {
         val inflater = LayoutInflater.from(parent.context)
         return when (entity) {
             is BookChooseViewHolderEntity.TheaterEntity -> BookChooseTheaterViewHolder(viewModel, parent,
-                ItemBookChooseTheaterBinding.inflate(
-                    inflater, parent, false
-                )
+                ItemBookChooseTheaterBinding.inflate(inflater, parent, false)
             ).apply {
                 setTheaters(entity.theaters)
             }
             is BookChooseViewHolderEntity.Showtime -> BookChooseShowtimeViewHolder(viewModel, parent,
-                ItemBookChooseShowtimeBinding.inflate(
-                    inflater, parent, false
-                )
+                ItemBookChooseShowtimeBinding.inflate(inflater, parent, false)
             ).apply {
                 setShowtimeList(entity.showTimeList)
                 setShowDateList(entity.showDateList)
             }
             is BookChooseViewHolderEntity.Seat -> BookChooseSeatViewHolder(viewModel, parent,
-                ItemBookChooseSeatBinding.inflate(
-                    inflater, parent, false
-                )
+                ItemBookChooseSeatBinding.inflate(inflater, parent, false)
             ).apply {
                 setSeats(entity.seats)
             }

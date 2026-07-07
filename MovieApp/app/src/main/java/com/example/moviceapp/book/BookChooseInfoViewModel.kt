@@ -41,9 +41,6 @@ class BookChooseInfoViewModel @AssistedInject constructor(
     val seatList: StateFlow<List<String>>
         get() = _seatList.asStateFlow()
     var chooseHandler: BookChooseHandler? = null
-    init {
-        loadMovieInfo(THEATER)
-    }
     /**
      * Change movie model
      */
@@ -74,17 +71,17 @@ class BookChooseInfoViewModel @AssistedInject constructor(
     fun selectSeat(seat: String) {
         _model.update { it.copy(selectedSeat = seat) }
     }
-    fun getNextBookInfo(): BookInfo = when (model.value.currentBookInfo) {
-        THEATER -> SHOWTIME
+    private fun getNextBookInfo(): BookInfo = when (model.value.currentBookInfo) {
+        THEATER ->  SHOWTIME
         SHOWTIME -> SEAT
-        else -> THEATER
+        else ->     THEATER
     }
-    fun goBookInfo(bookInfo: BookInfo? = null) {
+    private fun goBookInfo(bookInfo: BookInfo? = null) {
         val target = bookInfo ?: getNextBookInfo()
         _model.update { it.copy(currentBookInfo = target) }
         chooseHandler?.goNextAnimated(target)
     }
-    fun loadMovieInfo(info: BookInfo, isShowDate: Boolean = false) {
+    private fun loadMovieInfo(info: BookInfo, isShowDate: Boolean = false) {
         _model.update { it.copy(currentBookInfo = info) }
         val id = model.value.selectedMovie.id
         viewModelScope.launch {
@@ -116,9 +113,9 @@ class BookChooseInfoViewModel @AssistedInject constructor(
         val next = getNextBookInfo()
         goBookInfo(next)
         when (next) {
-            THEATER -> loadMovieInfo(THEATER)
+            THEATER ->  loadMovieInfo(THEATER)
             SHOWTIME -> loadMovieInfo(SHOWTIME, isShowDate = true)
-            SEAT -> loadMovieInfo(SEAT)
+            SEAT ->     loadMovieInfo(SEAT)
         }
     }
     fun actionMoviePageMoved(movie: Movie) {
@@ -128,6 +125,14 @@ class BookChooseInfoViewModel @AssistedInject constructor(
     }
     fun actionOnViewCreated() {
         loadMovieInfo(THEATER)
+    }
+    fun actionSetDateButton(date: String) {
+        selectShowDate(date)
+        loadMovieInfo(SHOWTIME, isShowDate = false)
+    }
+    fun actionSetTimeButton(slot: ShowtimeSlot) {
+        val date = model.value.selectedShowtime?.selectedShowDate
+        if (date != null) selectShowtime(date, slot)
     }
     private suspend fun getShowtimeDates(movieId: Int): List<String> =
         when (val result = repository.getShowtimeDates(movieId)) {
