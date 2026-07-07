@@ -13,9 +13,9 @@ import com.example.moviceapp.databinding.ItemBookChooseItemSeatBinding
 import com.example.moviceapp.databinding.ItemBookChooseSeatBinding
 
 class BookChooseSeatViewHolder(
+    private val viewModel: BookChooseInfoViewModel,
     val parent: ViewGroup,
     val binding: ItemBookChooseSeatBinding,
-    private val viewModel: BookChooseInfoViewModel,
 ) : BookChooseViewHolder(binding) {
     private val adapter = SeatListAdapter { seat ->
         viewModel.selectSeat(seat)

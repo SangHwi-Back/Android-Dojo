@@ -3,6 +3,9 @@ package com.example.moviceapp.book
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.moviceapp.book.BookInfo.SEAT
+import com.example.moviceapp.book.BookInfo.SHOWTIME
+import com.example.moviceapp.book.BookInfo.THEATER
 import com.example.moviceapp.repo.APIResult
 import com.example.moviceapp.repo.BookingRepository
 import com.example.moviceapp.repo.Movie
@@ -20,7 +23,7 @@ import kotlinx.coroutines.launch
 class BookChooseInfoViewModel @AssistedInject constructor(
     private val repository: BookingRepository,
     @Assisted private val initialMovie: Movie,
-    @Assisted private val initialBookInfo: BookInfo = BookInfo.THEATER
+    @Assisted private val initialBookInfo: BookInfo = THEATER
 ) : ViewModel() {
     private var _model = MutableStateFlow(BookChooseInfoModel(initialBookInfo, initialMovie))
     val model: StateFlow<BookChooseInfoModel>
@@ -38,11 +41,14 @@ class BookChooseInfoViewModel @AssistedInject constructor(
     val seatList: StateFlow<List<String>>
         get() = _seatList.asStateFlow()
     var chooseHandler: BookChooseHandler? = null
+    init {
+        loadMovieInfo(THEATER)
+    }
     /**
      * Change movie model
      */
     fun setMovieAndRefresh(movie: Movie) {
-        _model.value = BookChooseInfoModel(BookInfo.THEATER, movie)
+        _model.value = BookChooseInfoModel(THEATER, movie)
     }
     /**
      * Change theater model
@@ -69,9 +75,9 @@ class BookChooseInfoViewModel @AssistedInject constructor(
         _model.update { it.copy(selectedSeat = seat) }
     }
     fun getNextBookInfo(): BookInfo = when (model.value.currentBookInfo) {
-        BookInfo.THEATER -> BookInfo.SHOWTIME
-        BookInfo.SHOWTIME -> BookInfo.SEAT
-        else -> BookInfo.THEATER
+        THEATER -> SHOWTIME
+        SHOWTIME -> SEAT
+        else -> THEATER
     }
     fun goBookInfo(bookInfo: BookInfo? = null) {
         val target = bookInfo ?: getNextBookInfo()
@@ -83,10 +89,10 @@ class BookChooseInfoViewModel @AssistedInject constructor(
         val id = model.value.selectedMovie.id
         viewModelScope.launch {
             when (info) {
-                BookInfo.THEATER -> {
+                THEATER -> {
                     _theaterList.value = getTheaters(id)
                 }
-                BookInfo.SHOWTIME -> {
+                SHOWTIME -> {
                     if (isShowDate) {
                         _showDateList.value = getShowtimeDates(id)
                         _showTimeList.value = listOf()
@@ -99,25 +105,29 @@ class BookChooseInfoViewModel @AssistedInject constructor(
                         }
                     }
                 }
-                BookInfo.SEAT -> {
+                SEAT -> {
                     // TODO: Fetch seats from repository
                     _seatList.value = listOf("Wait", "For", "A", "While")
                 }
             }
         }
     }
-    fun refreshMovieInfo(info: BookInfo, isShowDate: Boolean = false) {
-        _model.update { current ->
-            when (info) {
-                BookInfo.THEATER -> current.copy(selectedTheater = null)
-                BookInfo.SHOWTIME -> if (isShowDate) {
-                    current.copy(selectedShowtime = null)
-                } else {
-                    current.copy(selectedShowtime = current.selectedShowtime?.copy(selectedShowtimeSlot = null))
-                }
-                BookInfo.SEAT -> current.copy(selectedSeat = null)
-            }
+    fun actionGoNextButton() {
+        val next = getNextBookInfo()
+        goBookInfo(next)
+        when (next) {
+            THEATER -> loadMovieInfo(THEATER)
+            SHOWTIME -> loadMovieInfo(SHOWTIME, isShowDate = true)
+            SEAT -> loadMovieInfo(SEAT)
         }
+    }
+    fun actionMoviePageMoved(movie: Movie) {
+        setMovieAndRefresh(movie)
+        loadMovieInfo(THEATER)
+        goBookInfo(THEATER)
+    }
+    fun actionOnViewCreated() {
+        loadMovieInfo(THEATER)
     }
     private suspend fun getShowtimeDates(movieId: Int): List<String> =
         when (val result = repository.getShowtimeDates(movieId)) {
@@ -138,14 +148,14 @@ class BookChooseInfoViewModel @AssistedInject constructor(
     interface MovieAssistedFactory {
         fun create(
             initialMovie: Movie,
-            initialBookInfo: BookInfo = BookInfo.THEATER
+            initialBookInfo: BookInfo = THEATER
         ): BookChooseInfoViewModel
     }
     companion object {
         fun provideFactory(
             assistedFactory: MovieAssistedFactory,
             initialMovie: Movie,
-            initialBookInfo: BookInfo = BookInfo.THEATER,
+            initialBookInfo: BookInfo = THEATER,
         ): ViewModelProvider.Factory {
             return object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {

@@ -16,9 +16,9 @@ import com.example.moviceapp.databinding.ItemBookTheaterSelectTheaterBinding
 import com.example.moviceapp.repo.Theater
 
 class BookChooseTheaterViewHolder(
+    private val viewModel: BookChooseInfoViewModel,
     val parent: ViewGroup,
     val binding: ItemBookChooseTheaterBinding,
-    private val viewModel: BookChooseInfoViewModel,
 ) : BookChooseViewHolder(binding) {
     private val adapter = TheaterListAdapter { theater ->
         viewModel.selectTheater(theater)

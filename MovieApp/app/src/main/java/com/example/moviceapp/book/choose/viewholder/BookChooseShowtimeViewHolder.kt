@@ -10,9 +10,9 @@ import com.example.moviceapp.databinding.ItemBookChooseShowtimeBinding
 import com.example.moviceapp.repo.ShowtimeSlot
 
 class BookChooseShowtimeViewHolder(
+    private val viewModel: BookChooseInfoViewModel,
     val parent: ViewGroup,
     val binding: ItemBookChooseShowtimeBinding,
-    private val viewModel: BookChooseInfoViewModel,
 ) : BookChooseViewHolder(binding) {
     private val dateAdapter = ShowtimeAdapter(
         onDateSelected = { date ->

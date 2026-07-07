@@ -1,4 +1,4 @@
-package com.example.moviceapp.book
+package com.example.moviceapp.book.choose.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

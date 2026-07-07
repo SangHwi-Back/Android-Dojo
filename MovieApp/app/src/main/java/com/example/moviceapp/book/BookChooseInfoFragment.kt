@@ -15,6 +15,7 @@ import com.example.moviceapp.book.BookInfo.SEAT
 import com.example.moviceapp.book.BookInfo.SHOWTIME
 import com.example.moviceapp.book.BookInfo.THEATER
 import com.example.moviceapp.book.choose.adapter.BookChooseInformationAdapter
+import com.example.moviceapp.book.choose.adapter.MoviePagerAdapter
 import com.example.moviceapp.databinding.FragmentBookChooseInfoBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -98,13 +99,7 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
         viewModel.chooseHandler = this
 
         binding.goNextButton.setOnClickListener {
-            val next = viewModel.getNextBookInfo()
-            viewModel.goBookInfo(next)
-            when (next) {
-                THEATER -> viewModel.loadMovieInfo(THEATER)
-                SHOWTIME -> viewModel.loadMovieInfo(SHOWTIME, isShowDate = true)
-                SEAT -> viewModel.loadMovieInfo(SEAT)
-            }
+            viewModel.actionGoNextButton()
         }
 
         binding.movieViewPager.adapter = MoviePagerAdapter(args.movies.toList())
@@ -112,8 +107,7 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
         binding.movieViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                viewModel.setMovieAndRefresh(args.movies[position])
-                viewModel.loadMovieInfo(THEATER)
+                viewModel.actionMoviePageMoved(args.movies[position])
             }
         })
 
@@ -122,7 +116,7 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
         binding.movieChooseInfoViewPager.isEnabled = false
 
         // 최초 진입 시 극장 목록 로드 (기존에는 button_theater 클릭이 이 역할을 했음)
-        viewModel.loadMovieInfo(THEATER)
+        viewModel.actionOnViewCreated()
     }
 
     override fun goNextAnimated(

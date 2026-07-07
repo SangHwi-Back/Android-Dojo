@@ -7,6 +7,8 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.example.moviceapp.R
+import com.example.moviceapp.databinding.ItemBookChooseItemShowtimeDateBinding
+import com.example.moviceapp.databinding.ItemBookChooseItemShowtimeTimeBinding
 
 abstract class ShowtimeViewHolder(
     binding: ViewBinding,
@@ -17,20 +19,13 @@ abstract class ShowtimeViewHolder(
 
 object ShowtimeViewHolderFactory {
     fun createViewHolder(parent: ViewGroup, viewType: Int, handler: ShowtimeClickHandler): ShowtimeViewHolder {
-        return when (viewType) {
-            SHOWTIME_DATE_VIEW_HOLDER_TYPE -> ShowtimeDateViewHolder(handler,getViewDataBinding(
-                parent,R.layout.item_book_choose_item_showtime_date))
-            else -> ShowtimeTimeViewHolder(handler, getViewDataBinding(
-                parent,R.layout.item_book_choose_item_showtime_time))
-        }
-    }
-    private fun <T: ViewDataBinding> getViewDataBinding(parent: ViewGroup, layoutRes: Int): T {
-        return DataBindingUtil.inflate(
-            LayoutInflater.from(parent.context),
-            layoutRes,
-            parent,
-            false
-        )
+        val inflater = LayoutInflater.from(parent.context)
+        return if (viewType == SHOWTIME_DATE_VIEW_HOLDER_TYPE)
+            ShowtimeDateViewHolder(handler, ItemBookChooseItemShowtimeDateBinding
+                .inflate(inflater, parent, false))
+        else
+            ShowtimeTimeViewHolder(handler, ItemBookChooseItemShowtimeTimeBinding
+                .inflate(inflater, parent, false))
     }
 }
 
