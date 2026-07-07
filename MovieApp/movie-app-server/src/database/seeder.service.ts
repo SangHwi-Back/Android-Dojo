@@ -6,10 +6,52 @@ import { Theater } from '../theaters/entities/theater.entity';
 import { Showtime } from '../showtimes/entities/showtime.entity';
 import { Booking } from '../bookings/entities/booking.entity';
 import { User } from '../users/entities/user.entity';
+import { Seat, SeatStatus, SeatType } from '../seats/entities/seat.entity';
+
+interface HallLayout {
+  hall: string;
+  floor: number;
+  rows: string[]; // 행 라벨 순서 (렌더링 순서 그대로)
+  columnsPerRow: number;
+  aisleAfterColumns: number[]; // 이 열 번호(1-based) 뒤에 통로
+  aisleAfterRows: string[]; // 이 행 라벨 다음에 통로
+  vipRows: string[]; // VIP 좌석으로 지정할 행 라벨
+}
 
 @Injectable()
 export class SeederService implements OnModuleInit {
   private readonly logger = new Logger(SeederService.name);
+
+  // 모든 극장이 공유하는 3개 홀의 좌석 배치 (Showtime.hall 문자열과 이름을 맞춤)
+  private readonly hallLayouts: HallLayout[] = [
+    {
+      hall: 'IMAX Hall 1',
+      floor: 2,
+      rows: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
+      columnsPerRow: 12,
+      aisleAfterColumns: [3, 9], // 3+6+3 좌우 통로
+      aisleAfterRows: ['D'], // 앞 4줄 / 뒤 4줄 사이 통로
+      vipRows: ['G', 'H'],
+    },
+    {
+      hall: 'Hall 2',
+      floor: 1,
+      rows: ['A', 'B', 'C', 'D', 'E', 'F'],
+      columnsPerRow: 10,
+      aisleAfterColumns: [5],
+      aisleAfterRows: [],
+      vipRows: [],
+    },
+    {
+      hall: 'Hall 3',
+      floor: 1,
+      rows: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
+      columnsPerRow: 14,
+      aisleAfterColumns: [4, 10],
+      aisleAfterRows: ['E'],
+      vipRows: ['I', 'J'],
+    },
+  ];
 
   constructor(
     @InjectRepository(Movie) private readonly moviesRepo: Repository<Movie>,
@@ -17,6 +59,7 @@ export class SeederService implements OnModuleInit {
     @InjectRepository(Showtime) private readonly showtimesRepo: Repository<Showtime>,
     @InjectRepository(Booking) private readonly bookingsRepo: Repository<Booking>,
     @InjectRepository(User) private readonly usersRepo: Repository<User>,
+    @InjectRepository(Seat) private readonly seatsRepo: Repository<Seat>,
   ) {}
 
   async onModuleInit() {
@@ -190,10 +233,18 @@ export class SeederService implements OnModuleInit {
     }
     await this.showtimesRepo.save(showtimesToSave);
 
-    // ── Bookings ──────────────────────────────────────────────────
+    // ── Seats (모든 극장 × 모든 홀 조합에 좌석 배치 생성) ─────────
+    const seatsToSave: Partial<Seat>[] = [];
+    for (const theater of theaters) {
+      for (const layout of this.hallLayouts) {
+        seatsToSave.push(...this.generateHallSeats(theater, layout));
+      }
+    }
+    await this.seatsRepo.save(seatsToSave);
+
+    // ── Bookings (id는 자동 채번 컬럼이라 지정하지 않음) ──────────
     await this.bookingsRepo.save([
       {
-        id: 1001,
         movie: movies[0],    // Dune: Part Three
         theater: theaters[0], // IMAX Cineplex Downtown
         date: 'May 15, 2026',
@@ -202,7 +253,6 @@ export class SeederService implements OnModuleInit {
         isUpcoming: true,
       },
       {
-        id: 1002,
         movie: movies[2],    // Neon Knights
         theater: theaters[1], // Galaxy Multiplex
         date: 'May 20, 2026',
@@ -211,7 +261,6 @@ export class SeederService implements OnModuleInit {
         isUpcoming: true,
       },
       {
-        id: 1003,
         movie: movies[1],    // Ocean's Eleven: Legacy
         theater: theaters[2], // Starlight Cinema
         date: 'May 28, 2026',
@@ -220,7 +269,6 @@ export class SeederService implements OnModuleInit {
         isUpcoming: true,
       },
       {
-        id: 1004,
         movie: movies[3],    // Starfall Chronicles
         theater: theaters[0], // IMAX Cineplex Downtown
         date: 'April 5, 2026',
@@ -238,5 +286,26 @@ export class SeederService implements OnModuleInit {
       points: '1.2K',
       saved: 89,
     });
+  }
+
+  private generateHallSeats(theater: Theater, layout: HallLayout): Partial<Seat>[] {
+    const seats: Partial<Seat>[] = [];
+    layout.rows.forEach((rowLabel, rowIndex) => {
+      for (let column = 1; column <= layout.columnsPerRow; column++) {
+        seats.push({
+          theater,
+          hall: layout.hall,
+          floor: layout.floor,
+          rowLabel,
+          rowIndex,
+          columnIndex: column,
+          seatType: layout.vipRows.includes(rowLabel) ? SeatType.VIP : SeatType.NORMAL,
+          hasAisleAfterColumn: layout.aisleAfterColumns.includes(column),
+          hasAisleAfterRow: layout.aisleAfterRows.includes(rowLabel),
+          status: SeatStatus.AVAILABLE,
+        });
+      }
+    });
+    return seats;
   }
 }

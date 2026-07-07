@@ -1215,7 +1215,7 @@ fun selectTheater(theater: Theater) {
 
 `BookChooseInfoViewModel.loadMovieInfo`의 `BookInfo.SEAT` 분기:
 ```kotlin
-BookInfo.SEAT -> {
+BookInfo.SEAT {
     // TODO: Fetch seats from repository
     _seatList.value = listOf("Wait", "For", "A", "While")
 }
@@ -1283,3 +1283,134 @@ BookInfo.SEAT -> {
 **의도적으로 보류한 항목**
 - 9번(좌석 선택 이후 플로우/예매 확정 화면) — 설계 미확정 상태라 손대지 않음. 현재는 좌석까지 선택 후 "다음"을 누르면 `getNextBookInfo()`가 다시 `THEATER`로 순환하는 기존 동작이 그대로 유지됨.
 - 5번(좌석 API 서버 연동) — `BookChooseInfoViewModel.loadMovieInfo`의 SEAT 분기는 여전히 `listOf("Wait", "For", "A", "While")` 하드코딩. 클릭/선택/하이라이트는 이 placeholder 데이터로 전부 정상 동작하도록 만들어뒀으므로, 서버에 실제 좌석 엔드포인트가 추가되면 이 부분만 교체하면 됨.
+
+---
+
+## 참고 자료 — 최신 영화 예매 앱의 좌석 선택 뷰는 어떻게 만드는가
+
+지금 이 프로젝트의 `BookChooseSeatViewHolder`는 `GridLayoutManager` 기반 `RecyclerView`로 좌석을 그리드로 뿌리는 방식입니다. 이 방식 자체는 실무에서도 흔히 쓰이지만, 실제 서비스들은 몇 가지를 더 신경 씁니다. 아래는 CGV/메가박스/Fandango류 앱들이 공통으로 채택하는 패턴을 정리한 것입니다.
+
+### 1. 렌더링 방식 — 왜 대부분 "커스텀 뷰 + Canvas"로 가는가
+
+좌석 배치는 순수 그리드가 아닙니다. 통로, 커브형 스크린, 짝수 열만 있는 층, VIP존의 배치 변경 등 불규칙한 형태가 많습니다. `RecyclerView` + `GridLayoutManager`는 "고정된 열 수"를 전제로 하기 때문에, 홀마다 열 개수·통로 위치가 다르면 `spanSizeLookup`을 홀마다 새로 계산해야 하고, 확대/축소(핀치 줌)나 좌석 간 정밀한 간격 조정이 번거로워집니다.
+
+그래서 실무에서는 두 갈래로 갈립니다:
+
+- **소규모/심플한 UI**: 지금 이 프로젝트처럼 `RecyclerView` + `GridLayoutManager` + `ItemDecoration`으로 통로 간격을 표현. 구현이 빠르고 RecyclerView의 재활용(뷰홀더 풀링) 이점을 그대로 가져감. 좌석 수가 수백 석 이내면 이 방식으로도 충분히 부드럽게 동작.
+- **정교한 좌석맵(대부분의 실제 서비스)**: `Canvas` 기반 커스텀 `View`(또는 Compose의 `Canvas`/`drawScope`)에 좌석 좌표를 직접 계산해서 그림. 각 좌석을 `Path`/`RoundRect`로 그리고, `MotionEvent`(또는 Compose의 `pointerInput`)로 터치 좌표를 좌석 인덱스로 역산해 선택 처리. 이 방식이 각광받는 이유:
+  - 임의의 좌석 배치(비정형 통로, 커브, VIP 박스석 등)를 좌표 기반으로 자유롭게 표현 가능
+  - 핀치 줌/팬(pan)을 `Matrix` 변환 하나로 자연스럽게 처리 — RecyclerView로는 이게 훨씬 번거로움
+  - 좌석 수백~수천 개를 한 화면에 그려도 뷰 객체 생성 비용이 없음(그리기만 하면 되므로)
+
+지금 프로젝트 규모(수십~백여 석, 홀 3종)에서는 RecyclerView 방식을 유지하는 게 합리적입니다. 다만 나중에 "핀치 줌으로 좌석맵 전체를 보다가 확대해서 정밀 선택" 같은 요구가 생기면 Canvas 기반으로 갈아탈 근거가 됩니다.
+
+### 2. 좌석 상태(state) 모델링
+
+실무 앱은 좌석 하나에 최소 아래 상태를 갖습니다(지금 프로젝트의 `Seat` 엔티티는 "배치" 정보만 있고 "상태"는 아직 없는 상태):
+
+```
+enum SeatStatus { AVAILABLE, SELECTED, OCCUPIED, HELD, DISABLED }
+```
+
+- `OCCUPIED`: 이미 확정 결제된 좌석
+- `HELD`: 다른 사용자가 지금 막 선택 중이라 임시로 잠긴 좌석 (아래 3번 항목 참고)
+- `DISABLED`: 물리적으로 없는 자리(간격 맞추기용 빈 칸, 고장난 좌석 등)
+
+지금 프로젝트의 `Seat` 엔티티(배치도)와 실제 "이 상영 회차에 이 좌석이 비어있는지"는 별개 테이블로 분리하는 게 일반적입니다 — `Seat`는 극장×홀의 물리적 배치(불변에 가까움), `ShowtimeSeatStatus`(혹은 `SeatHold`) 같은 테이블이 "특정 Showtime + 특정 Seat"의 상태를 담당합니다. 그래야 같은 물리적 좌석이 회차마다 다른 예약 상태를 가질 수 있습니다.
+
+### 3. 동시성 처리 — "좌석 임시 잠금(Seat Hold)"
+
+여러 사용자가 동시에 같은 좌석을 고를 수 있으므로, 실무 앱은 거의 예외 없이 다음 흐름을 씁니다:
+
+1. 사용자가 좌석을 탭하면 클라이언트는 즉시 낙관적으로 `SELECTED` 표시
+2. 동시에 서버에 "이 좌석 N분간 홀드해줘" 요청 (`POST /showtimes/{id}/seats/hold`) — 서버는 해당 좌석을 `HELD` 상태로 바꾸고 TTL(보통 5~10분)을 건다
+3. 결제/예매 확정 API 호출 시 홀드가 유효한지 검증 후 `OCCUPIED`로 전환
+4. TTL이 지나거나 사용자가 이탈하면 서버가 자동으로 `HELD` → `AVAILABLE`로 되돌림(Redis TTL, DB 스케줄러, 혹은 Bull/Cron 잡)
+
+다른 사용자의 실시간 좌석 상태 변경(누가 방금 그 좌석을 잡았다)을 반영하려면 WebSocket이나 짧은 주기 폴링으로 좌석맵을 다시 받아옵니다. 지금 이 프로젝트는 좌석 조회(`GET /api/seats`)만 있고 홀드/동시성 개념이 전혀 없는 상태라, 나중에 실제 결제 흐름을 붙일 때 반드시 고려해야 할 부분입니다.
+
+### 4. UX 디테일
+
+- **범례(legend)**: 화면 하단에 "이용가능/선택됨/예약불가/VIP" 색상 표를 항상 보여줌
+- **스크린 표시**: 좌석맵 상단에 곡선형 "SCREEN THIS WAY" 바를 그려 방향감을 줌
+- **선택 요약 바**: 좌석 선택 시 화면 하단에 고정으로 "A3, A4 · 2석 · ₩24,000"처럼 실시간 요약을 보여주고, 여기서 바로 결제로 진행
+- **최대 선택 개수 제한**: 보통 1회 예매당 8~10석 제한을 두고, 넘으면 선택 불가 토스트
+- **접근성**: 색상만으로 상태를 구분하지 않고 아이콘/테두리 스타일도 같이 사용(색맹 사용자 고려)
+
+### 5. 현재 프로젝트에 적용한다면
+
+- 지금 아키텍처(RecyclerView + GridLayoutManager, `Seat` 엔티티에 row/column/aisle/floor/seatType)는 "물리적 배치"를 표현하는 부분으로는 충분히 실무적입니다.
+- 다음 단계로 필요한 건 **"이 배치도 위에서 이 회차, 이 순간에 어떤 좌석이 비어있는지"**를 나타내는 상태 계층입니다. 예를 들어 `ShowtimeSeat` 같은 중간 테이블(`showtime_id`, `seat_id`, `status`, `held_until`)을 추가하는 방향을 고려해볼 수 있습니다.
+- 동시성(좌석 홀드)까지 가려면 서버에 TTL 기반 잠금 로직이 필요한데, 이건 지금 프로젝트 규모(로컬 개발/학습용)에서는 우선순위가 낮을 수 있습니다 — 다만 "왜 실제 서비스들이 이렇게 복잡하게 만드는지"를 이해하는 참고 자료로 남겨둡니다.
+
+---
+
+## 완료된 작업 — Seat 현재 상태(status) 및 홀드(Hold) 로직 구현
+
+바로 위 참고 자료에서 설명한 "좌석 상태 모델링"과 "좌석 임시 잠금(Seat Hold)" 개념을 실제로 `Seat` 엔티티에 적용했습니다. 별도의 `ShowtimeSeat` 중간 테이블로 분리하지 않고, 사용자가 요청한 대로 **`Seat` 엔티티 자체에 상태 필드를 직접 추가**하는 단순한 형태로 구현했습니다 (지금 프로젝트 규모에서는 이쪽이 더 적절하다고 판단).
+
+### 상태값 설계 — 왜 5개가 아니라 4개인가
+
+```typescript
+export enum SeatStatus {
+  AVAILABLE = 'AVAILABLE',
+  HELD = 'HELD',
+  OCCUPIED = 'OCCUPIED',
+  DISABLED = 'DISABLED',
+}
+```
+
+참고 자료에서 언급했던 5가지 상태(`AVAILABLE/SELECTED/OCCUPIED/HELD/DISABLED`) 중 `SELECTED`는 일부러 빼고 4개만 서버에 persist했습니다. `SELECTED`는 "사용자가 지금 탭해서 고르는 중"이라는, **아직 서버에 알릴 필요조차 없는 순수 클라이언트 로컬 UI 상태**입니다. 서버가 알아야 하는 건 "이 사용자가 결제까지 이어갈 생각으로 이 좌석을 붙잡고 있다"는 `HELD` 뿐입니다. `SELECTED`까지 서버에 얹으면 소유자 정보 없이 상태만 있는 애매한 필드가 되어 오히려 혼란을 유발합니다.
+
+### `HELD` 상태에 필요한 추가 필드
+
+```typescript
+@Column({ name: 'held_by_user_id', nullable: true })
+heldByUserId: string | null;
+
+@Column({ name: 'held_until', type: 'timestamp', nullable: true })
+heldUntil: Date | null;
+```
+
+`HELD`는 "누가, 언제까지"가 없으면 의미가 없는 상태라 두 필드를 추가로 붙였습니다. 지금 프로젝트에는 실제 로그인/인증 시스템이 없으므로 `userId`는 클라이언트가 만들어 보내는 임의의 식별자(기기 UUID 등)로 취급합니다 — `users` 테이블과의 FK 관계는 아닙니다.
+
+### 동시성 처리 — read-then-write가 아니라 트랜잭션 + row lock
+
+가장 신경 쓴 부분입니다. "좌석을 조회해서 비어있으면 잠근다"를 순진하게 구현하면(조회 → 검사 → 저장이 별개의 쿼리) 두 요청이 동시에 들어왔을 때 둘 다 "비어있다"고 읽은 뒤 둘 다 저장에 성공해버리는 경쟁 상태(race condition)가 생깁니다. 이를 막기 위해 `SeatsService.holdSeat/releaseSeat/confirmSeat` 전부 TypeORM 트랜잭션 안에서 `lock: { mode: 'pessimistic_write' }`(Postgres의 `SELECT ... FOR UPDATE`)로 해당 좌석 row를 잠근 뒤 검사·수정을 한 트랜잭션 안에서 원자적으로 처리하도록 만들었습니다.
+
+### 만료 처리 — 스케줄러 없이 lazy expiry로 해결
+
+Redis TTL이나 Bull/Cron 잡을 새로 도입하는 대신, 두 지점에서 "지금 시각 기준으로 만료됐는지"를 즉석에서 확인하는 방식(lazy expiry)을 택했습니다:
+
+- `holdSeat`/`releaseSeat`/`confirmSeat`: row를 잠근 직후 `heldUntil`이 지났으면 그 자리에서 `AVAILABLE`로 되돌리고 이어서 로직을 진행 (`expireIfNeeded`)
+- `findAll`(좌석 목록 조회): 조회 직전에 해당 극장·홀에서 만료된 `HELD` 좌석들을 일괄 `UPDATE`로 `AVAILABLE`로 정리한 뒤 조회
+
+이 방식은 별도 백그라운드 프로세스 없이도 "다음에 누군가 이 좌석을 만지거나 조회하는 시점"에 자연스럽게 정리되므로 지금 프로젝트 규모에 적절합니다. 다만 아무도 조회/시도하지 않는 좌석은 만료 이후에도 DB에는 `HELD`로 남아있을 수 있다는 한계가 있습니다 — 실제 서비스라면 주기적 배치 작업으로 보완합니다.
+
+### 새 엔드포인트
+
+| Method | URL | 설명 |
+|---|---|---|
+| POST | `/api/seats/:id/hold` | `{ userId, ttlMinutes? }` — 좌석을 TTL 동안 임시 잠금. 이미 `OCCUPIED`면 409, `DISABLED`면 400, 다른 사용자가 `HELD` 중이면 409 |
+| POST | `/api/seats/:id/release` | `{ userId }` — 본인이 잡은 홀드만 해제 가능(남의 것 시도 시 403), 이미 안 잠겨있으면 그대로 반환(idempotent) |
+| POST | `/api/seats/:id/confirm` | `{ userId }` — 본인이 유효하게 홀드 중인 좌석만 `OCCUPIED`로 확정. 홀드 없이 호출하면 400 |
+| PATCH | `/api/seats/:id/status` | 관리용 직접 상태 지정(`AVAILABLE`/`OCCUPIED`/`DISABLED`). `HELD`는 소유자/TTL 정보가 필요해 여기선 거부하고 `/hold`를 쓰도록 안내 |
+
+### 실제 검증 시나리오
+
+1. userA가 좌석 홀드(TTL 5초) → 201, `status: HELD`
+2. userB가 같은 좌석 즉시 홀드 시도 → **409 Conflict** ("다른 사용자가 잡고 있음")
+3. userB가 남의 홀드를 release 시도 → **403 Forbidden**
+4. 5초 대기 후 TTL 만료 → userB가 다시 홀드 시도 → **성공** (만료된 홀드는 자동으로 풀림)
+5. userB가 confirm → **`OCCUPIED`로 확정**
+6. `OCCUPIED` 상태에서 userC가 홀드 시도 → **409 Conflict** ("이미 예약됨")
+7. PATCH로 `HELD`를 직접 지정 시도 → **400** (차단)
+8. 홀드 없이 confirm 시도 → **400** ("활성 홀드 없음")
+
+전부 기대대로 동작했고, 테스트에 사용한 좌석은 다시 `AVAILABLE`로 원복해뒀습니다.
+
+### 알려진 한계 (지금 규모에서는 의도적으로 남겨둔 것들)
+
+- **단일 프로세스 전제**: row lock은 하나의 Postgres 인스턴스 안에서만 유효합니다. 서버를 여러 대로 수평 확장하면 이 자체로는 문제없지만(Postgres가 잠금을 담당하므로), 만약 나중에 Redis 같은 별도 캐시 레이어로 홀드를 옮기면 그때는 분산 락 문제를 새로 고려해야 합니다.
+- **`userId` 위조 가능**: 인증이 없으므로 클라이언트가 임의의 `userId` 문자열을 보내면 그대로 신뢰합니다. 실제 서비스라면 인증 토큰에서 추출한 사용자 식별자를 써야 합니다.
+- **만료 좌석의 게으른 정리**: 위에서 언급한 대로, 아무도 건드리지 않는 좌석은 만료 후에도 조회 전까지 `HELD`로 남아있을 수 있습니다.

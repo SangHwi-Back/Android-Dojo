@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
 import { Showtime } from '../../showtimes/entities/showtime.entity';
 import { Booking } from '../../bookings/entities/booking.entity';
+import { Seat } from '../../seats/entities/seat.entity';
 
 @Entity('theaters')
 export class Theater {
@@ -21,4 +22,7 @@ export class Theater {
 
   @OneToMany(() => Booking, (booking) => booking.theater)
   bookings: Booking[];
+
+  @OneToMany(() => Seat, (seat) => seat.theater)
+  seats: Seat[];
 }
