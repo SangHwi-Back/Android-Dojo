@@ -1,10 +1,10 @@
-import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Movie } from '../../movies/entities/movie.entity';
 import { Theater } from '../../theaters/entities/theater.entity';
 
 @Entity('bookings')
 export class Booking {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @ManyToOne(() => Movie, (movie) => movie.bookings, { eager: true })

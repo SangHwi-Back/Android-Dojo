@@ -39,7 +39,7 @@ export class BookingsController {
   }
 
   @Post()
-  bookMovie(@Body('booking') booking: Booking) {
+  bookMovie(@Body() booking: Booking) {
     return this.bookingsService.saveBooking(booking)
   }
 }

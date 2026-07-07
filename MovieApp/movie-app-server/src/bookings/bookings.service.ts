@@ -30,12 +30,7 @@ export class BookingsService {
   }
 
   async saveBooking(booking: Booking): Promise<Booking> {
-    let duplicate = await this.bookingsRepo.findOne({
-      where: { id: booking.id }
-    })
-    if (duplicate === null)
-      return null
-    else
-      return await this.bookingsRepo.save(booking)
+    // id는 서버가 발급한다 — 클라이언트가 보낸 값이 있어도 무시하고 새 레코드로 저장
+    return this.bookingsRepo.save({ ...booking, id: undefined })
   }
 }
