@@ -9,7 +9,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.moviceapp.book.BookViewModel
 import com.example.moviceapp.common.GridSpanDecoration
 import com.example.moviceapp.common.ThumbnailAdapter
 import com.example.moviceapp.databinding.FragmentBookBinding
@@ -23,9 +22,7 @@ class BookFragment : Fragment(), ThumbnailOnClickListener {
     private var _binding: FragmentBookBinding? = null
     private val binding get() = _binding!!
     private val viewModel: BookViewModel by viewModels()
-    private lateinit var adapter: ThumbnailAdapter
-    private var allMovies: List<Movie> = emptyList()
-
+    private var adapter = ThumbnailAdapter(listener = this)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,31 +30,27 @@ class BookFragment : Fragment(), ThumbnailOnClickListener {
         _binding = FragmentBookBinding.inflate(inflater, container, false)
         return binding.root
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = ThumbnailAdapter(listener = this)
-
-        binding.bookRecyclerGridView.apply {
-            layoutManager = GridLayoutManager(context, 3)
-            addItemDecoration(GridSpanDecoration(3, 8))
-            adapter = this@BookFragment.adapter
-        }
-
+        binding.bookRecyclerGridView.layoutManager = GridLayoutManager(
+            context, 3)
+        binding.bookRecyclerGridView.addItemDecoration(
+            GridSpanDecoration(3, 8))
+        binding.bookRecyclerGridView.adapter = adapter
         lifecycleScope.launch {
-            allMovies = viewModel.getMovies()
-            adapter.submitList(allMovies)
+            viewModel.movies.collect { adapter.submitList(it) }
+        }
+        lifecycleScope.launch {
+            viewModel.fetchMovies()
         }
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
     override fun onClickMovieFromThumbnail(movie: Movie) {
-        findNavController().navigate(
-            BookFragmentDirections.actionBookFragmentToBookChooseInfoFragment(allMovies.toTypedArray(), movie)
-        )
+        val directions = BookFragmentDirections.actionBookFragmentToBookChooseInfoFragment(
+            viewModel.movies.value.toTypedArray(), movie)
+        findNavController().navigate(directions)
     }
 }

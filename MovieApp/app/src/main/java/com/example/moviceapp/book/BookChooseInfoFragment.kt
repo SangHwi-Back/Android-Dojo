@@ -44,7 +44,9 @@ interface BookChooseHandler {
 }
 @AndroidEntryPoint
 class BookChooseInfoFragment : Fragment(), BookChooseHandler {
-    private lateinit var binding: FragmentBookChooseInfoBinding
+    private var _binding: FragmentBookChooseInfoBinding? = null
+    private val binding: FragmentBookChooseInfoBinding
+        get() = _binding!!
     private val args: BookChooseInfoFragmentArgs by navArgs()
     @Inject
     lateinit var movieAssistedFactory: BookChooseInfoViewModel.MovieAssistedFactory
@@ -59,7 +61,8 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentBookChooseInfoBinding.inflate(inflater, container, false)
+        _binding = FragmentBookChooseInfoBinding.inflate(
+            inflater, container, false)
         return binding.root
     }
 
@@ -117,6 +120,11 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
 
         // 최초 진입 시 극장 목록 로드 (기존에는 button_theater 클릭이 이 역할을 했음)
         viewModel.actionOnViewCreated()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun goNextAnimated(
