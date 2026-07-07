@@ -2,14 +2,14 @@ package com.example.moviceapp.book.choose.viewholder
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import com.example.moviceapp.R
 import com.example.moviceapp.book.BookChooseInfoModel
 import com.example.moviceapp.book.BookChooseInfoViewModel
 import com.example.moviceapp.book.choose.adapter.BookChooseViewHolderEntity
+import com.example.moviceapp.databinding.ItemBookChooseSeatBinding
+import com.example.moviceapp.databinding.ItemBookChooseShowtimeBinding
+import com.example.moviceapp.databinding.ItemBookChooseTheaterBinding
 
 abstract class BookChooseViewHolder(
     binding: ViewBinding
@@ -25,30 +25,39 @@ object BookChooseViewHolderFactory {
     ): BookChooseViewHolder {
         return when (entity) {
             is BookChooseViewHolderEntity.TheaterEntity -> BookChooseTheaterViewHolder(
-                parent, getViewDataBinding(parent, R.layout.item_book_choose_theater), viewModel
+                parent,
+                ItemBookChooseTheaterBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                ),
+                viewModel
             ).apply {
                 setTheaters(entity.theaters)
             }
             is BookChooseViewHolderEntity.Showtime -> BookChooseShowtimeViewHolder(
-                parent, getViewDataBinding(parent, R.layout.item_book_choose_showtime), viewModel
+                parent,
+                ItemBookChooseShowtimeBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                ),
+                viewModel
             ).apply {
                 setShowtimeList(entity.showTimeList)
                 setShowDateList(entity.showDateList)
             }
             is BookChooseViewHolderEntity.Seat -> BookChooseSeatViewHolder(
-                parent, getViewDataBinding(parent, R.layout.item_book_choose_seat), viewModel
+                parent,
+                ItemBookChooseSeatBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                ),
+                viewModel
             ).apply {
                 setSeats(entity.seats)
             }
         }
-    }
-
-    private fun <T: ViewDataBinding> getViewDataBinding(parent: ViewGroup, layoutRes: Int): T {
-        return DataBindingUtil.inflate(
-            LayoutInflater.from(parent.context),
-            layoutRes,
-            parent,
-            false
-        )
     }
 }

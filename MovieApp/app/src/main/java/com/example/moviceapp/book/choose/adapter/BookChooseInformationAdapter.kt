@@ -11,6 +11,7 @@ import com.example.moviceapp.book.choose.viewholder.BookChooseTheaterViewHolder
 import com.example.moviceapp.book.choose.viewholder.BookChooseViewHolder
 import com.example.moviceapp.book.choose.viewholder.BookChooseViewHolderFactory
 import com.example.moviceapp.book.currentItem
+import com.example.moviceapp.book.toBookInfo
 import com.example.moviceapp.repo.ShowtimeSlot
 import com.example.moviceapp.repo.Theater
 
@@ -43,10 +44,11 @@ class BookChooseInformationAdapter(
         viewType: Int
     ): BookChooseViewHolder {
         val model = viewModel.model.value
-        return BookChooseViewHolderFactory.createViewHolder(parent, viewModel, when (viewType) {
-            BookInfo.THEATER.currentItem -> BookChooseViewHolderEntity
+        // viewType range is 0~2. viewType.toBookInfo shouldn't be null.
+        return BookChooseViewHolderFactory.createViewHolder(parent, viewModel, when (viewType.toBookInfo) {
+            BookInfo.THEATER -> BookChooseViewHolderEntity
                 .TheaterEntity(model.selectedTheater, theaters)
-            BookInfo.SHOWTIME.currentItem -> BookChooseViewHolderEntity
+            BookInfo.SHOWTIME -> BookChooseViewHolderEntity
                 .Showtime(model.selectedShowtime, showDateList, showTimeList)
             else -> BookChooseViewHolderEntity
                 .Seat(model.selectedSeat, seats)

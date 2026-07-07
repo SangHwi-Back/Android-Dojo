@@ -1,5 +1,6 @@
 package com.example.moviceapp.book.choose.viewholder
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -48,7 +49,10 @@ class BookChooseSeatViewHolder(
             return SeatViewHolder(ItemBookChooseItemSeatBinding.inflate(inflater, parent, false))
         }
 
-        override fun onBindViewHolder(holder: SeatViewHolder, position: Int) {
+        override fun onBindViewHolder(
+            holder: SeatViewHolder,
+            @SuppressLint("RecyclerView") position: Int
+        ) {
             val seat = seats[position]
             holder.bind(seat, position == selectedPosition)
             holder.itemView.setOnClickListener {

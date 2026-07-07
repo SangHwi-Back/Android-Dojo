@@ -16,6 +16,7 @@ import com.example.moviceapp.book.BookInfo.SHOWTIME
 import com.example.moviceapp.book.BookInfo.THEATER
 import com.example.moviceapp.book.choose.adapter.BookChooseInformationAdapter
 import com.example.moviceapp.databinding.FragmentBookChooseInfoBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -40,7 +41,7 @@ interface BookChooseHandler {
         duration: Long = 300
     )
 }
-
+@AndroidEntryPoint
 class BookChooseInfoFragment : Fragment(), BookChooseHandler {
     private lateinit var binding: FragmentBookChooseInfoBinding
     private val args: BookChooseInfoFragmentArgs by navArgs()
