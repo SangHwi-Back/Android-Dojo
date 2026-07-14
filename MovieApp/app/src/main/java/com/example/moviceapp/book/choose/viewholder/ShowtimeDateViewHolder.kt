@@ -1,5 +1,6 @@
 package com.example.moviceapp.book.choose.viewholder
 
+import android.view.View
 import androidx.core.content.ContextCompat
 import com.example.moviceapp.R
 import com.example.moviceapp.databinding.ItemBookChooseItemShowtimeDateBinding
@@ -10,15 +11,30 @@ class ShowtimeDateViewHolder(
     val handler: ShowtimeClickHandler,
     val binding: ItemBookChooseItemShowtimeDateBinding,
 ) : ShowtimeViewHolder(binding, handler) {
+    private val model: String = ""
+
     override fun bind(model: String, isSelected: Boolean) {
-        binding.dateButton.text = model
         val context = binding.root.context
-        val tint = if (isSelected) R.color.green_accent else R.color.background_secondary
+        val tint = if (model.isEmpty())
+            R.color.background_primary
+        else if (isSelected)
+            R.color.green_accent
+        else
+            R.color.background_secondary
+        val textColor = if (model.isEmpty())
+            R.color.background_primary
+        else if (isSelected)
+            R.color.badge_text
+        else
+            R.color.text_primary
+        binding.dateButton.isClickable = model.isNotEmpty()
+        binding.dateButton.text = model
         binding.dateButton.backgroundTintList = ContextCompat.getColorStateList(context, tint)
-        val textColor = if (isSelected) R.color.badge_text else R.color.text_primary
         binding.dateButton.setTextColor(ContextCompat.getColor(context, textColor))
-        binding.dateButton.setOnClickListener {
-            handler.onClickDate(model)
+        if (model.isNotEmpty()) {
+            binding.dateButton.setOnClickListener {
+                handler.onClickDate(model)
+            }
         }
     }
 }

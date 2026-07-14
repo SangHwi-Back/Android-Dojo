@@ -127,6 +127,7 @@ class BookChooseInfoViewModel @AssistedInject constructor(
         loadMovieInfo(THEATER)
     }
     fun actionSetDateButton(date: String) {
+        if (date.isEmpty()) return
         selectShowDate(date)
         loadMovieInfo(SHOWTIME, isShowDate = false)
     }

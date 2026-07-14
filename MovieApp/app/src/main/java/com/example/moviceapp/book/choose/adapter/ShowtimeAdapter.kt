@@ -31,8 +31,10 @@ class ShowtimeAdapter(
 
     private var selectedDateIndex = -1
     private var selectedTimeIndex = -1
+    val paddingDatesCount: Int
+        get() = if (dates.size % 3 == 0) 0 else (3 - dates.size % 3)
 
-    override fun getItemCount(): Int = dates.size + timeSlots.size
+    override fun getItemCount(): Int = dates.size + paddingDatesCount + timeSlots.size
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -46,8 +48,10 @@ class ShowtimeAdapter(
     ) {
         if (position < dates.size) {
             holder.bind(dates[position], position == selectedDateIndex)
+        } else if (position < (dates.size + paddingDatesCount)) {
+            holder.bind("", false)
         } else {
-            val timeIndex = position - dates.size
+            val timeIndex = position - paddingDatesCount - dates.size
             holder.bind(timeSlots[timeIndex].time, timeIndex == selectedTimeIndex)
         }
     }
