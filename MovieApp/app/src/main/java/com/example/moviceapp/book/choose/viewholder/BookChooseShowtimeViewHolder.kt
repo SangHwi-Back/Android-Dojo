@@ -4,7 +4,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.moviceapp.book.BookChooseInfoModel
 import com.example.moviceapp.book.BookChooseInfoViewModel
-import com.example.moviceapp.book.BookInfo
 import com.example.moviceapp.book.choose.adapter.ShowtimeAdapter
 import com.example.moviceapp.databinding.ItemBookChooseShowtimeBinding
 import com.example.moviceapp.repo.ShowtimeSlot

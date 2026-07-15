@@ -11,30 +11,31 @@ class ShowtimeDateViewHolder(
     val handler: ShowtimeClickHandler,
     val binding: ItemBookChooseItemShowtimeDateBinding,
 ) : ShowtimeViewHolder(binding, handler) {
-    private val model: String = ""
-
     override fun bind(model: String, isSelected: Boolean) {
-        val context = binding.root.context
-        val tint = if (model.isEmpty())
-            R.color.background_primary
-        else if (isSelected)
-            R.color.green_accent
-        else
-            R.color.background_secondary
-        val textColor = if (model.isEmpty())
-            R.color.background_primary
-        else if (isSelected)
-            R.color.badge_text
-        else
-            R.color.text_primary
-        binding.dateButton.isClickable = model.isNotEmpty()
         binding.dateButton.text = model
-        binding.dateButton.backgroundTintList = ContextCompat.getColorStateList(context, tint)
-        binding.dateButton.setTextColor(ContextCompat.getColor(context, textColor))
+
+        binding.dateButton.backgroundTintList = ContextCompat.getColorStateList(
+            binding.root.context, if (model.isEmpty())
+                R.color.background_primary
+            else if (isSelected)
+                R.color.green_accent
+            else
+                R.color.background_secondary
+        )
+
+        binding.dateButton.setTextColor(ContextCompat.getColor(
+            binding.root.context, if (model.isEmpty())
+                R.color.background_primary
+            else if (isSelected)
+                R.color.badge_text
+            else
+                R.color.text_primary
+        ))
+
+        binding.dateButton.isClickable = model.isNotEmpty()
+
         if (model.isNotEmpty()) {
-            binding.dateButton.setOnClickListener {
-                handler.onClickDate(model)
-            }
+            binding.dateButton.setOnClickListener { handler.onClickDate(model) }
         }
     }
 }

@@ -57,7 +57,10 @@ class ShowtimeAdapter(
     }
 
     override fun getItemViewType(position: Int): Int =
-        if (position < dates.size) SHOWTIME_DATE_VIEW_HOLDER_TYPE else SHOWTIME_TIME_VIEW_HOLDER_TYPE
+        if (position < (dates.size + paddingDatesCount))
+            SHOWTIME_DATE_VIEW_HOLDER_TYPE
+        else
+            SHOWTIME_TIME_VIEW_HOLDER_TYPE
 
     override fun onClickDate(date: String) {
         val index = dates.indexOf(date)
