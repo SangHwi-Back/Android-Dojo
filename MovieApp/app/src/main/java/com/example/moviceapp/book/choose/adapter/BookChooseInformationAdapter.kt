@@ -12,6 +12,7 @@ import com.example.moviceapp.book.choose.viewholder.BookChooseViewHolder
 import com.example.moviceapp.book.choose.viewholder.BookChooseViewHolderFactory
 import com.example.moviceapp.book.currentItem
 import com.example.moviceapp.book.toBookInfo
+import com.example.moviceapp.repo.SeatSlot
 import com.example.moviceapp.repo.ShowtimeSlot
 import com.example.moviceapp.repo.Theater
 
@@ -33,7 +34,7 @@ class BookChooseInformationAdapter(
             field = value
             notifyItemChanged(BookInfo.SHOWTIME.currentItem)
         }
-    var seats: List<String> = listOf()
+    var seats: List<SeatSlot> = listOf()
         set(value) {
             field = value
             notifyItemChanged(BookInfo.SEAT.currentItem)
@@ -85,7 +86,7 @@ sealed class BookChooseViewHolderEntity {
         var showTimeList: List<ShowtimeSlot>,
     ) : BookChooseViewHolderEntity()
     data class Seat(
-        val seat: String? = null,
-        var seats: List<String>,
+        val seat: SeatSlot? = null,
+        var seats: List<SeatSlot>,
     ) : BookChooseViewHolderEntity()
 }

@@ -46,6 +46,25 @@ data class ShowtimeSlot(
     val availableSeats: Int,
 )
 
+data class SeatSlot(
+    val id: Int,
+    val theater: Theater,
+    val hall: String, // Showtime.hall 과 동일한 문자열로 매칭 (예: "IMAX Hall 1")
+    val floor: Int,
+    val rowLabel: String, // "A", "B", "C" ...
+    val rowIndex: Int, // 0, 1, 2 ... 행 정렬/렌더링 순서
+    val columnIndex: Int, // 1, 2, 3 ... 행 내 좌석 순서(가로 위치)
+    val seatType: String,
+    val hasAisleAfterColumn: Boolean, // 이 좌석 오른쪽에 통로
+    val hasAisleAfterRow: Boolean, // 이 행 다음에 통로
+    val status: String,
+    val heldByUserId: String?,
+    val heldUntil: Long?,
+) {
+    val name: String
+        get() = "$rowLabel$columnIndex"
+}
+
 data class UserStats(
     val moviesCount: Int,
     val points: String,            // "1.2K"

@@ -11,6 +11,7 @@ import com.example.moviceapp.book.BookChooseInfoModel
 import com.example.moviceapp.book.BookChooseInfoViewModel
 import com.example.moviceapp.databinding.ItemBookChooseItemSeatBinding
 import com.example.moviceapp.databinding.ItemBookChooseSeatBinding
+import com.example.moviceapp.repo.SeatSlot
 
 class BookChooseSeatViewHolder(
     private val viewModel: BookChooseInfoViewModel,
@@ -24,7 +25,7 @@ class BookChooseSeatViewHolder(
         binding.theaterSeatRecyclerView.layoutManager = GridLayoutManager(parent.context, 4)
         binding.theaterSeatRecyclerView.adapter = adapter
     }
-    fun setSeats(seats: List<String>) {
+    fun setSeats(seats: List<SeatSlot>) {
         adapter.seats = seats
     }
     override fun bind(model: BookChooseInfoModel) {
@@ -32,9 +33,9 @@ class BookChooseSeatViewHolder(
     }
 
     class SeatListAdapter(
-        private val onSelected: (String) -> Unit
+        private val onSelected: (SeatSlot) -> Unit
     ) : RecyclerView.Adapter<SeatViewHolder>() {
-        var seats: List<String> = listOf()
+        var seats: List<SeatSlot> = listOf()
             set(value) {
                 field = value
                 selectedPosition = -1
@@ -68,8 +69,8 @@ class BookChooseSeatViewHolder(
     class SeatViewHolder(
         private val binding: ItemBookChooseItemSeatBinding
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(seat: String, isSelected: Boolean) {
-            binding.seatNumber.text = seat
+        fun bind(seat: SeatSlot, isSelected: Boolean) {
+            binding.seatNumber.text = seat.name
             val color = if (isSelected) R.color.seat_selected else R.color.seat_available
             binding.seatNumber.setTextColor(ContextCompat.getColor(binding.root.context, color))
         }

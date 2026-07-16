@@ -9,6 +9,7 @@ import com.example.moviceapp.book.BookInfo.THEATER
 import com.example.moviceapp.repo.APIResult
 import com.example.moviceapp.repo.BookingRepository
 import com.example.moviceapp.repo.Movie
+import com.example.moviceapp.repo.SeatSlot
 import com.example.moviceapp.repo.ShowtimeSlot
 import com.example.moviceapp.repo.Theater
 import dagger.assisted.Assisted
@@ -68,7 +69,7 @@ class BookChooseInfoViewModel @AssistedInject constructor(
     /**
      * Change seat model
      */
-    fun selectSeat(seat: String) {
+    fun selectSeat(seat: SeatSlot) {
         _model.update { it.copy(selectedSeat = seat) }
     }
     private fun getNextBookInfo(): BookInfo = when (model.value.currentBookInfo) {
@@ -177,7 +178,7 @@ data class BookChooseInfoModel(
     var selectedMovie: Movie,
     var selectedTheater: Theater? = null,
     var selectedShowtime: BookShowtime? = null,
-    var selectedSeat: String? = null,
+    var selectedSeat: SeatSlot? = null,
 )
 data class BookShowtime(
     var selectedShowDate: String,
