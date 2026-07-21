@@ -56,31 +56,21 @@ fun Table.insertRecords(data: List<Record>) {
         throw IllegalArgumentException("Columns not equals")
     rows.add(Row(records = data.toMutableList()))
 }
-@Throws(NoSuchElementException::class)
-fun Table.updateRecord(key: String, data: String, column: String) {
-    val rowIndex = rows.getRowIndex(key)
-    if (rowIndex == null || rowIndex < 0) return
-
-    val columnIndex = rows[rowIndex].records.map { it.column.name }.indexOf(column)
-    if (columnIndex < 0) return
-
-    rows[rowIndex].records[columnIndex].data = data
-}
-@Throws(NoSuchElementException::class)
-fun Table.updateRecord(row: Row) {
-    val rowIndex = rows.indexOf(row)
-    if (rowIndex < 0) return
-    rows[rowIndex] = row
-}
-@Throws(NoSuchElementException::class)
-fun Table.updateRecord(key: String, record: Record) {
-    val rowIndex = rows.getRowIndex(key)
-    if (rowIndex == null || rowIndex < 0) return
-
-    val columnIndex = rows[rowIndex].records.getColumnIndex(record.column)
-    if (columnIndex == null || columnIndex < 0) return
-
-    rows[rowIndex].records[columnIndex] = record
+fun Table.updateRecords(record: Record, where: List<Where>) {
+    fun checkRow(row: Row): Boolean {
+        for (condition in where) {
+            val data = row.records.firstOrNull { it.column == condition.column }?.data
+            if (data != null && condition.data != data)
+                return false
+        }
+        return true
+    }
+    rows.forEachIndexed { index, row ->
+        if (checkRow(row).not()) return@forEachIndexed
+        val columnIndex = row.records.indexOfFirst { it.column == record.column }
+        if (columnIndex == -1) return@forEachIndexed
+        rows[index].records[columnIndex].data = record.data
+    }
 }
 fun Table.deleteRow(key: String) {
     val rowIndex = rows.getRowIndex(key)

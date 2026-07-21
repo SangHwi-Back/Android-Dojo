@@ -19,7 +19,15 @@ fun main() {
         insertRow(listOf("5", "David", "2027-12-20", "david@gmail.com"))
     }.apply {
         println(this.rows)
-        updateRecord("3","Colin", "name")
+        val nameColumn = Column(name = "name", dataType = DBDataType.VARCHAR)
+        val keyColumn = Column(name = "key", dataType = DBDataType.NUMBER)
+        updateRecords(
+            record = Record(
+                column = nameColumn,
+                data = "Colin",
+                dataType = DBDataType.VARCHAR),
+            where = listOf(Where(keyColumn, "3"))
+        )
         deleteRow("4")
         deleteRow("5")
     }
@@ -33,6 +41,15 @@ fun MutableList<Row>.getRowIndex(key: String): Int? {
             return index
     }
     return null
+}
+fun MutableList<Row>.getRows(where: List<Where>): List<Row> = filter { row ->
+    for (condition in where) {
+        val data = row.records.firstOrNull { it.column == condition.column }?.data
+
+        if (data != null && condition.data != data)
+            return@filter false
+    }
+    return@filter true
 }
 fun MutableList<Record>.getColumnIndex(key: Column): Int? {
     for ((index, record) in this.withIndex()) {
