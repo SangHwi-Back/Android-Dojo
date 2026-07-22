@@ -1,50 +1,53 @@
 package org.example
 
-data class Column(
+data class TableColumn(
     val name: String,
     val dataType: DBDataType,
 )
 
-data class Row(
-    val records: MutableList<Record>
+data class TableRow(
+    val tableRecords: MutableList<TableRecord>
 ) {
     override fun toString(): String =
-        records.joinToString(", ")
+        tableRecords.joinToString(", ")
     companion object {
-        fun increment(key: String, records: List<Record>): Row =
-            Row((mutableListOf(
-                Record(
-                    column = Column(name = "key", dataType = DBDataType.NUMBER),
+        fun increment(key: String, tableRecords: List<TableRecord>): TableRow =
+            TableRow((mutableListOf(
+                TableRecord(
+                    tableColumn = TableColumn(name = "key", dataType = DBDataType.NUMBER),
                     data = key
                 )
             ).apply {
-                addAll(records)
+                addAll(tableRecords)
             }))
     }
 }
 
-data class Record(
-    val column: Column,
+data class TableRecord(
+    val tableColumn: TableColumn,
     var data: String,
 ) {
     override fun toString(): String =
-        "[{${column.dataType}} $column]: $data"
+        "[{${tableColumn.dataType}} $tableColumn]: $data"
+}
+interface TableColumns {
+    val tableColumns: List<TableColumn>
 }
 
-data class Table(
-    val name: String,
-    val columns: List<Column>,
-    var rows: MutableList<Row>,
-) {
+interface TableRows {
+    var tableRows: MutableList<TableRow>
+}
+
+abstract class Table(val name: String): TableColumns, TableRows {
     override fun toString(): String =
-        "📦 Table: {$name}, Columns: " + columns.joinToString(", ") { "${it.name}[${it.dataType}]" } + "]"
-    fun increment(records: List<Record>) {
-        val key = rows.mapNotNull { row ->
-            row.records.getRecord("key")?.data?.toInt()
+        "📦 Table: {$name}, Columns: " + tableColumns.joinToString(", ") { "${it.name}[${it.dataType}]" } + "]"
+    fun increment(tableRecords: List<TableRecord>) {
+        val key = tableRows.mapNotNull { row ->
+            row.tableRecords.getRecord("key")?.data?.toInt()
         }.maxOrNull() ?: -1
-        rows.add(Row.increment("${key+1}", records))
+        tableRows.add(TableRow.increment("${key+1}", tableRecords))
     }
-    inline fun columns(inlined: (List<Column>) -> Unit) {
-        inlined(columns)
+    inline fun columns(inlined: (List<TableColumn>) -> Unit) {
+        inlined(tableColumns)
     }
 }

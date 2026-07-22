@@ -1,61 +1,61 @@
 package org.example
 
 fun Table.selectRows(
-    columns: List<Column>? = null,
+    tableColumns: List<TableColumn>? = null,
     where: List<Where> = listOf()
-): List<Row> {
-    fun selectAll(): List<Row> = rows.filter {
+): List<TableRow> {
+    fun selectAll(): List<TableRow> = tableRows.filter {
         for (condition in where) {
-            for (record in it.records) {
-                if (condition.column == record.column && condition.data != record.data) {
+            for (record in it.tableRecords) {
+                if (condition.tableColumn == record.tableColumn && condition.data != record.data) {
                     return@filter false
                 }
             }
         }
         return@filter true
     }
-    fun selectFrom(columns: List<Column>): List<Row> {
-        val result = mutableListOf<Row>()
-        outerLoop@ for (row in rows) {
+    fun selectFrom(tableColumns: List<TableColumn>): List<TableRow> {
+        val result = mutableListOf<TableRow>()
+        outerLoop@ for (row in tableRows) {
             var row = row
             // Where 검증
             for (condition in where) {
-                for (record in row.records) {
-                    if (condition.column != record.column) {
+                for (record in row.tableRecords) {
+                    if (condition.tableColumn != record.tableColumn) {
                         continue@outerLoop
                     }
                 }
             }
             // 원하는 컬럼만 추출
-            row = Row(records = row.records.filter { columns.contains(it.column) }.toMutableList())
+            row = TableRow(tableRecords = row.tableRecords.filter { tableColumns.contains(it.tableColumn) }.toMutableList())
             result.add(row)
         }
         return result
     }
-    return if (columns != null)
-        selectFrom(columns)
+    return if (tableColumns != null)
+        selectFrom(tableColumns)
     else
         selectAll()
 }
 
 @Throws(IllegalArgumentException::class)
 fun Table.insertRow(data: List<String>) {
-    if (columns.size != data.size)
+    if (tableColumns.size != data.size)
         throw IllegalArgumentException("Columns count don't match")
-    rows.add(Row(records = columns.mapIndexed { index, column ->
+    tableRows.add(TableRow(tableRecords = tableColumns.mapIndexed { index, column ->
         if (!column.dataType.checkType(data[index]))
             throw IllegalArgumentException("Column type ${column.dataType.name} not supported")
-        Record(column, data[index])
+        TableRecord(column, data[index])
     }.toMutableList()))
 }
 @Throws(IllegalArgumentException::class)
-fun Table.insertRecords(records: List<Record>) {
-    val records = records.toMutableList()
-    val columnsExceptKeyRecord = columns.filter { column ->
+fun Table.insertRecords(tableRecords: List<TableRecord>) {
+    val records = tableRecords.toMutableList()
+    val columnsExceptKeyRecord = tableColumns.filter { column ->
         column.name.lowercase() != "key"
     }
     val recordsExceptKeyRecord = records.toMutableList().filter { record ->
-        val column = record.column
+        val column = record.tableColumn
         if (!column.dataType.checkType(record.data))
             throw IllegalArgumentException("Column type ${column.dataType.name} not supported")
         column.name.lowercase() != "key"
@@ -64,24 +64,24 @@ fun Table.insertRecords(records: List<Record>) {
         throw IllegalArgumentException("Columns not equals")
     increment(recordsExceptKeyRecord)
 }
-fun Table.updateRecords(record: Record, where: List<Where>) {
-    fun checkRow(row: Row): Boolean {
+fun Table.updateRecords(tableRecord: TableRecord, where: List<Where>) {
+    fun checkRow(tableRow: TableRow): Boolean {
         for (condition in where) {
-            val data = row.records.firstOrNull { it.column == condition.column }?.data
+            val data = tableRow.tableRecords.firstOrNull { it.tableColumn == condition.tableColumn }?.data
             if (data != null && condition.data != data)
                 return false
         }
         return true
     }
-    rows.forEachIndexed { index, row ->
+    tableRows.forEachIndexed { index, row ->
         if (checkRow(row).not()) return@forEachIndexed
-        val columnIndex = row.records.indexOfFirst { it.column == record.column }
+        val columnIndex = row.tableRecords.indexOfFirst { it.tableColumn == tableRecord.tableColumn }
         if (columnIndex == -1) return@forEachIndexed
-        rows[index].records[columnIndex].data = record.data
+        tableRows[index].tableRecords[columnIndex].data = tableRecord.data
     }
 }
 fun Table.deleteRow(key: String) {
-    val rowIndex = rows.getRowIndex(key)
+    val rowIndex = tableRows.getRowIndex(key)
     if (rowIndex == null || rowIndex < 0) return
-    rows.removeAt(rowIndex)
+    tableRows.removeAt(rowIndex)
 }
