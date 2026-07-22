@@ -5,32 +5,19 @@ fun Table.selectRows(
     where: List<Where> = listOf()
 ): List<TableRow> {
     fun selectAll(): List<TableRow> = tableRows.filter {
-        for (condition in where) {
-            for (record in it.tableRecords) {
-                if (condition.tableColumn == record.tableColumn && condition.data != record.data) {
+        for ((tableColumn, data) in where)
+            for ((tableRecordColumn, tableRecordData) in it.tableRecords)
+                if (tableColumn == tableRecordColumn && data != tableRecordData) {
                     return@filter false
                 }
-            }
-        }
         return@filter true
     }
-    fun selectFrom(tableColumns: List<TableColumn>): List<TableRow> {
-        val result = mutableListOf<TableRow>()
-        outerLoop@ for (row in tableRows) {
-            var row = row
-            // Where 검증
-            for (condition in where) {
-                for (record in row.tableRecords) {
-                    if (condition.tableColumn != record.tableColumn) {
-                        continue@outerLoop
-                    }
-                }
-            }
-            // 원하는 컬럼만 추출
-            row = TableRow(tableRecords = row.tableRecords.filter { tableColumns.contains(it.tableColumn) }.toMutableList())
-            result.add(row)
+    fun selectFrom(targetColumns: List<TableColumn>): List<TableRow> {
+        return selectAll().map { row ->
+            TableRow(row.tableRecords.filter {
+                it.tableColumn in targetColumns
+            }.toMutableList())
         }
-        return result
     }
     return if (tableColumns != null)
         selectFrom(tableColumns)
@@ -60,7 +47,7 @@ fun Table.insertRecords(tableRecords: List<TableRecord>) {
             throw IllegalArgumentException("Column type ${column.dataType.name} not supported")
         column.name.lowercase() != "key"
     }
-    if (columnsExceptKeyRecord != recordsExceptKeyRecord)
+    if (columnsExceptKeyRecord.map { it.name }.sorted() != recordsExceptKeyRecord.map { it.tableColumn.name }.sorted())
         throw IllegalArgumentException("Columns not equals")
     increment(recordsExceptKeyRecord)
 }

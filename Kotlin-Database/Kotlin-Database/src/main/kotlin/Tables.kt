@@ -1,13 +1,7 @@
 package org.example
 
 class Users: Table("Users") {
-    init {
-        insertRow(listOf("1", "John", "2027-07-20", "john@gmail.com"))
-        insertRow(listOf("2", "Rose", "2027-06-18", "rose@gmail.com"))
-        insertRow(listOf("3", "Smith", "2027-03-20", "smith@gmail.com"))
-        insertRow(listOf("4", "Sally", "2027-04-28", "sally@gmail.com"))
-        insertRow(listOf("5", "David", "2027-12-20", "david@gmail.com"))
-    }
+    override var tableRows: MutableList<TableRow> = mutableListOf()
     override val tableColumns: List<TableColumn>
         get() = listOf(
             TableColumn("key", DBDataType.NUMBER),
@@ -15,7 +9,14 @@ class Users: Table("Users") {
             TableColumn("birth", DBDataType.DATE),
             TableColumn("email", DBDataType.VARCHAR)
         )
-    override var tableRows: MutableList<TableRow> = mutableListOf()
+
+    init {
+        insertRow(listOf("1", "John", "2027-07-20", "john@gmail.com"))
+        insertRow(listOf("2", "Rose", "2027-06-18", "rose@gmail.com"))
+        insertRow(listOf("3", "Smith", "2027-03-20", "smith@gmail.com"))
+        insertRow(listOf("4", "Sally", "2027-04-28", "sally@gmail.com"))
+        insertRow(listOf("5", "David", "2027-12-20", "david@gmail.com"))
+    }
 }
 
 class EnvironmentTable: Table("Environment") {
