@@ -15,10 +15,9 @@ data class Row(
 data class Record(
     val column: Column,
     var data: String,
-    val dataType: DBDataType,
 ) {
     override fun toString(): String =
-        "[{$dataType} $column]: $data"
+        "[{${column.dataType}} $column]: $data"
 }
 
 data class Table(

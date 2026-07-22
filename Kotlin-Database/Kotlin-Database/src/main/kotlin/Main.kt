@@ -22,41 +22,37 @@ fun main() {
         val nameColumn = Column(name = "name", dataType = DBDataType.VARCHAR)
         val keyColumn = Column(name = "key", dataType = DBDataType.NUMBER)
         updateRecords(
-            record = Record(
-                column = nameColumn,
-                data = "Colin",
-                dataType = DBDataType.VARCHAR),
+            record = Record(column = nameColumn, data = "Colin"),
             where = listOf(Where(keyColumn, "3"))
         )
         deleteRow("4")
         deleteRow("5")
+        insertRecords(columns.map {
+            Record(column = it, data = "Testing")
+        })
     }
-    print(users.rows)
+    val fetchResult = users.selectRows()
+    print(fetchResult)
 }
 
 fun MutableList<Row>.getRowIndex(key: String): Int? {
     for ((index, row) in this.withIndex()) {
-        val record = row.records.firstOrNull { it.column.name == "key" }
-        if (record != null && record.data == key)
+        val keyRecord = row.records.firstOrNull { it.column.name == "key" }
+        if (keyRecord != null && keyRecord.data == key)
             return index
     }
     return null
 }
-fun MutableList<Row>.getRows(where: List<Where>): List<Row> = filter { row ->
-    for (condition in where) {
-        val data = row.records.firstOrNull { it.column == condition.column }?.data
-
-        if (data != null && condition.data != data)
-            return@filter false
-    }
-    return@filter true
-}
-fun MutableList<Record>.getColumnIndex(key: Column): Int? {
+fun MutableList<Record>.getColumnIndex(column: Column): Int? {
     for ((index, record) in this.withIndex()) {
-        if (record.column == key)
+        if (record.column == column)
             return index
     }
     return null
+}
+fun MutableList<Record>.getRecord(column: Column): Record? {
+    val columnIndex = getColumnIndex(column)
+    return if (columnIndex != null) this[columnIndex] else null
 }
 
 enum class DBDataType {

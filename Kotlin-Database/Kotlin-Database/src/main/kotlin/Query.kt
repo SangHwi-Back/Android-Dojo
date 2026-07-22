@@ -7,12 +7,12 @@ fun Table.selectRows(
     fun selectAll(): List<Row> = rows.filter {
         for (condition in where) {
             for (record in it.records) {
-                if (condition.column == record.column) {
-                    return@filter condition.data == record.data
+                if (condition.column == record.column && condition.data != record.data) {
+                    return@filter false
                 }
             }
         }
-        return@filter false
+        return@filter true
     }
     fun selectFrom(columns: List<Column>): List<Row> {
         val result = mutableListOf<Row>()
@@ -43,16 +43,20 @@ fun Table.insertRow(data: List<String>) {
     if (columns.size != data.size)
         throw IllegalArgumentException("Columns count don't match")
     rows.add(Row(records = columns.mapIndexed { index, column ->
-        Record(
-            column,
-            data[index],
-            dataType = column.dataType
-        )
+        Record(column, data[index])
     }.toMutableList()))
 }
 @Throws(IllegalArgumentException::class)
 fun Table.insertRecords(data: List<Record>) {
-    if (columns.map { it.name.lowercase() }.sorted() != data.map { it.column.name.lowercase() }.sorted())
+    val (columnsInScheme, columnsData) = Pair(columns, data.map { it.column })
+        .toList()
+        .map { columns ->
+            columns.mapNotNull { column ->
+                val name = column.name.lowercase()
+                if (name == "key") null else name
+            }.sorted()
+        }
+    if (columnsInScheme != columnsData)
         throw IllegalArgumentException("Columns not equals")
     rows.add(Row(records = data.toMutableList()))
 }
