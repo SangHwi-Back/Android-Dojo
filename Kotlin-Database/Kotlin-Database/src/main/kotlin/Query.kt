@@ -43,22 +43,26 @@ fun Table.insertRow(data: List<String>) {
     if (columns.size != data.size)
         throw IllegalArgumentException("Columns count don't match")
     rows.add(Row(records = columns.mapIndexed { index, column ->
+        if (!column.dataType.checkType(data[index]))
+            throw IllegalArgumentException("Column type ${column.dataType.name} not supported")
         Record(column, data[index])
     }.toMutableList()))
 }
 @Throws(IllegalArgumentException::class)
-fun Table.insertRecords(data: List<Record>) {
-    val (columnsInScheme, columnsData) = Pair(columns, data.map { it.column })
-        .toList()
-        .map { columns ->
-            columns.mapNotNull { column ->
-                val name = column.name.lowercase()
-                if (name == "key") null else name
-            }.sorted()
-        }
-    if (columnsInScheme != columnsData)
+fun Table.insertRecords(records: List<Record>) {
+    val records = records.toMutableList()
+    val columnsExceptKeyRecord = columns.filter { column ->
+        column.name.lowercase() != "key"
+    }
+    val recordsExceptKeyRecord = records.toMutableList().filter { record ->
+        val column = record.column
+        if (!column.dataType.checkType(record.data))
+            throw IllegalArgumentException("Column type ${column.dataType.name} not supported")
+        column.name.lowercase() != "key"
+    }
+    if (columnsExceptKeyRecord != recordsExceptKeyRecord)
         throw IllegalArgumentException("Columns not equals")
-    rows.add(Row(records = data.toMutableList()))
+    increment(recordsExceptKeyRecord)
 }
 fun Table.updateRecords(record: Record, where: List<Where>) {
     fun checkRow(row: Row): Boolean {

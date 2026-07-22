@@ -10,6 +10,17 @@ data class Row(
 ) {
     override fun toString(): String =
         records.joinToString(", ")
+    companion object {
+        fun increment(key: String, records: List<Record>): Row =
+            Row((mutableListOf(
+                Record(
+                    column = Column(name = "key", dataType = DBDataType.NUMBER),
+                    data = key
+                )
+            ).apply {
+                addAll(records)
+            }))
+    }
 }
 
 data class Record(
@@ -27,4 +38,13 @@ data class Table(
 ) {
     override fun toString(): String =
         "📦 Table: {$name}, Columns: " + columns.joinToString(", ") { "${it.name}[${it.dataType}]" } + "]"
+    fun increment(records: List<Record>) {
+        val key = rows.mapNotNull { row ->
+            row.records.getRecord("key")?.data?.toInt()
+        }.maxOrNull() ?: -1
+        rows.add(Row.increment("${key+1}", records))
+    }
+    inline fun columns(inlined: (List<Column>) -> Unit) {
+        inlined(columns)
+    }
 }

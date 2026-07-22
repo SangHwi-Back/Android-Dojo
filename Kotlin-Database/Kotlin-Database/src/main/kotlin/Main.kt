@@ -27,9 +27,6 @@ fun main() {
         )
         deleteRow("4")
         deleteRow("5")
-        insertRecords(columns.map {
-            Record(column = it, data = "Testing")
-        })
     }
     val fetchResult = users.selectRows()
     print(fetchResult)
@@ -37,31 +34,53 @@ fun main() {
 
 fun MutableList<Row>.getRowIndex(key: String): Int? {
     for ((index, row) in this.withIndex()) {
-        val keyRecord = row.records.firstOrNull { it.column.name == "key" }
+        val keyRecord = row.records.getRecord("key")
         if (keyRecord != null && keyRecord.data == key)
             return index
     }
     return null
 }
-fun MutableList<Record>.getColumnIndex(column: Column): Int? {
+fun MutableList<Record>.getColumnIndex(name: String): Int? {
     for ((index, record) in this.withIndex()) {
-        if (record.column == column)
+        if (record.column.name == name)
             return index
     }
     return null
 }
-fun MutableList<Record>.getRecord(column: Column): Record? {
-    val columnIndex = getColumnIndex(column)
+fun MutableList<Record>.getRecord(columnName: String): Record? {
+    val columnIndex = getColumnIndex(columnName)
     return if (columnIndex != null) this[columnIndex] else null
 }
 
 enum class DBDataType {
-    NUMBER, VARCHAR, DATE, EMAIL;
-
+    NUMBER,
+    VARCHAR,
+    DATE,
+    EMAIL;
+    // Interfaces
     override fun toString(): String = when (this) {
         NUMBER -> "Number"
         VARCHAR -> "Varchar"
         DATE -> "Date"
         EMAIL -> "Email"
+    }
+    fun checkType(data: String): Boolean = when (this) {
+        NUMBER -> data.toIntOrNull() != null || data.toDoubleOrNull() != null
+        VARCHAR -> true
+        DATE -> {
+            data.split("-").let {
+                if (it.size < 3) return false
+                for (num in it) {
+                    if (num.toIntOrNull() == null) return false
+                }
+            }
+            return true
+        }
+        EMAIL -> {
+            val split1 = data.split("@")
+            if (split1.size < 2) return false
+            val split2 = split1[1].split(".")
+            return split2.size >= 2
+        }
     }
 }
