@@ -39,8 +39,34 @@ interface TableRows {
 }
 
 abstract class Table(val name: String): TableColumns, TableRows {
-    override fun toString(): String =
-        "📦 Table: {$name}, Columns: " + tableColumns.joinToString(", ") { "${it.name}[${it.dataType}]" } + "]"
+    override fun toString(): String {
+        val colWidths = tableColumns.map { col ->
+            maxOf(
+                col.name.length,
+                tableRows.maxOfOrNull { row ->
+                    row.tableRecords.firstOrNull { it.tableColumn == col }?.data?.length ?: 0
+                } ?: 0
+            )
+        }
+
+        fun separator() = "+" + colWidths.joinToString("+") { "-".repeat(it + 2) } + "+"
+
+        fun row(values: List<String>) =
+            "|" + values.mapIndexed { i, v -> " ${v.padEnd(colWidths[i])} " }.joinToString("|") + "|"
+
+        return buildString {
+            appendLine(separator())
+            appendLine(row(tableColumns.map { it.name }))
+            appendLine(separator())
+            for (tableRow in tableRows) {
+                val values = tableColumns.map { col ->
+                    tableRow.tableRecords.firstOrNull { it.tableColumn == col }?.data ?: ""
+                }
+                appendLine(row(values))
+            }
+            append(separator())
+        }
+    }
     fun increment(tableRecords: List<TableRecord>) {
         val key = tableRows.mapNotNull { row ->
             row.tableRecords.getRecord("key")?.data?.toInt()

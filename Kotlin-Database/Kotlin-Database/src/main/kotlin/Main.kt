@@ -12,12 +12,8 @@ fun main() {
         deleteRow("4")
         deleteRow("5")
     }
-    var fetchResult = users.selectRows()
-    print(fetchResult)
-
-    val environmentTable = EnvironmentTable()
-    fetchResult = environmentTable.selectRows()
-    print(fetchResult)
+    print(users)
+    print(EnvironmentTable())
 }
 
 fun MutableList<TableRow>.getRowIndex(key: String): Int? {
