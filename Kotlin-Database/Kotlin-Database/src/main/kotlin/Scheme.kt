@@ -2,12 +2,9 @@ package org.example
 
 import java.sql.Date
 
-data class TableColumn(
-    val name: String,
-    val dataType: DBDataType,
-) {
+data class TableColumn<out T>(val name: String, val type: TableColumnType<out T>) {
     companion object {
-        val Key = TableColumn("Key", dataType = DBDataType.NUMBER)
+        val Key = TableColumn("Key", TableColumnType.NumberInt)
     }
 }
 
@@ -33,29 +30,29 @@ sealed class TableColumnType<T> {
 }
 
 data class TableRow(
-    val tableRecords: MutableList<TableRecord>
+    val tableRecords: MutableList<TableRecord<Any>>
 ) {
     override fun toString(): String =
         tableRecords.joinToString(", ")
     companion object {
-        fun increment(key: String, tableRecords: List<TableRecord>): TableRow =
-            TableRow(mutableListOf(
-                TableRecord(TableColumn.Key, key)
+        fun increment(key: String, tableRecords: List<TableRecord<Any>>): TableRow =
+            TableRow(mutableListOf<TableRecord<Any>>(
+                TableRecord(TableColumn.Key, key.toInt())
             ).apply {
                 addAll(tableRecords)
             })
     }
 }
 
-data class TableRecord(
-    val tableColumn: TableColumn,
-    var data: String,
+data class TableRecord<out T>(
+    val tableColumn: TableColumn<T>,
+    var data: @UnsafeVariance T,
 ) {
     override fun toString(): String =
-        "[{${tableColumn.dataType}} $tableColumn]: $data"
+        "[{${tableColumn.type}} $tableColumn]: $data"
 }
 interface TableColumns {
-    val tableColumns: List<TableColumn>
+    val tableColumns: List<TableColumn<Any>>
 }
 
 interface TableRows {
@@ -68,7 +65,7 @@ abstract class Table(val name: String): TableColumns, TableRows {
             maxOf(
                 col.name.length,
                 tableRows.maxOfOrNull { row ->
-                    row.tableRecords.firstOrNull { it.tableColumn == col }?.data?.length ?: 0
+                    row.tableRecords.firstOrNull { it.tableColumn == col }?.data?.toString()?.length ?: 0
                 } ?: 0
             )
         }
@@ -84,24 +81,24 @@ abstract class Table(val name: String): TableColumns, TableRows {
             appendLine(separator())
             for (tableRow in tableRows) {
                 val values = tableColumns.map { col ->
-                    tableRow.tableRecords.firstOrNull { it.tableColumn == col }?.data ?: ""
+                    tableRow.tableRecords.firstOrNull { it.tableColumn == col }?.data.toString()
                 }
                 appendLine(row(values))
             }
             append(separator())
         }
     }
-    fun increment(tableRecords: List<TableRecord>) =
+    fun increment(tableRecords: List<TableRecord<Any>>) =
         tableRows
             .mapNotNull { row ->
-                row.getRecord("key")?.data?.toInt()
+                row.getRecord<Int>(TableColumn.Key)?.data
             }
             .maxOrNull()?.let { key ->
                 tableRows.add(TableRow.increment("${key+1}", tableRecords))
             }
     fun increment(row: TableRow) = increment(row.tableRecords)
 }
-class RowBuilder(private val columns: List<TableColumn>) {
+class RowBuilder(private val columns: List<TableColumn<Any>>) {
     private val _values = mutableMapOf<String, String>()
     val values: Map<String, String>
         get() = _values.toMap()

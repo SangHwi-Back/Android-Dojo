@@ -29,49 +29,18 @@ fun main() {
 
 fun MutableList<TableRow>.getRowIndex(key: String): Int? {
     for ((index, row) in this.withIndex())
-        row.getRecord(TableColumn.Key)?.let {
-            if (it.data == key) return index
+        row.getRecord<Int>(TableColumn.Key)?.let {
+            if (it.data == key.toInt()) return index
         }
     return null
 }
-fun MutableList<TableRecord>.columnIndex(name: String): Int =
+fun MutableList<out TableRecord<Any>>.columnIndex(name: String): Int =
     map { it.tableColumn.name }.indexOf(name)
-fun MutableList<TableRecord>.columnIndex(column: TableColumn): Int =
+fun MutableList<out TableRecord<Any>>.columnIndex(column: TableColumn<Any>): Int =
     map { it.tableColumn }.indexOf(column)
-fun TableRow.getRecord(columnName: String): TableRecord? =
-    tableRecords.columnIndex(columnName).let { return if (it >= 0) tableRecords[it] else null }
-fun TableRow.getRecord(column: TableColumn): TableRecord? =
-    tableRecords.columnIndex(column).let { return if (it >= 0) tableRecords[it] else null }
-
-enum class DBDataType {
-    NUMBER,
-    VARCHAR,
-    DATE,
-    EMAIL;
-    // Interfaces
-    override fun toString(): String = when (this) {
-        NUMBER -> "Number"
-        VARCHAR -> "Varchar"
-        DATE -> "Date"
-        EMAIL -> "Email"
-    }
-    fun checkType(data: String): Boolean = when (this) {
-        NUMBER -> data.toIntOrNull() != null || data.toDoubleOrNull() != null
-        VARCHAR -> true
-        DATE -> data.split("-").let {
-            if (it.size < 3)
-                return false
-            for (num in it)
-                if (num.toIntOrNull() == null)
-                    return false
-            return true
-        }
-        EMAIL -> data.split("@").let { split ->
-            if (split.size < 2)
-                return false
-            split[1].split(".").let { split ->
-                return split.size >= 2
-            }
-        }
-    }
-}
+fun <T> TableRow.getRecord(columnName: String): TableRecord<T>? =
+    tableRecords.columnIndex(columnName).let {
+        return if (it >= 0) tableRecords[it] as? TableRecord<T> else null }
+fun <T> TableRow.getRecord(column: TableColumn<Any>): TableRecord<T>? =
+    tableRecords.columnIndex(column).let {
+        return if (it >= 0) tableRecords[it] as? TableRecord<T> else null }

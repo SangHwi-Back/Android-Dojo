@@ -1,6 +1,6 @@
 package org.example
 
-data class Where(
-    val tableColumn: TableColumn,
+data class Where<T>(
+    val tableColumn: TableColumn<T>,
     val data: String,
 )

@@ -2,19 +2,19 @@ package org.example
 
 class Users: Table("Users") {
     override var tableRows: MutableList<TableRow> = mutableListOf()
-    override val tableColumns: List<TableColumn>
+    override val tableColumns: List<TableColumn<Any>>
         get() = allColumns
     companion object {
-        val keyColumn = TableColumn(name = "key", dataType = DBDataType.NUMBER)
-        val nameColumn = TableColumn(name = "name", dataType = DBDataType.VARCHAR)
-        val birthColumn = TableColumn("birth", DBDataType.DATE)
-        val emailColumn = TableColumn("email", DBDataType.VARCHAR)
+        val keyColumn = TableColumn("key", TableColumnType.NumberInt)
+        val nameColumn = TableColumn("name", TableColumnType.Varchar)
+        val birthColumn = TableColumn("birth", TableColumnType.DateTime)
+        val emailColumn = TableColumn("email", TableColumnType.Varchar)
         val allColumns = listOf(keyColumn, nameColumn, birthColumn, emailColumn)
     }
 }
 
 class EnvironmentTable: Table("Environment") {
-    override val tableColumns: List<TableColumn>
+    override val tableColumns: List<TableColumn<Any>>
         get() = allColumns
     override var tableRows: MutableList<TableRow> = mutableListOf(
         TableRow(mutableListOf(
@@ -23,8 +23,8 @@ class EnvironmentTable: Table("Environment") {
         ))
     )
     companion object {
-        val nameColumn = TableColumn("name", DBDataType.VARCHAR)
-        val valueColumn = TableColumn("value", DBDataType.VARCHAR)
+        val nameColumn = TableColumn("name", TableColumnType.Varchar)
+        val valueColumn = TableColumn("value", TableColumnType.Varchar)
         val allColumns = listOf(nameColumn, valueColumn)
     }
 }
