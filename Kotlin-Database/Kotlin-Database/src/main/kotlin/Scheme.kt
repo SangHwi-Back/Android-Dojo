@@ -12,7 +12,7 @@ data class TableColumn<out T>(val name: String, val type: TableColumnType<out T>
     }
 
     companion object {
-        val Key = TableColumn("Key", TableColumnType.NumberInt)
+        val Key = TableColumn("key", TableColumnType.NumberInt)
     }
 }
 
@@ -43,7 +43,7 @@ data class TableRow(
     override fun toString(): String =
         tableRecords.joinToString(", ")
     companion object {
-        fun increment(key: String, tableRecords: List<TableRecord<Any>>): TableRow =
+        fun addRowWithAutoKey(key: String, tableRecords: List<TableRecord<Any>>): TableRow =
             TableRow(mutableListOf<TableRecord<Any>>(
                 TableRecord(TableColumn.Key, key.toInt())
             ).apply {
@@ -96,15 +96,10 @@ abstract class Table(val name: String): TableColumns, TableRows {
             append(separator())
         }
     }
-    fun increment(tableRecords: List<TableRecord<Any>>) =
-        tableRows
-            .mapNotNull { row ->
-                row.getRecord<Int>(TableColumn.Key)?.data
-            }
-            .maxOrNull()?.let { key ->
-                tableRows.add(TableRow.increment("${key+1}", tableRecords))
-            }
-    fun increment(row: TableRow) = increment(row.tableRecords)
+    fun addRowWithAutoKey(tableRecords: List<TableRecord<Any>>) {
+        tableRows.add(TableRow.addRowWithAutoKey("${newKey()}", tableRecords))
+    }
+    fun addRowWithAutoKey(row: TableRow) = addRowWithAutoKey(row.tableRecords)
 }
 
 class RowBuilder(private val columns: List<TableColumn<Any>>) {

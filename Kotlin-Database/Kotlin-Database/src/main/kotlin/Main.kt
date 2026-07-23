@@ -20,13 +20,8 @@ fun main() {
         }
         updateRecords(
             tableRecord = TableRecord(nameColumn, "Colin"),
-            where = listOf(Where(keyColumn, "3"))
+            where = listOf(Where(keyColumn, 3))
         )
-        try {
-            deleteRow("4")
-        } catch (exception: IllegalArgumentException) {
-            println("계획대로 $exception")
-        }
     }
     println(users)
     println(EnvironmentTable())
