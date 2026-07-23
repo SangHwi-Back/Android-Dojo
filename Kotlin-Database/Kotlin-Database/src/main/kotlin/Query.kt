@@ -45,23 +45,25 @@ fun Table.newKey(): Int {
         }
         .tableRecords.firstOrNull { it.tableColumn == TableColumn.Key }?.data?.toString()?.toInt() ?: 0
 }
-fun <T> Table.updateRecords(tableRecord: TableRecord<T>, where: List<Where<Any>>) {
+fun <T : Any> Table.updateRecords(tableRecord: TableRecord<T>, where: List<Where<Any>>) {
     fun checkRow(tableRow: TableRow): Boolean {
-        for (condition in where) {
-            val data = tableRow.tableRecords.firstOrNull { it.tableColumn == condition.tableColumn }?.data
-            if (data != null && condition.data != data)
+        for ((tableColumn, value) in where) {
+            val data = tableRow.tableRecords.firstOrNull { it.tableColumn == tableColumn }?.data
+            if (data != null && value != data)
                 return false
         }
         return true
     }
+
     tableRows.forEachIndexed { index, row ->
         if (checkRow(row).not()) return@forEachIndexed
+
         val columnIndex = row.tableRecords.indexOfFirst { it.tableColumn == tableRecord.tableColumn }
         if (columnIndex == -1) return@forEachIndexed
-        val data = tableRecord.tableColumn.type.validate(tableRecord.data)
-        if (data != null) {
-            tableRows[index].tableRecords[columnIndex].data = data
-        }
+
+        tableRows[index].tableRecords[columnIndex] = TableRecord(
+            tableRecord.tableColumn,
+            tableRecord.tableColumn.type.validate(tableRecord.data))
     }
 }
 @Throws(IllegalArgumentException::class)

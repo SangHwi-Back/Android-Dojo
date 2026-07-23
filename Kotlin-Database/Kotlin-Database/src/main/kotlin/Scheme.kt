@@ -54,7 +54,7 @@ data class TableRow(
 
 data class TableRecord<out T>(
     val tableColumn: TableColumn<T>,
-    var data: @UnsafeVariance T,
+    val data: T,
 ) {
     override fun toString(): String =
         "[{${tableColumn.type}} $tableColumn]: $data"
@@ -106,6 +106,7 @@ abstract class Table(val name: String): TableColumns, TableRows {
             }
     fun increment(row: TableRow) = increment(row.tableRecords)
 }
+
 class RowBuilder(private val columns: List<TableColumn<Any>>) {
     private val values = mutableMapOf<TableColumn<*>, Any?>()
     val size: Int
@@ -115,18 +116,16 @@ class RowBuilder(private val columns: List<TableColumn<Any>>) {
         values[this] = value
     }
 
-    fun build(columns: List<TableColumn<*>>): TableRow {
+    fun build(): TableRow {
         val records: List<TableRecord<Any>> = columns.mapNotNull { col ->
             val raw = values[col] ?: throw IllegalArgumentException("Column ${col.name} not found")
             val data = col.type.validate(raw)
-            ((if (data != null)
-                TableRecord(col, data)
-            else
-                null) as TableRecord<Any>?)
+            ((TableRecord(col, data)) as TableRecord<Any>?)
         }
         return TableRow(records.toMutableList())
     }
 }
+
 @Throws(IllegalArgumentException::class)
 inline fun Table.newRow(block: RowBuilder.() -> Unit): TableRow {
     val builder = RowBuilder(tableColumns)
@@ -134,5 +133,5 @@ inline fun Table.newRow(block: RowBuilder.() -> Unit): TableRow {
     if (builder.size != tableColumns.size) {
         throw IllegalArgumentException("[RowBuilder.build]-[Table.newRow] New Row should have exactly size (expect: ${tableColumns.size}, actual: ${builder.size})")
     }
-    return builder.build(tableColumns)
+    return builder.build()
 }
