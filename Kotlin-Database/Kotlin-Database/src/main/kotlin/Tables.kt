@@ -3,32 +3,29 @@ package org.example
 class Users: Table("Users") {
     override var tableRows: MutableList<TableRow> = mutableListOf()
     override val tableColumns: List<TableColumn>
-        get() = listOf(
-            TableColumn("key", DBDataType.NUMBER),
-            TableColumn("name", DBDataType.VARCHAR),
-            TableColumn("birth", DBDataType.DATE),
-            TableColumn("email", DBDataType.VARCHAR)
-        )
-
-    init {
-        insertRow(listOf("1", "John", "2027-07-20", "john@gmail.com"))
-        insertRow(listOf("2", "Rose", "2027-06-18", "rose@gmail.com"))
-        insertRow(listOf("3", "Smith", "2027-03-20", "smith@gmail.com"))
-        insertRow(listOf("4", "Sally", "2027-04-28", "sally@gmail.com"))
-        insertRow(listOf("5", "David", "2027-12-20", "david@gmail.com"))
+        get() = allColumns
+    companion object {
+        val keyColumn = TableColumn(name = "key", dataType = DBDataType.NUMBER)
+        val nameColumn = TableColumn(name = "name", dataType = DBDataType.VARCHAR)
+        val birthColumn = TableColumn("birth", DBDataType.DATE)
+        val emailColumn = TableColumn("email", DBDataType.VARCHAR)
+        val allColumns = listOf(keyColumn, nameColumn, birthColumn, emailColumn)
     }
 }
 
 class EnvironmentTable: Table("Environment") {
-    val nameColumn = TableColumn("name", DBDataType.VARCHAR)
-    val valueColumn = TableColumn("value", DBDataType.VARCHAR)
     override val tableColumns: List<TableColumn>
-        get() = listOf(nameColumn, valueColumn)
+        get() = allColumns
     override var tableRows: MutableList<TableRow> = mutableListOf(
         TableRow(mutableListOf(
             TableRecord(nameColumn, "version"),
             TableRecord(valueColumn, "1.0"),
         ))
     )
+    companion object {
+        val nameColumn = TableColumn("name", DBDataType.VARCHAR)
+        val valueColumn = TableColumn("value", DBDataType.VARCHAR)
+        val allColumns = listOf(nameColumn, valueColumn)
+    }
 }
 
