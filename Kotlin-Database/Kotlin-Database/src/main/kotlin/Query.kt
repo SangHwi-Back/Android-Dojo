@@ -29,7 +29,7 @@ fun Table.selectRows(
 fun Table.insertRow(row: TableRow) {
     if (row.tableRecords.firstOrNull { it.tableColumn == TableColumn.Key } == null)
         row.appendKeyInRow(newKey())
-    addRowWithAutoKey(row)
+    tableRows.add(row)
 }
 fun TableRow.appendKeyInRow(key: Int) {
     if (tableRecords.firstOrNull { it.tableColumn == TableColumn.Key } != null) return
