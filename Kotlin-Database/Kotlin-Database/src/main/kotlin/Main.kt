@@ -1,40 +1,47 @@
 package org.example
 
+import org.example.Users.Companion.keyColumn
+import org.example.Users.Companion.nameColumn
+
 fun main() {
     val users = Users().apply {
-        println(this.tableRows)
-        val nameTableColumn = TableColumn(name = "name", dataType = DBDataType.VARCHAR)
-        val keyTableColumn = TableColumn(name = "key", dataType = DBDataType.NUMBER)
+        try {
+            newRow {
+                "Test" set "value_test"
+                "Testing" set "value_test"
+            }
+        } catch (exception: IllegalArgumentException) {
+            println("계획대로 $exception")
+        }
         updateRecords(
-            tableRecord = TableRecord(tableColumn = nameTableColumn, data = "Colin"),
-            where = listOf(Where(keyTableColumn, "3"))
+            tableRecord = TableRecord(nameColumn, "Colin"),
+            where = listOf(Where(keyColumn, "3"))
         )
-        deleteRow("4")
-        deleteRow("5")
+        try {
+            deleteRow("4")
+        } catch (exception: IllegalArgumentException) {
+            println("계획대로 $exception")
+        }
     }
-    print(users)
-    print(EnvironmentTable())
+    println(users)
+    println(EnvironmentTable())
 }
 
 fun MutableList<TableRow>.getRowIndex(key: String): Int? {
-    for ((index, row) in this.withIndex()) {
-        val keyRecord = row.tableRecords.getRecord("key")
-        if (keyRecord != null && keyRecord.data == key)
-            return index
-    }
+    for ((index, row) in this.withIndex())
+        row.getRecord(TableColumn.Key)?.let {
+            if (it.data == key) return index
+        }
     return null
 }
-fun MutableList<TableRecord>.getColumnIndex(name: String): Int? {
-    for ((index, record) in this.withIndex()) {
-        if (record.tableColumn.name == name)
-            return index
-    }
-    return null
-}
-fun MutableList<TableRecord>.getRecord(columnName: String): TableRecord? {
-    val columnIndex = getColumnIndex(columnName)
-    return if (columnIndex != null) this[columnIndex] else null
-}
+fun MutableList<TableRecord>.columnIndex(name: String): Int =
+    map { it.tableColumn.name }.indexOf(name)
+fun MutableList<TableRecord>.columnIndex(column: TableColumn): Int =
+    map { it.tableColumn }.indexOf(column)
+fun TableRow.getRecord(columnName: String): TableRecord? =
+    tableRecords.columnIndex(columnName).let { return if (it >= 0) tableRecords[it] else null }
+fun TableRow.getRecord(column: TableColumn): TableRecord? =
+    tableRecords.columnIndex(column).let { return if (it >= 0) tableRecords[it] else null }
 
 enum class DBDataType {
     NUMBER,
@@ -51,20 +58,21 @@ enum class DBDataType {
     fun checkType(data: String): Boolean = when (this) {
         NUMBER -> data.toIntOrNull() != null || data.toDoubleOrNull() != null
         VARCHAR -> true
-        DATE -> {
-            data.split("-").let {
-                if (it.size < 3) return false
-                for (num in it) {
-                    if (num.toIntOrNull() == null) return false
-                }
-            }
+        DATE -> data.split("-").let {
+            if (it.size < 3)
+                return false
+            for (num in it)
+                if (num.toIntOrNull() == null)
+                    return false
             return true
         }
-        EMAIL -> {
-            val split1 = data.split("@")
-            if (split1.size < 2) return false
-            val split2 = split1[1].split(".")
-            return split2.size >= 2
+        EMAIL -> data.split("@").let { split ->
+            if (split.size < 2)
+                return false
+            split[1].split(".").let { split ->
+                return split.size >= 2
+            }
         }
     }
 }
+// KMP 에서는 Lambda-Receiver DSL,

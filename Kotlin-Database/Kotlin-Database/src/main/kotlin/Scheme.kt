@@ -3,7 +3,11 @@ package org.example
 data class TableColumn(
     val name: String,
     val dataType: DBDataType,
-)
+) {
+    companion object {
+        val Key = TableColumn(name = "Key", dataType = DBDataType.NUMBER)
+    }
+}
 
 data class TableRow(
     val tableRecords: MutableList<TableRecord>
@@ -12,14 +16,11 @@ data class TableRow(
         tableRecords.joinToString(", ")
     companion object {
         fun increment(key: String, tableRecords: List<TableRecord>): TableRow =
-            TableRow((mutableListOf(
-                TableRecord(
-                    tableColumn = TableColumn(name = "key", dataType = DBDataType.NUMBER),
-                    data = key
-                )
+            TableRow(mutableListOf(
+                TableRecord(TableColumn.Key, key)
             ).apply {
                 addAll(tableRecords)
-            }))
+            })
     }
 }
 
@@ -67,13 +68,38 @@ abstract class Table(val name: String): TableColumns, TableRows {
             append(separator())
         }
     }
-    fun increment(tableRecords: List<TableRecord>) {
-        val key = tableRows.mapNotNull { row ->
-            row.tableRecords.getRecord("key")?.data?.toInt()
-        }.maxOrNull() ?: -1
-        tableRows.add(TableRow.increment("${key+1}", tableRecords))
+    fun increment(tableRecords: List<TableRecord>) =
+        tableRows
+            .mapNotNull { row ->
+                row.getRecord("key")?.data?.toInt()
+            }
+            .maxOrNull()?.let { key ->
+                tableRows.add(TableRow.increment("${key+1}", tableRecords))
+            }
+    fun increment(row: TableRow) = increment(row.tableRecords)
+}
+class RowBuilder(private val columns: List<TableColumn>) {
+    private val _values = mutableMapOf<String, String>()
+    val values: Map<String, String>
+        get() = _values.toMap()
+
+    infix fun String.set(value: String) {
+        _values[this] = value
     }
-    inline fun columns(inlined: (List<TableColumn>) -> Unit) {
-        inlined(tableColumns)
+
+    fun build(): TableRow {
+        val records = columns.map { col ->
+            TableRecord(col, _values[col.name] ?: "")
+        }
+        return TableRow(records.toMutableList())
     }
+}
+@Throws(IllegalArgumentException::class)
+inline fun Table.newRow(block: RowBuilder.() -> Unit): TableRow {
+    val builder = RowBuilder(tableColumns)
+    builder.block()
+    if (builder.values.size != tableColumns.size) {
+        throw IllegalArgumentException("[RowBuilder.build]-[Table.newRow] New Row should have exactly size (expect: ${tableColumns.size}, actual: ${builder.values.size})")
+    }
+    return builder.build()
 }

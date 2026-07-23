@@ -26,31 +26,19 @@ fun Table.selectRows(
 }
 
 @Throws(IllegalArgumentException::class)
-fun Table.insertRow(data: List<String>) {
-    if (tableColumns.size != data.size)
-        throw IllegalArgumentException("Columns count don't match")
-    tableRows.add(TableRow(tableRecords = tableColumns.mapIndexed { index, column ->
-        if (!column.dataType.checkType(data[index]))
-            throw IllegalArgumentException("Column type ${column.dataType.name} not supported")
-        TableRecord(column, data[index])
-    }.toMutableList()))
+fun Table.insertRow(row: TableRow) {
+    if (row.tableRecords.firstOrNull { it.tableColumn == TableColumn.Key } == null)
+        row.appendKeyInRow("${newKey()}")
+    increment(row)
 }
-@Throws(IllegalArgumentException::class)
-fun Table.insertRecords(tableRecords: List<TableRecord>) {
-    val records = tableRecords.toMutableList()
-    val columnsExceptKeyRecord = tableColumns.filter { column ->
-        column.name.lowercase() != "key"
-    }
-    val recordsExceptKeyRecord = records.toMutableList().filter { record ->
-        val column = record.tableColumn
-        if (!column.dataType.checkType(record.data))
-            throw IllegalArgumentException("Column type ${column.dataType.name} not supported")
-        column.name.lowercase() != "key"
-    }
-    if (columnsExceptKeyRecord.map { it.name }.sorted() != recordsExceptKeyRecord.map { it.tableColumn.name }.sorted())
-        throw IllegalArgumentException("Columns not equals")
-    increment(recordsExceptKeyRecord)
+fun TableRow.appendKeyInRow(key: String) {
+    if (tableRecords.firstOrNull { it.tableColumn == TableColumn.Key } != null) return
+    tableRecords.add(0, TableRecord(TableColumn.Key, key))
 }
+@Throws(NumberFormatException::class)
+fun Table.newKey(): Int = tableRows
+    .maxBy { row -> row.tableRecords.firstOrNull { it.tableColumn == TableColumn.Key }?.data?.toInt() ?: 0 }
+    .tableRecords.firstOrNull { it.tableColumn == TableColumn.Key }?.data?.toInt() ?: 0
 fun Table.updateRecords(tableRecord: TableRecord, where: List<Where>) {
     fun checkRow(tableRow: TableRow): Boolean {
         for (condition in where) {
@@ -67,8 +55,10 @@ fun Table.updateRecords(tableRecord: TableRecord, where: List<Where>) {
         tableRows[index].tableRecords[columnIndex].data = tableRecord.data
     }
 }
+@Throws(IllegalArgumentException::class)
 fun Table.deleteRow(key: String) {
     val rowIndex = tableRows.getRowIndex(key)
-    if (rowIndex == null || rowIndex < 0) return
+    if (rowIndex == null || rowIndex < 0)
+        throw IllegalArgumentException("[Table.deleteRow($key)] No row found for key")
     tableRows.removeAt(rowIndex)
 }
