@@ -36,9 +36,15 @@ fun TableRow.appendKeyInRow(key: Int) {
     tableRecords.addFirst(TableRecord(TableColumn.Key, key))
 }
 @Throws(NumberFormatException::class)
-fun Table.newKey(): Int = tableRows
-    .maxBy { row -> row.tableRecords.firstOrNull { it.tableColumn == TableColumn.Key }?.data?.toString()?.toInt() ?: 0 }
-    .tableRecords.firstOrNull { it.tableColumn == TableColumn.Key }?.data?.toString()?.toInt() ?: 0
+fun Table.newKey(): Int {
+    if (tableRows.isEmpty())
+        return 0
+    return tableRows
+        .maxBy { row ->
+            row.tableRecords.firstOrNull { it.tableColumn == TableColumn.Key }?.data?.toString()?.toInt() ?: 0
+        }
+        .tableRecords.firstOrNull { it.tableColumn == TableColumn.Key }?.data?.toString()?.toInt() ?: 0
+}
 fun <T> Table.updateRecords(tableRecord: TableRecord<T>, where: List<Where<Any>>) {
     fun checkRow(tableRow: TableRow): Boolean {
         for (condition in where) {

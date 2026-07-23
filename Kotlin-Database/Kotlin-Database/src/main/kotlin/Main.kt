@@ -2,14 +2,19 @@ package org.example
 
 import org.example.Users.Companion.keyColumn
 import org.example.Users.Companion.nameColumn
+import org.example.Users.Companion.birthColumn
+import org.example.Users.Companion.emailColumn
+import java.sql.Date
 
 fun main() {
     val users = Users().apply {
         try {
-            newRow {
-                "Test" set "value_test"
-                "Testing" set "value_test"
-            }
+            insertRow(newRow {
+                keyColumn set 3
+                nameColumn set "John"
+                birthColumn set Date(2027, 7, 23)
+                emailColumn set "john@gmail.com"
+            })
         } catch (exception: IllegalArgumentException) {
             println("계획대로 $exception")
         }
