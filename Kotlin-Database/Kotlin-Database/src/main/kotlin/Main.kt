@@ -75,4 +75,3 @@ enum class DBDataType {
         }
     }
 }
-// KMP 에서는 Lambda-Receiver DSL,

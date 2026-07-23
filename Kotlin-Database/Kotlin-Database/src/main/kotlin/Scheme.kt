@@ -1,11 +1,34 @@
 package org.example
 
+import java.sql.Date
+
 data class TableColumn(
     val name: String,
     val dataType: DBDataType,
 ) {
     companion object {
-        val Key = TableColumn(name = "Key", dataType = DBDataType.NUMBER)
+        val Key = TableColumn("Key", dataType = DBDataType.NUMBER)
+    }
+}
+
+sealed class TableColumnType<T> {
+    abstract fun validate(value: Any?): T
+
+    object NumberInt: TableColumnType<Int>() {
+        override fun validate(value: Any?): Int =
+            value as? Int ?: throw IllegalArgumentException()
+    }
+    object NumberDouble: TableColumnType<Double>() {
+        override fun validate(value: Any?): Double =
+            value as? Double ?: throw IllegalArgumentException()
+    }
+    object Varchar: TableColumnType<String>() {
+        override fun validate(value: Any?): String =
+            value as? String ?: throw IllegalArgumentException()
+    }
+    object DateTime: TableColumnType<Date>() {
+        override fun validate(value: Any?): Date =
+            value as? Date ?: throw IllegalArgumentException()
     }
 }
 
