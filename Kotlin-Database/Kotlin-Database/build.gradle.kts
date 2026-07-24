@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+    implementation(libs.kotlinx.coroutines.core)
 }
 
 kotlin {

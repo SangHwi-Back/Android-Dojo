@@ -1,55 +1,64 @@
 package org.example
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.example.Users.Companion.keyColumn
 import org.example.Users.Companion.nameColumn
 import org.example.Users.Companion.birthColumn
 import org.example.Users.Companion.emailColumn
 import java.sql.Date
+import kotlin.time.Duration.Companion.seconds
 
 fun main() {
-    val users = Users().apply {
-        try {
-            insertRow(
-                newRow {
+    val database = Database()
+    val users = Users()
+    database.insertTransaction(
+        Transaction.InsertRows(users, TransactionElement.Row(
+            listOf(
+                users.newRow {
                     keyColumn set 0
                     nameColumn set "John"
                     birthColumn set Date.valueOf("2027-06-25")
                     emailColumn set "john@gmail.com"
                 },
-                newRow {
+                users.newRow {
                     keyColumn set 1
                     nameColumn set "Macquarie"
                     birthColumn set Date.valueOf("2027-01-20")
                     emailColumn set "mac@gmail.com"
                 },
-                newRow {
+                users.newRow {
                     keyColumn set 2
                     nameColumn set "Jane"
                     birthColumn set Date.valueOf("2027-02-28")
                     emailColumn set "jane@gmail.com"
                 },
-                newRow {
+                users.newRow {
                     keyColumn set 3
                     nameColumn set "Rose"
                     birthColumn set Date.valueOf("2027-03-01")
                     emailColumn set "rose@gmail.com"
                 },
-                newRow {
-                    // Intended missing key row
-                    nameColumn set "BigFoot"
-                    birthColumn set Date.valueOf("1990-03-31")
-                    emailColumn set "bigfoot@pentagon.com"
-                }
             )
-        } catch (exception: IllegalArgumentException) {
-            println("계획대로 $exception")
-        }
-        updateRecords(
-            tableRecord = TableRecord(nameColumn, "Colin"),
-            where = listOf(Where(keyColumn, 3))
+        ))
+    )
+    database.insertTransaction(
+        Transaction.UpdateRecords(
+            users,
+            TransactionElement.Records(listOf(
+                TableRecord(users.let { nameColumn }, "Colin")
+            )),
+            conditions = TransactionElement.Conditions(listOf(
+                Where(users.let { keyColumn }, 3)
+            ))
         )
-    }
+    )
+
     println(users)
+    runBlocking {
+        delay(1.seconds)
+        println(users)
+    }
     println(EnvironmentTable())
 }
 
