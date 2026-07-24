@@ -26,10 +26,12 @@ fun Table.selectRows(
 }
 
 @Throws(IllegalArgumentException::class)
-fun Table.insertRow(row: TableRow) {
-    if (row.tableRecords.firstOrNull { it.tableColumn == TableColumn.Key } == null)
-        row.appendKeyInRow(newKey())
-    tableRows.add(row)
+fun Table.insertRow(vararg rows: TableRow) {
+    for (row in rows) {
+        if (row.tableRecords.firstOrNull { it.tableColumn.name == TableColumn.Key.name } == null)
+            row.appendKeyInRow(newKey())
+        tableRows.add(row)
+    }
 }
 fun TableRow.appendKeyInRow(key: Int) {
     if (tableRecords.firstOrNull { it.tableColumn == TableColumn.Key } != null) return

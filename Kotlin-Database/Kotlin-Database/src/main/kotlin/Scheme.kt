@@ -11,6 +11,9 @@ data class TableColumn<out T>(val name: String, val type: TableColumnType<out T>
         return false
     }
 
+    override fun toString(): String =
+        "name is $name, type is ${type}"
+
     companion object {
         val Key = TableColumn("key", TableColumnType.NumberInt)
     }
@@ -22,18 +25,26 @@ sealed class TableColumnType<T> {
     object NumberInt: TableColumnType<Int>() {
         override fun validate(value: Any?): Int =
             value as? Int ?: throw IllegalArgumentException("Value must be a integer $value.")
+
+        override fun toString(): String = "TableColumnType.NumberInt"
     }
     object NumberDouble: TableColumnType<Double>() {
         override fun validate(value: Any?): Double =
             value as? Double ?: throw IllegalArgumentException("Value must be a float or double $value.")
+
+        override fun toString(): String = "TableColumnType.NumberDouble"
     }
     object Varchar: TableColumnType<String>() {
         override fun validate(value: Any?): String =
             value as? String ?: throw IllegalArgumentException("Value is not a string $value.")
+
+        override fun toString(): String = "TableColumnType.Varchar"
     }
     object DateTime: TableColumnType<Date>() {
         override fun validate(value: Any?): Date =
             value as? Date ?: throw IllegalArgumentException("Date cannot be converted $value.")
+
+        override fun toString(): String = "TableColumnType.DateTime"
     }
 }
 
@@ -96,10 +107,6 @@ abstract class Table(val name: String): TableColumns, TableRows {
             append(separator())
         }
     }
-    fun addRowWithAutoKey(tableRecords: List<TableRecord<Any>>) {
-        tableRows.add(TableRow.addRowWithAutoKey("${newKey()}", tableRecords))
-    }
-    fun addRowWithAutoKey(row: TableRow) = addRowWithAutoKey(row.tableRecords)
 }
 
 class RowBuilder(private val columns: List<TableColumn<Any>>) {
@@ -111,9 +118,13 @@ class RowBuilder(private val columns: List<TableColumn<Any>>) {
         values[this] = value
     }
 
+    @Throws(IllegalArgumentException::class, NoSuchElementException::class)
     fun build(): TableRow {
         val records: List<TableRecord<Any>> = columns.mapNotNull { col ->
-            val raw = values[col] ?: throw IllegalArgumentException("Column ${col.name} not found")
+            val raw = values[col] ?: if (col.name == TableColumn.Key.name)
+                throw NoSuchElementException(TableColumn.Key.name)
+            else
+                throw IllegalArgumentException("Column ${col.name} not found $values")
             val data = col.type.validate(raw)
             ((TableRecord(col, data)) as TableRecord<Any>?)
         }
@@ -121,12 +132,18 @@ class RowBuilder(private val columns: List<TableColumn<Any>>) {
     }
 }
 
-@Throws(IllegalArgumentException::class)
+@Throws(IllegalArgumentException::class, NoSuchElementException::class)
 inline fun Table.newRow(block: RowBuilder.() -> Unit): TableRow {
     val builder = RowBuilder(tableColumns)
     builder.block()
-    if (builder.size != tableColumns.size) {
-        throw IllegalArgumentException("[RowBuilder.build]-[Table.newRow] New Row should have exactly size (expect: ${tableColumns.size}, actual: ${builder.size})")
+    return try {
+        builder.build()
+    } catch (exception: NoSuchElementException) {
+        if (exception.message == TableColumn.Key.name) {
+            // TODO: Set New Key Needed
+            builder.build()
+        } else {
+            throw exception
+        }
     }
-    return builder.build()
 }
