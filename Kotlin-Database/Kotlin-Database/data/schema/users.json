@@ -1,0 +1,23 @@
+{
+  "table_name": "Users",
+  "columns": [
+    { "name": "key", "type": "number" },
+    { "name": "name", "type": "varchar" },
+    { "name": "birth", "type": "date" },
+    { "name": "email", "type": "varchar" }
+  ],
+  "rows": [
+    {
+      "key": 0, "name": "John", "birth": "2027-06-26", "email": "john@gmail.com"
+    },
+    {
+      "key": 1, "name": "Macquarie", "birth": "2027-01-20", "email": "mac@gmail.com"
+    },
+    {
+      "key": 2, "name": "Jane", "birth": "2027-02-28", "email": "jane@gmail.com"
+    },
+    {
+      "key": 3, "name": "Rose", "birth": "2027-03-01", "email": "rose@gmail.com"
+    }
+  ]
+}

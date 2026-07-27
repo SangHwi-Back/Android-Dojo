@@ -1,6 +1,23 @@
 package org.example
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
 import java.sql.Date
+
+@Serializable
+data class RawSchema(
+    @SerialName("table_name")
+    val tableName: String,
+    val columns: List<RawColumn>,
+    val rows: List<JsonObject>
+)
+
+@Serializable
+data class RawColumn(
+    val name: String,
+    val type: String,
+)
 
 data class TableColumn<out T>(val name: String, val type: TableColumnType<out T>) {
     override fun equals(other: Any?): Boolean {
@@ -21,6 +38,15 @@ data class TableColumn<out T>(val name: String, val type: TableColumnType<out T>
 
 sealed class TableColumnType<T> {
     abstract fun validate(value: Any?): T
+
+    companion object {
+        fun string(type: String): TableColumnType<out Any> = when (type.lowercase()) {
+            "number" -> NumberInt
+            "date" -> DateTime
+            "double" -> NumberDouble
+            else -> Varchar
+        }
+    }
 
     object NumberInt: TableColumnType<Int>() {
         override fun validate(value: Any?): Int =

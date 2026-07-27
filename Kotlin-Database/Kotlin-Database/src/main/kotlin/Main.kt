@@ -1,65 +1,50 @@
 package org.example
 
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import org.example.Users.Companion.keyColumn
-import org.example.Users.Companion.nameColumn
-import org.example.Users.Companion.birthColumn
-import org.example.Users.Companion.emailColumn
-import java.sql.Date
-import kotlin.time.Duration.Companion.seconds
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonPrimitive
+import java.io.File
 
 fun main() {
-    val database = Database()
-    val users = Users()
-    database.insertTransaction(
-        Transaction.InsertRows(users, TransactionElement.Row(
-            listOf(
-                users.newRow {
-                    keyColumn set 0
-                    nameColumn set "John"
-                    birthColumn set Date.valueOf("2027-06-25")
-                    emailColumn set "john@gmail.com"
-                },
-                users.newRow {
-                    keyColumn set 1
-                    nameColumn set "Macquarie"
-                    birthColumn set Date.valueOf("2027-01-20")
-                    emailColumn set "mac@gmail.com"
-                },
-                users.newRow {
-                    keyColumn set 2
-                    nameColumn set "Jane"
-                    birthColumn set Date.valueOf("2027-02-28")
-                    emailColumn set "jane@gmail.com"
-                },
-                users.newRow {
-                    keyColumn set 3
-                    nameColumn set "Rose"
-                    birthColumn set Date.valueOf("2027-03-01")
-                    emailColumn set "rose@gmail.com"
-                },
-            )
-        ))
-    )
-    database.insertTransaction(
-        Transaction.UpdateRecords(
-            users,
-            TransactionElement.Records(listOf(
-                TableRecord(users.let { nameColumn }, "Colin")
-            )),
-            conditions = TransactionElement.Conditions(listOf(
-                Where(users.let { keyColumn }, 3)
-            ))
-        )
-    )
+    val path = "data/schema"
 
-    println(users)
-    runBlocking {
-        delay(1.seconds)
-        println(users)
+    if (File(path).exists().not()) return
+
+    val files = File(path).listFiles()!!
+
+    println(files.contentToString())
+
+    val json = Json { ignoreUnknownKeys = true }
+
+    for (file in files) {
+        val jsonString = file.readText()
+        val rawSchema: RawSchema = json.decodeFromString<RawSchema>(jsonString)
+
+        // JsonObject를 TableRow로 변환
+        val rows = rawSchema.rows.map { jsonObject ->
+            val records = mutableListOf<TableRecord<Any>>()
+
+            for ((key, jsonValue) in jsonObject) {
+                val column = rawSchema.columns.find { it.name == key }
+                if (column != null) {
+                    val value = (jsonValue as? JsonPrimitive)?.content ?: jsonValue.toString()
+                    val tableColumn = TableColumn(column.name, TableColumnType.string(column.type))
+                    records.add(TableRecord(tableColumn, value))
+                }
+            }
+
+            TableRow(records)
+        }.toMutableList()
+
+        val table = object : Table(rawSchema.tableName) {
+            override val tableColumns: List<TableColumn<Any>>
+                get() = rawSchema.columns.map {
+                    TableColumn(it.name, TableColumnType.string(it.type))
+                }
+            override var tableRows: MutableList<TableRow> = rows
+        }
+
+        println(table)
     }
-    println(EnvironmentTable())
 }
 
 fun MutableList<TableRow>.getRowIndex(key: String): Int? {

@@ -1,4 +1,5 @@
 plugins {
+    alias(libs.plugins.kotlin.serialization)
     kotlin("jvm") version "2.3.21"
 }
 
@@ -12,6 +13,7 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.serialization.json)
 }
 
 kotlin {

@@ -1,0 +1,12 @@
+{
+  "table_name": "Environment",
+  "columns": [
+    { "name": "name", "type": "varchar" },
+    { "name": "value", "type": "varchar" }
+  ],
+  "rows": [
+    {
+      "name": "version", "value": "1.0"
+    }
+  ]
+}
