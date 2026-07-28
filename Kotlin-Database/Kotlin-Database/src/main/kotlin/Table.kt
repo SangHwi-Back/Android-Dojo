@@ -132,13 +132,16 @@ class RowBuilder(private val maxKey: Int, private val columns: List<TableColumn<
     }
 
     @Throws(IllegalArgumentException::class, NoSuchElementException::class)
-    fun build(): TableRow {
+    fun build(autoKey: Boolean): TableRow {
         val records: List<TableRecord<Any>> = columns.mapNotNull { col ->
-            val raw = values[col] ?: if (col.name == TableColumn.Key.name)
-                maxKey + 1
+            val rawData = values[col] ?: if (col.name == TableColumn.Key.name)
+                if (autoKey)
+                    maxKey + 1
+                else
+                    throw NoSuchElementException(TableColumn.Key.name)
             else
                 throw IllegalArgumentException("Column ${col.name} not found $values")
-            val data = col.type.validate(raw)
+            val data = col.type.validate(rawData)
             ((TableRecord(col, data)) as TableRecord<Any>?)
         }
         return TableRow(records.toMutableList())
@@ -146,7 +149,7 @@ class RowBuilder(private val maxKey: Int, private val columns: List<TableColumn<
 }
 
 @Throws(IllegalArgumentException::class, NoSuchElementException::class)
-inline fun Table.newRow(block: RowBuilder.() -> Unit): TableRow {
+inline fun Table.newRow(autoKey: Boolean = true, block: RowBuilder.() -> Unit): TableRow {
     val recordsKeyColumn = try {
         tableRows.mapNotNull { row ->
             row.tableRecords.firstOrNull { it.tableColumn == TableColumn.Key }?.data as? Int
@@ -154,16 +157,9 @@ inline fun Table.newRow(block: RowBuilder.() -> Unit): TableRow {
     } catch (_: NoSuchElementException) {
         0
     }
-    val builder = RowBuilder(recordsKeyColumn, tableColumns)
-    builder.block()
-    return try {
-        builder.build()
-    } catch (exception: NoSuchElementException) {
-        if (exception.message == TableColumn.Key.name) {
-            // TODO: Set New Key Needed
-            builder.build()
-        } else {
-            throw exception
-        }
+
+    return RowBuilder(recordsKeyColumn, tableColumns).let {
+        it.block()
+        it.build(autoKey)
     }
 }
