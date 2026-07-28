@@ -1,12 +1,14 @@
 package org.example
 
+import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive
 import java.io.File
+import kotlin.time.Duration.Companion.milliseconds
 
-val tables = mutableListOf<Table>()
+val database = Database()
 
-fun main() {
+suspend fun main() {
     val path = "data/schema"
 
     if (File(path).exists().not()) return
@@ -51,18 +53,26 @@ fun main() {
             override var tableRows: MutableList<TableRow> = rows
         }
 
-        if (rawSchema.tableName == "Users")
-            table.addNewRow {
+        database.tables[rawSchema.tableName] = table
+    }
+
+    database.tables["Users"]?.let { table ->
+        Transaction(table.hashCode().toString(), listOf(
+            Operation.Insert(table.name, table.newRow {
                 TableColumn("name", TableColumnType.Varchar) set "BigFoot"
                 TableColumn("birth", TableColumnType.DateTime) set "1990-03-31"
                 TableColumn("email", TableColumnType.Varchar) set "bigfoot@pentagon.com"
-            }
-
-        tables.add(table)
+            }),
+            Operation.Select(table.name, table.tableColumns),
+        )).let {
+            database.insertTransaction(it)
+        }
     }
 
-    for (table in tables) {
-        println(table)
+    delay(1000L.milliseconds)
+
+    for ((key, table) in database.tables) {
+        println("[[[ $key ]]]\n$table")
     }
 }
 

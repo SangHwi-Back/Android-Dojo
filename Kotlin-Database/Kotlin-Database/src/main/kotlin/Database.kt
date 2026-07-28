@@ -6,12 +6,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class Database {
     private val scope = CoroutineScope(Dispatchers.IO)
+    val tables = mutableMapOf<String, Table>()
 
     private val transactionFlow = MutableStateFlow<MutableList<Transaction>>(mutableListOf())
+
+    private val _selectTransactionFlow = MutableStateFlow(listOf<TableRow>())
+    val selectTransactionFlow = _selectTransactionFlow.asStateFlow()
 
     init {
         scope.launch {
@@ -27,27 +30,31 @@ class Database {
         transactionFlow.update { transactions.toMutableList() }
     }
 
-    private fun execute(t: Transaction) = t.table.apply {
-        when (t) {
-            is Transaction.InsertRows -> {
-                t.rows.value.forEach { row -> insertRow(row) }
-            }
-            is Transaction.InsertRecords -> {
-                insertRow(TableRow(t.records.toTableRecordMutableList()))
-            }
-            is Transaction.UpdateRows -> {
-                t.rows.value.forEach { row ->
-                    dbUpdateRecord(row.tableRecords, t.conditions.value)
+    private fun execute(t: Transaction) {
+        val operations = t.operation.mapNotNull {
+            val table = tables[it.tableName]
+            if (table != null) Pair(table, it) else null
+        }
+
+        for ((table, operation) in operations) {
+            when (operation) {
+                is Operation.Select -> _selectTransactionFlow.update {
+                    table.selectRows(operation.columns)
                 }
-            }
-            is Transaction.UpdateRecords -> {
-                dbUpdateRecord(t.records.toTableRecordMutableList(), t.conditions.value)
-            }
-            is Transaction.DeleteRows -> {
-                t.conditions.value.forEach {
-                    val data = it.data as? Int
-                    if (it.tableColumn == TableColumn.Key && data != null)
-                        deleteRow("$data")
+                is Operation.Insert ->
+                    table.insertRow(operation.row)
+                is Operation.Update ->
+                    table.dbUpdateRecord(operation.records, operation.where)
+                is Operation.Delete -> when (operation.condition) {
+                    is ConditionDelete.ID ->
+                        table.deleteRow(operation.condition.id.toString())
+                    is ConditionDelete.WHERE -> if (operation.condition.where.tableColumn == TableColumn.Key) {
+                        operation.condition.where.apply {
+                            table.deleteRow(
+                                tableColumn.type.validate(data).toString()
+                            )
+                        }
+                    }
                 }
             }
         }

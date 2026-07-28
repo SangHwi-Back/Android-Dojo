@@ -120,6 +120,8 @@ abstract class Table(val name: String): TableColumns, TableRows {
             append(separator())
         }
     }
+
+    override fun hashCode(): Int = name.hashCode()
 }
 
 class RowBuilder(private val maxKey: Int, private val columns: List<TableColumn<Any>>) {
