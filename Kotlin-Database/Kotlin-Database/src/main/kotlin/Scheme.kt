@@ -49,13 +49,17 @@ sealed class TableColumnType<T> {
     }
 
     object NumberInt: TableColumnType<Int>() {
-        override fun validate(value: Any?): Int =
+        override fun validate(value: Any?): Int = if (value is String)
+            value.toIntOrNull() ?: throw IllegalArgumentException("Value must be a integer $value.")
+        else
             value as? Int ?: throw IllegalArgumentException("Value must be a integer $value.")
 
         override fun toString(): String = "TableColumnType.NumberInt"
     }
     object NumberDouble: TableColumnType<Double>() {
-        override fun validate(value: Any?): Double =
+        override fun validate(value: Any?): Double = if (value is String)
+            value.toDoubleOrNull() ?: throw IllegalArgumentException("Value must be a integer $value.")
+        else
             value as? Double ?: throw IllegalArgumentException("Value must be a float or double $value.")
 
         override fun toString(): String = "TableColumnType.NumberDouble"
@@ -67,7 +71,9 @@ sealed class TableColumnType<T> {
         override fun toString(): String = "TableColumnType.Varchar"
     }
     object DateTime: TableColumnType<Date>() {
-        override fun validate(value: Any?): Date =
+        override fun validate(value: Any?): Date = if (value is String)
+            Date.valueOf(value) ?: throw IllegalArgumentException("Value must be a integer $value.")
+        else
             value as? Date ?: throw IllegalArgumentException("Date cannot be converted $value.")
 
         override fun toString(): String = "TableColumnType.DateTime"

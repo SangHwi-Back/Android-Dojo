@@ -19,27 +19,33 @@ fun main() {
         val jsonString = file.readText()
         val rawSchema: RawSchema = json.decodeFromString<RawSchema>(jsonString)
 
+        val columns = rawSchema.columns.map {
+            TableColumn(it.name, TableColumnType.string(it.type))
+        }
+
         // JsonObject를 TableRow로 변환
-        val rows = rawSchema.rows.map { jsonObject ->
+        val rows = rawSchema.rows.mapNotNull { jsonObject ->
             val records = mutableListOf<TableRecord<Any>>()
 
             for ((key, jsonValue) in jsonObject) {
-                val column = rawSchema.columns.find { it.name == key }
-                if (column != null) {
-                    val value = (jsonValue as? JsonPrimitive)?.content ?: jsonValue.toString()
-                    val tableColumn = TableColumn(column.name, TableColumnType.string(column.type))
-                    records.add(TableRecord(tableColumn, value))
+                val column = columns.find { it.name == key }
+                val value = (jsonValue as? JsonPrimitive)?.content?.let {
+                    column?.type?.validate(it)
+                }
+
+                if (column != null && value != null) {
+                    records.add(TableRecord(column, value))
                 }
             }
 
+            if (records.size != columns.size) return@mapNotNull null
+
             TableRow(records)
+
         }.toMutableList()
 
         val table = object : Table(rawSchema.tableName) {
-            override val tableColumns: List<TableColumn<Any>>
-                get() = rawSchema.columns.map {
-                    TableColumn(it.name, TableColumnType.string(it.type))
-                }
+            override val tableColumns: List<TableColumn<Any>> = columns
             override var tableRows: MutableList<TableRow> = rows
         }
 
