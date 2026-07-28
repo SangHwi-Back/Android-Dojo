@@ -11,7 +11,7 @@ sealed class Transaction(val table: Table) {
     ): Transaction(t)
     data class InsertRecords(
         val t: Table,
-        val records: TransactionElement.Records
+        val records: List<TransactionElement.Record>
     ): Transaction(t)
     data class UpdateRows(
         val t: Table,
@@ -20,7 +20,7 @@ sealed class Transaction(val table: Table) {
     ): Transaction(t)
     data class UpdateRecords(
         val t: Table,
-        val records: TransactionElement.Records,
+        val records: List<TransactionElement.Record>,
         val conditions: TransactionElement.Conditions
     ): Transaction(t)
     data class DeleteRows(
@@ -37,6 +37,11 @@ sealed class Transaction(val table: Table) {
 }
 sealed class TransactionElement {
     data class Row(var value: List<TableRow>)
-    data class Records(val value: List<TableRecord<Any>>)
+    data class Record(val value: TableRecord<Any>)
     data class Conditions(val value: List<Where<Any>>)
 }
+
+fun List<TransactionElement.Record>.toTableRecordList(): List<TableRecord<Any>> =
+    map { it.value }
+fun List<TransactionElement.Record>.toTableRecordMutableList(): MutableList<TableRecord<Any>> =
+    map { it.value }.toMutableList()

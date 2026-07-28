@@ -33,7 +33,7 @@ class Database {
                 t.rows.value.forEach { row -> insertRow(row) }
             }
             is Transaction.InsertRecords -> {
-                insertRow(TableRow(t.records.value.toMutableList()))
+                insertRow(TableRow(t.records.toTableRecordMutableList()))
             }
             is Transaction.UpdateRows -> {
                 t.rows.value.forEach { row ->
@@ -41,7 +41,7 @@ class Database {
                 }
             }
             is Transaction.UpdateRecords -> {
-                dbUpdateRecord(t.records.value, t.conditions.value)
+                dbUpdateRecord(t.records.toTableRecordMutableList(), t.conditions.value)
             }
             is Transaction.DeleteRows -> {
                 t.conditions.value.forEach {
