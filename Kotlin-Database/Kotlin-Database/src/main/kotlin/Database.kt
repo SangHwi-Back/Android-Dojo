@@ -14,7 +14,6 @@ class Database {
     private val transactionFlow = MutableStateFlow<MutableList<Transaction>>(mutableListOf())
 
     private val _selectTransactionFlow = MutableStateFlow(listOf<TableRow>())
-    val selectTransactionFlow = _selectTransactionFlow.asStateFlow()
 
     init {
         scope.launch {

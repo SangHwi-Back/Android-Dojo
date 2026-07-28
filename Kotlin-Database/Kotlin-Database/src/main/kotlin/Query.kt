@@ -28,7 +28,7 @@ fun Table.selectRows(
 @Throws(IllegalArgumentException::class)
 fun Table.insertRow(vararg rows: TableRow) {
     for (row in rows) {
-        if (row.tableRecords.firstOrNull { it.tableColumn.name == TableColumn.Key.name } == null)
+        if (row.tableRecords.firstOrNull { it.tableColumn == TableColumn.Key } == null)
             row.appendKeyInRow(newKey())
         tableRows.add(row)
     }

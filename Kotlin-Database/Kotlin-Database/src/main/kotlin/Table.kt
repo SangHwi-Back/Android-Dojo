@@ -120,8 +120,6 @@ abstract class Table(val name: String): TableColumns, TableRows {
             append(separator())
         }
     }
-
-    override fun hashCode(): Int = name.hashCode()
 }
 
 class RowBuilder(private val maxKey: Int, private val columns: List<TableColumn<Any>>) {
@@ -168,11 +166,4 @@ inline fun Table.newRow(block: RowBuilder.() -> Unit): TableRow {
             throw exception
         }
     }
-}
-
-@Throws(IllegalArgumentException::class, NoSuchElementException::class)
-inline fun Table.addNewRow(block: RowBuilder.() -> Unit): TableRow {
-    val newRow = newRow(block)
-    tableRows.add(newRow)
-    return newRow
 }
