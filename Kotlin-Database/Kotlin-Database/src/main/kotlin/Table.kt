@@ -74,14 +74,6 @@ data class TableRow(
 ) {
     override fun toString(): String =
         tableRecords.joinToString(", ")
-    companion object {
-        fun addRowWithKey(key: String, tableRecords: List<TableRecord<Any>>): TableRow =
-            TableRow(mutableListOf<TableRecord<Any>>(
-                TableRecord(TableColumn.Key, key.toInt())
-            ).apply {
-                addAll(tableRecords)
-            })
-    }
 }
 
 data class TableRecord<out T>(
