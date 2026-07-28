@@ -4,6 +4,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive
 import java.io.File
 
+val tables = mutableListOf<Table>()
+
 fun main() {
     val path = "data/schema"
 
@@ -49,6 +51,17 @@ fun main() {
             override var tableRows: MutableList<TableRow> = rows
         }
 
+        if (rawSchema.tableName == "Users")
+            table.addNewRow {
+                TableColumn("name", TableColumnType.Varchar) set "BigFoot"
+                TableColumn("birth", TableColumnType.DateTime) set "1990-03-31"
+                TableColumn("email", TableColumnType.Varchar) set "bigfoot@pentagon.com"
+            }
+
+        tables.add(table)
+    }
+
+    for (table in tables) {
         println(table)
     }
 }
