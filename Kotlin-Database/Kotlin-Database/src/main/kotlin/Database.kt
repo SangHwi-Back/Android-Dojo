@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -17,9 +16,7 @@ class Database {
     private val transactionFlow = MutableStateFlow<MutableList<Transaction>>(mutableListOf())
 
     private val _selectTransactionFlow = MutableStateFlow(listOf<TableRow>())
-    val selectTransactionFlow = _selectTransactionFlow
-        .asStateFlow()
-        .filter { it.isNotEmpty() }
+    val selectTransactionFlow = _selectTransactionFlow.asStateFlow()
     private val _transactionEffectFlow = MutableStateFlow<Throwable?>(null)
     val transactionEffectFlow = _transactionEffectFlow
         .asStateFlow()
