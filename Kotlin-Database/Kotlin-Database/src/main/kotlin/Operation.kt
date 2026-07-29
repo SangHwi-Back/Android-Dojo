@@ -2,7 +2,7 @@ package org.example
 
 sealed interface Operation {
     val tableName: String
-    data class Select(val _tableName: String, val columns: List<TableColumn<Any>>): Operation {
+    data class Select(val _tableName: String, val columns: List<TableColumn<Any>>, val where: List<Where<Any>> = listOf()): Operation {
         override val tableName: String
             get() = _tableName
     }

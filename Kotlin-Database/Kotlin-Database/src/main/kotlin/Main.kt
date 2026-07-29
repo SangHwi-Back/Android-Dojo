@@ -1,6 +1,9 @@
 package org.example
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive
 import java.io.File
@@ -56,6 +59,18 @@ suspend fun main() {
         database.tables[rawSchema.tableName] = table
     }
 
+    CoroutineScope(Dispatchers.IO).launch {
+        database.selectTransactionFlow.collect {
+            println("Select 결과 ::: $it")
+        }
+    }
+
+    CoroutineScope(Dispatchers.IO).launch {
+        database.transactionEffectFlow.collect {
+            println("Throw 결과 ::: $it")
+        }
+    }
+
     database.tables["Users"]?.let { table ->
         Transaction(table.hashCode().toString(), listOf(
             Operation.Insert(table.name, table.newRow {
@@ -64,6 +79,17 @@ suspend fun main() {
                 TableColumn("email", TableColumnType.Varchar) set "bigfoot@pentagon.com"
             }),
             Operation.Select(table.name, table.tableColumns),
+        )).let {
+            database.insertTransaction(it)
+        }
+
+        Transaction(table.hashCode().toString(), listOf(
+            Operation.Insert(table.name, table.newRow {
+                TableColumn("key", TableColumnType.NumberInt) set 0
+                TableColumn("name", TableColumnType.Varchar) set "ReleaseGhost"
+                TableColumn("birth", TableColumnType.DateTime) set "2000-03-31"
+                TableColumn("email", TableColumnType.Varchar) set "ghost@pentagon.com"
+            }),
         )).let {
             database.insertTransaction(it)
         }

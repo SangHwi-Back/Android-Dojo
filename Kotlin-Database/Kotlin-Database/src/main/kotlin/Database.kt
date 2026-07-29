@@ -4,8 +4,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.runCatching
 
 class Database {
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -14,14 +17,23 @@ class Database {
     private val transactionFlow = MutableStateFlow<MutableList<Transaction>>(mutableListOf())
 
     private val _selectTransactionFlow = MutableStateFlow(listOf<TableRow>())
+    val selectTransactionFlow = _selectTransactionFlow
+        .asStateFlow()
+        .filter { it.isNotEmpty() }
+    private val _transactionEffectFlow = MutableStateFlow<Throwable?>(null)
+    val transactionEffectFlow = _transactionEffectFlow
+        .asStateFlow()
+        .filterNotNull()
 
     init {
         scope.launch {
-            transactionFlow.asStateFlow().collect { list ->
-                list.forEach { t ->
-                    execute(t)
+            transactionFlow
+                .asStateFlow()
+                .runCatching { collect {
+                    list -> list.forEach { execute(it) }
+                } }.onFailure {
+                    _transactionEffectFlow.value = it
                 }
-            }
         }
     }
 
@@ -29,6 +41,7 @@ class Database {
         transactionFlow.update { transactions.toMutableList() }
     }
 
+    @Throws(IllegalArgumentException::class)
     private fun execute(t: Transaction) {
         val operations = t.operation.mapNotNull {
             val table = tables[it.tableName]
@@ -38,7 +51,7 @@ class Database {
         for ((table, operation) in operations) {
             when (operation) {
                 is Operation.Select -> _selectTransactionFlow.update {
-                    table.selectRows(operation.columns)
+                    table.selectRows(operation.columns, operation.where)
                 }
                 is Operation.Insert ->
                     table.insertRow(operation.row)

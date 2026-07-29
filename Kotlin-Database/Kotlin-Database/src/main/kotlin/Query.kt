@@ -27,6 +27,12 @@ fun Table.selectRows(
 
 @Throws(IllegalArgumentException::class)
 fun Table.insertRow(vararg rows: TableRow) {
+    val rowsInKey = rows.mapNotNull { it.tableRecords.getKeyColumn() }
+
+    for (row in tableRows)
+        if (rowsInKey.contains(row.tableRecords.getKeyColumn()))
+            throw IllegalArgumentException("Duplicate key column exists.")
+
     for (row in rows) {
         if (row.tableRecords.firstOrNull { it.tableColumn == TableColumn.Key } == null)
             row.appendKeyInRow(newKey())
@@ -74,4 +80,10 @@ fun Table.deleteRow(key: String) {
     if (rowIndex == null || rowIndex < 0)
         throw IllegalArgumentException("[Table.deleteRow($key)] No row found for key")
     tableRows.removeAt(rowIndex)
+}
+
+fun List<TableRecord<Any>>.getKeyColumn(): TableRecord<Int>? {
+    return firstOrNull {
+        it.tableColumn == TableColumn.Key
+    } as? TableRecord<Int>
 }
