@@ -2,22 +2,22 @@ package org.example
 
 sealed interface Operation {
     val tableName: String
-    data class Select(val _tableName: String, val columns: List<TableColumn<Any>>, val where: List<Where<Any>> = listOf()): Operation {
-        override val tableName: String
-            get() = _tableName
-    }
-    data class Insert(val _tableName: String, val row: TableRow) : Operation {
-        override val tableName: String
-            get() = _tableName
-    }
-    data class Delete(val _tableName: String, val condition: ConditionDelete) : Operation {
-        override val tableName: String
-            get() = _tableName
-    }
-    data class Update(val _tableName: String, val records: List<TableRecord<Any>>, val where: List<Where<Any>>) : Operation {
-        override val tableName: String
-            get() = _tableName
-    }
+    data class Select(
+        override val tableName: String,
+        val columns: List<TableColumn<Any>>, val where: List<Where<Any>> = listOf()
+    ): Operation
+    data class Insert(
+        override val tableName: String,
+        val row: TableRow
+    ) : Operation
+    data class Delete(
+        override val tableName: String,
+        val condition: ConditionDelete
+    ) : Operation
+    data class Update(
+        override val tableName: String,
+        val records: List<TableRecord<Any>>, val where: List<Where<Any>>
+    ) : Operation
 }
 
 sealed class ConditionDelete {

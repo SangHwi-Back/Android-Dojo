@@ -27,10 +27,10 @@ fun Table.selectRows(
 
 @Throws(IllegalArgumentException::class)
 fun Table.insertRow(vararg rows: TableRow) {
-    val rowsInKey = rows.mapNotNull { it.tableRecords.getKeyColumn() }
+    val rowsInKey = rows.mapNotNull { it.getKeyColumn() }
 
     for (row in tableRows)
-        if (rowsInKey.contains(row.tableRecords.getKeyColumn()))
+        if (rowsInKey.contains(row.getKeyColumn()))
             throw IllegalArgumentException("Duplicate key column exists.")
 
     for (row in rows) {
@@ -69,9 +69,9 @@ fun <T : Any> Table.updateRecords(tableRecord: TableRecord<T>, where: List<Where
         val columnIndex = row.tableRecords.indexOfFirst { it.tableColumn == tableRecord.tableColumn }
         if (columnIndex == -1) return@forEachIndexed
 
-        tableRows[index].tableRecords[columnIndex] = TableRecord(
-            tableRecord.tableColumn,
-            tableRecord.tableColumn.type.validate(tableRecord.data))
+        val data = tableRecord.dataValidateType()
+        if (data != null)
+            tableRows[index].tableRecords[columnIndex] = TableRecord(tableRecord.tableColumn, data)
     }
 }
 @Throws(IllegalArgumentException::class)
@@ -80,10 +80,4 @@ fun Table.deleteRow(key: String) {
     if (rowIndex == null || rowIndex < 0)
         throw IllegalArgumentException("[Table.deleteRow($key)] No row found for key")
     tableRows.removeAt(rowIndex)
-}
-
-fun List<TableRecord<Any>>.getKeyColumn(): TableRecord<Int>? {
-    return firstOrNull {
-        it.tableColumn == TableColumn.Key
-    } as? TableRecord<Int>
 }

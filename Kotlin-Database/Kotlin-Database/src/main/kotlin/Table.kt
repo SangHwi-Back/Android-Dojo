@@ -38,6 +38,7 @@ sealed class TableColumnType<T> {
     }
 
     object NumberInt: TableColumnType<Int>() {
+        @Throws(IllegalArgumentException::class)
         override fun validate(value: Any?): Int = if (value is String)
             value.toIntOrNull() ?: throw IllegalArgumentException("Value must be a integer $value.")
         else
@@ -46,6 +47,7 @@ sealed class TableColumnType<T> {
         override fun toString(): String = "TableColumnType.NumberInt"
     }
     object NumberDouble: TableColumnType<Double>() {
+        @Throws(IllegalArgumentException::class)
         override fun validate(value: Any?): Double = if (value is String)
             value.toDoubleOrNull() ?: throw IllegalArgumentException("Value must be a integer $value.")
         else
@@ -54,12 +56,14 @@ sealed class TableColumnType<T> {
         override fun toString(): String = "TableColumnType.NumberDouble"
     }
     object Varchar: TableColumnType<String>() {
+        @Throws(IllegalArgumentException::class)
         override fun validate(value: Any?): String =
             value as? String ?: throw IllegalArgumentException("Value is not a string $value.")
 
         override fun toString(): String = "TableColumnType.Varchar"
     }
     object DateTime: TableColumnType<Date>() {
+        @Throws(IllegalArgumentException::class)
         override fun validate(value: Any?): Date = if (value is String)
             Date.valueOf(value) ?: throw IllegalArgumentException("Value must be a integer $value.")
         else
@@ -74,14 +78,40 @@ data class TableRow(
 ) {
     override fun toString(): String =
         tableRecords.joinToString(", ")
+
+    inline fun <reified T> getRecords(): List<TableRecord<T>> {
+        if (tableRecords.isEmpty()) return emptyList()
+        @Suppress("UNCHECKED_CAST")
+        return tableRecords
+            .filter { it.dataValidateType() is T }
+            .map { it as TableRecord<T> }
+    }
+
+    fun getKeyColumn(): TableRecord<Int>? {
+        if (tableRecords.isEmpty()) return null
+        @Suppress("UNCHECKED_CAST")
+        return tableRecords
+            .filter { it.isType<Int>() && it.tableColumn == TableColumn.Key }
+            .map { it as TableRecord<Int> }
+            .firstOrNull()
+    }
 }
 
-data class TableRecord<out T>(
+data class TableRecord<T>(
     val tableColumn: TableColumn<T>,
     val data: T,
 ) {
     override fun toString(): String =
         "[{${tableColumn.type}} $tableColumn]: $data"
+
+    fun dataValidateType(): T? = try {
+        tableColumn.type.validate(data)
+    } catch (_: IllegalArgumentException) {
+        return null
+    }
+
+    inline fun <reified AnotherType> isType(): Boolean =
+        dataValidateType() is AnotherType
 }
 interface TableColumns {
     val tableColumns: List<TableColumn<Any>>
