@@ -26,7 +26,18 @@ data class TableColumn<out T>(val name: String, val type: TableColumnType<out T>
 }
 
 sealed class TableColumnType<T> {
-    abstract fun validate(value: Any?): T
+    abstract val typeName: String
+    protected abstract fun parseString(value: String): T?
+    protected abstract fun cast(value: Any): T?
+    // 검증 로직은 여기 한 곳에만 존재
+    fun validate(value: Any?): T {
+        val result = when (value) {
+            null -> null
+            is String -> parseString(value)
+            else -> cast(value)
+        }
+        return result ?: throw IllegalArgumentException("Value must be a $typeName: $value")
+    }
 
     companion object {
         fun string(type: String): TableColumnType<out Any> = when (type.lowercase()) {
@@ -37,39 +48,31 @@ sealed class TableColumnType<T> {
         }
     }
 
-    object NumberInt: TableColumnType<Int>() {
-        @Throws(IllegalArgumentException::class)
-        override fun validate(value: Any?): Int = if (value is String)
-            value.toIntOrNull() ?: throw IllegalArgumentException("Value must be a integer $value.")
-        else
-            value as? Int ?: throw IllegalArgumentException("Value must be a integer $value.")
+    override fun toString(): String = "TableColumnType.$typeName"
 
-        override fun toString(): String = "TableColumnType.NumberInt"
+    object NumberInt : TableColumnType<Int>() {
+        override val typeName = "integer"
+        override fun parseString(value: String) = value.toIntOrNull()
+        override fun cast(value: Any) = value as? Int
     }
-    object NumberDouble: TableColumnType<Double>() {
-        @Throws(IllegalArgumentException::class)
-        override fun validate(value: Any?): Double = if (value is String)
-            value.toDoubleOrNull() ?: throw IllegalArgumentException("Value must be a integer $value.")
-        else
-            value as? Double ?: throw IllegalArgumentException("Value must be a float or double $value.")
 
-        override fun toString(): String = "TableColumnType.NumberDouble"
+    object NumberDouble : TableColumnType<Double>() {
+        override val typeName = "double"
+        override fun parseString(value: String) = value.toDoubleOrNull()
+        override fun cast(value: Any) = value as? Double
     }
-    object Varchar: TableColumnType<String>() {
-        @Throws(IllegalArgumentException::class)
-        override fun validate(value: Any?): String =
-            value as? String ?: throw IllegalArgumentException("Value is not a string $value.")
 
-        override fun toString(): String = "TableColumnType.Varchar"
+    object Varchar : TableColumnType<String>() {
+        override val typeName = "string"
+        override fun parseString(value: String): String = value
+        override fun cast(value: Any) = value as? String
     }
-    object DateTime: TableColumnType<Date>() {
-        @Throws(IllegalArgumentException::class)
-        override fun validate(value: Any?): Date = if (value is String)
-            Date.valueOf(value) ?: throw IllegalArgumentException("Value must be a integer $value.")
-        else
-            value as? Date ?: throw IllegalArgumentException("Date cannot be converted $value.")
 
-        override fun toString(): String = "TableColumnType.DateTime"
+    object DateTime : TableColumnType<Date>() {
+        override val typeName = "date"
+        override fun parseString(value: String): Date? =
+            runCatching { Date.valueOf(value) }.getOrNull()
+        override fun cast(value: Any) = value as? Date
     }
 }
 
