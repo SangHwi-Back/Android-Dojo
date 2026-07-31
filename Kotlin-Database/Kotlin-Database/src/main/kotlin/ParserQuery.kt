@@ -11,9 +11,7 @@ class ParserQuery(private val rawQueryString: String) {
         removeUnused()
         command = getCommand()
         columnsEffect = getColumnIdentifiers()
-        getTargetTable().let {
-            tables = if (it != null) listOf(it) else listOf()
-        }
+        tables = listOf(getTargetTable())
         dmlData = getDMLData()
     }
 
@@ -28,10 +26,11 @@ class ParserQuery(private val rawQueryString: String) {
         query = query.trim().removeSuffix(";")
     }
 
+    @Throws(IllegalArgumentException::class)
     private fun getCommand(): Token.Command {
         val items = query.split(Regex("\\s+")).toMutableList()
         if (items.isEmpty())
-            throw IllegalArgumentException("No Keyword Found")
+            throw IllegalArgumentException("No Keyword Found $query")
         var keyword = items.removeFirst().uppercase()
         if (keyword == "INSERT" || keyword == "DELETE")
             keyword += " ${items.removeFirst().uppercase()}"
@@ -93,46 +92,63 @@ class ParserQuery(private val rawQueryString: String) {
         }
     }
 
-    private fun getTargetTable(): Token.Identifier.Table? = when (command) {
+    private fun getTargetTable(): Token.Identifier.Table = when (command) {
         Token.Command.SELECT, Token.Command.DELETE -> {
             val fromIndex = query.indexOf("from", ignoreCase = true)
-            if (fromIndex == -1) null else query
-                .removeRange(0, query.indexOf("from", 0, true) + 4)
+            if (fromIndex == -1)
+                throw IllegalArgumentException("No Keyword Select From $query")
+            else query
+                .removeRange(0, fromIndex + 4)
                 .removePrefix(" ")
                 .split(Regex("\\s+"))
                 .firstOrNull()
-                ?.let { Token.Identifier.Table(it) }
+                .let {
+                    if (it != null)
+                        Token.Identifier.Table(it)
+                    else
+                        throw IllegalArgumentException("No Table Found $query")
+                }
         }
         Token.Command.UPDATE, Token.Command.INSERT -> {
             removeKeyword(query)
                 .split(Regex("\\s+"))
                 .firstOrNull()
-                ?.let { Token.Identifier.Table(it) }
+                .let {
+                    if (it != null)
+                        Token.Identifier.Table(it)
+                    else
+                        throw IllegalArgumentException("No Table Found $query")
+                }
         }
     }
 
+    @Throws(IllegalArgumentException::class)
     private fun getDMLData(): Token.Data? = when (command) {
         Token.Command.DELETE, Token.Command.SELECT -> {
             return null
         }
         Token.Command.INSERT -> {
-            val valuesIndex = query.indexOf("values", 0, true)
-            if (valuesIndex == -1) return null
+            var valuesIndex = query.indexOf("values", 0, true)
+            if (valuesIndex == -1)
+                throw IllegalArgumentException("No Keyword Insert Values $query")
+            valuesIndex += 6
 
-            val open = query.indexOf('(', valuesIndex, true)
-            val close = query.indexOf(')', open, true)
-            if (open == -1 || close == -1 || open >= close) return null
+            var open = query.indexOf('(', valuesIndex)
+            val close = query.indexOf(')', open)
+            if (open == -1 || close == -1 || open >= close)
+                throw IllegalArgumentException("Invalid Insert Data after Values keyword [${query.substring(valuesIndex)}]")
+            open += 1
 
             return Token.Data.Insert(query
-                .substring(open + 1, close)
+                .substring(open, close)
                 .split(",")
-                .mapIndexedNotNull { i, data ->
+                .mapIndexed { i, data ->
                     listOf(
                         data.indexOfFirst { it == '\''},
                         data.indexOfLast { it == '\''}
                     ).let { indexes ->
                         if (indexes[0] == -1 || indexes[1] == -1)
-                            null
+                            throw IllegalArgumentException("Insert value clause has problem [${query.substring(open, close)}]")
                         else
                             Pair(columnsEffect[i].name, data.substring(indexes[0]+1, indexes[1]))
                     }
@@ -140,17 +156,19 @@ class ParserQuery(private val rawQueryString: String) {
             )
         }
         Token.Command.UPDATE -> {
-            val setIndex = query.indexOf("set", ignoreCase = true)
-            if (setIndex == -1) return null
+            var setIndex = query.indexOf("set", ignoreCase = true)
+            if (setIndex == -1)
+                throw IllegalArgumentException("No Keyword Update Set $query")
+            setIndex += 3
 
             val whereIndex = query.indexOf("where", setIndex, true)
-            val start = if (whereIndex == -1) 0 else setIndex + 3
-            val end = if (whereIndex == -1) setIndex + 3 else whereIndex
+            val end = if (whereIndex == -1) setIndex else whereIndex
 
-            if (start >= end) return null
+            if (setIndex >= end)
+                throw IllegalArgumentException("Invalid Update Data After Set clause [${query.substring(setIndex)}]")
 
             return Token.Data.Update(query
-                .removeRange(start, end)
+                .removeRange(setIndex, end)
                 .trim()
                 .split(",")
                 .mapNotNull { data ->
