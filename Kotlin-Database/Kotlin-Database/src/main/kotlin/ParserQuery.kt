@@ -47,40 +47,48 @@ class ParserQuery(private val rawQueryString: String) {
     private fun getColumnIdentifiers(): List<Token.Identifier.Column> {
         var sql = removeKeyword(query).trim()
         return when (command) {
+            Token.Command.DELETE ->
+                return emptyList()
             Token.Command.SELECT -> {
-                sql = sql.indexOf("from", ignoreCase = true).let { index ->
-                    if (index == -1) return emptyList() else sql.removeRange(index, sql.length)
-                }
+                val fromIndex = sql.indexOf("from", ignoreCase = true)
+                if (fromIndex == -1)
+                    return emptyList()
+                else
+                    sql = sql.removeRange(fromIndex, sql.length)
             }
             Token.Command.UPDATE -> {
-                sql = sql.indexOf("set", ignoreCase = true).let { setIndex ->
-                    if (setIndex == -1) return emptyList()
-                    val end = sql.indexOf("where", ignoreCase = true)
+                var setIndex = sql.indexOf("set", ignoreCase = true)
+                if (setIndex == -1)
+                    return emptyList()
+
+                setIndex += 3
+
+                val end = sql.indexOf("where", setIndex, true)
+
+                sql = sql.apply {
                     if (end == -1)
-                        sql.substring(setIndex + 3)
+                        substring(setIndex)
                     else
-                        sql.substring(setIndex + 3, end)
+                        substring(setIndex, end)
                 }
             }
             Token.Command.INSERT -> {
-                sql = sql.indexOf("(", 0).let { openIndex ->
-                    if (openIndex == -1) return emptyList() else
-                        sql.indexOf(")").let { closeIndex ->
-                            if (closeIndex == -1) return emptyList() else sql.substring(openIndex + 1, closeIndex)
-                        }
+                sql = listOf(
+                    sql.indexOf('('),
+                    sql.indexOf(')')
+                ).let { indexes ->
+                    if (indexes[0] == -1 || indexes[1] == -1)
+                        return emptyList()
+                    else
+                        sql.substring(indexes[0] +1, indexes[1])
                 }
             }
-            Token.Command.DELETE ->
-                return emptyList()
         }.let {
-            return if (command == Token.Command.UPDATE) {
-                sql.trim().split(Regex("\\s+"))
-                    .filter { it.isNotBlank() }
-                    .map { Token.Identifier.Column(it.trim().removeSuffix(",")) }
-            } else {
-                sql.split(Regex("\\s+"))
-                    .toMutableList()
-                    .map { Token.Identifier.Column(it.trim().removeSuffix(",")) }
+            var split = sql.trim().split(Regex("\\s+"))
+            if (command == Token.Command.UPDATE)
+                split = split.filter { it.isNotBlank() }
+            split.map {
+                Token.Identifier.Column(it.trim().removeSuffix(","))
             }
         }
     }
@@ -102,63 +110,66 @@ class ParserQuery(private val rawQueryString: String) {
                 ?.let { Token.Identifier.Table(it) }
         }
     }
+
     private fun getDMLData(): Token.Data? = when (command) {
+        Token.Command.DELETE, Token.Command.SELECT -> {
+            return null
+        }
         Token.Command.INSERT -> {
+            val valuesIndex = query.indexOf("values", 0, true)
+            if (valuesIndex == -1) return null
 
-            Token.Data.Insert(query
-                .indexOf("values", 0, true).let { valuesIndex ->
+            val open = query.indexOf('(', valuesIndex, true)
+            val close = query.indexOf(')', open, true)
+            if (open == -1 || close == -1 || open >= close) return null
 
-                    if (valuesIndex == -1) return null else query
-                        .indexOf('(', valuesIndex).let { openIndex ->
-
-                            if (openIndex == -1) return null else query
-                                .indexOf(')', openIndex).let { closeIndex ->
-
-                                    if (closeIndex == -1) return null else query
-                                        .substring(openIndex + 1, closeIndex)
-                                        .replace("\\s+".toRegex(), " ")
-                                        .split(",")
-                                        .mapIndexed { index, string ->
-                                            Pair(columnsEffect[index].name, string)
-                                        }
-                            }
-                        }
+            return Token.Data.Insert(query
+                .substring(open + 1, close)
+                .split(",")
+                .mapIndexedNotNull { i, data ->
+                    listOf(
+                        data.indexOfFirst { it == '\''},
+                        data.indexOfLast { it == '\''}
+                    ).let { indexes ->
+                        if (indexes[0] == -1 || indexes[1] == -1)
+                            null
+                        else
+                            Pair(columnsEffect[i].name, data.substring(indexes[0]+1, indexes[1]))
+                    }
                 }
             )
         }
-        Token.Command.DELETE, Token.Command.SELECT -> {
-            null
-        }
         Token.Command.UPDATE -> {
-            Token.Data.Update(query
-                .indexOf("set", ignoreCase = true).let { setIndex ->
-                    if (setIndex == -1) return null else query.indexOf("where", ignoreCase = true).let { whereIndex ->
-                        if (whereIndex == -1)
-                            query.removeRange(0, setIndex+3).trim()
-                                .split(",")
-                                .mapNotNull { data ->
-                                    data.split("=").map { it.trim() }.let {
-                                        if (it.size == 2)
-                                            Pair(it[0], it[1])
-                                        else
-                                            null
-                                    }
-                                }
-                        else if (setIndex < whereIndex)
-                            query.substring(setIndex+3, whereIndex).trim()
-                                .split(",")
-                                .mapNotNull { data ->
-                                    data.split("=").map { it.trim() }.let {
-                                        if (it.size == 2)
-                                            Pair(it[0], it[1])
-                                        else
-                                            null
-                                    }
-                                }
+            val setIndex = query.indexOf("set", ignoreCase = true)
+            if (setIndex == -1) return null
+
+            val whereIndex = query.indexOf("where", setIndex, true)
+            val start = if (whereIndex == -1) 0 else setIndex + 3
+            val end = if (whereIndex == -1) setIndex + 3 else whereIndex
+
+            if (start >= end) return null
+
+            return Token.Data.Update(query
+                .removeRange(start, end)
+                .trim()
+                .split(",")
+                .mapNotNull { data ->
+                    data.split("=").map { it.trim() }.let {
+                        if (it.size == 2)
+                            listOf(
+                                it[1].indexOfFirst { char -> char == '\'' },
+                                it[1].indexOfLast { char -> char == '\'' }
+                            ).let { indexes ->
+                                if (indexes[0] == -1 || indexes[1] == -1)
+                                    null
+                                else
+                                    Pair(it[0], it[1].substring(indexes[0]+1, indexes[1]))
+                            }
                         else
-                            return null
+                            null
                     }
-                })
+                }
+            )
         }
     }
 }
