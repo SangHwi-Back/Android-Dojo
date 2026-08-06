@@ -111,7 +111,9 @@ suspend fun main() {
                 listOf()
             ),
             Operation.Delete(table.name, ConditionDelete.ID(0))
-        ))
+        )).let {
+            database.insertTransaction(it)
+        }
     }
 
     delay(1000L.milliseconds)

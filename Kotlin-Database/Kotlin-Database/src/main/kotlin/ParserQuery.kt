@@ -2,14 +2,14 @@ package org.example
 
 class ParserQuery(private val rawQueryString: String) {
     var query = ""
-    val command: Token.Command
+    val tokenCommand: Token.Command
     val columnsEffect: List<Token.Identifier.Column>
     val tables: List<Token.Identifier.Table>
     val dmlData: Token.Data?
 
     init {
         removeUnused()
-        command = getCommand()
+        tokenCommand = getCommand()
         columnsEffect = getColumnIdentifiers()
         tables = listOf(getTargetTable())
         dmlData = getDMLData()
@@ -45,7 +45,7 @@ class ParserQuery(private val rawQueryString: String) {
 
     private fun getColumnIdentifiers(): List<Token.Identifier.Column> {
         var sql = removeKeyword(query).trim()
-        return when (command) {
+        return when (tokenCommand) {
             Token.Command.DELETE ->
                 return emptyList()
             Token.Command.SELECT -> {
@@ -84,7 +84,7 @@ class ParserQuery(private val rawQueryString: String) {
             }
         }.let {
             var split = sql.trim().split(Regex("\\s+"))
-            if (command == Token.Command.UPDATE)
+            if (tokenCommand == Token.Command.UPDATE)
                 split = split.filter { it.isNotBlank() }
             split.map {
                 Token.Identifier.Column(it.trim().removeSuffix(","))
@@ -92,7 +92,7 @@ class ParserQuery(private val rawQueryString: String) {
         }
     }
 
-    private fun getTargetTable(): Token.Identifier.Table = when (command) {
+    private fun getTargetTable(): Token.Identifier.Table = when (tokenCommand) {
         Token.Command.SELECT, Token.Command.DELETE -> {
             val fromIndex = query.indexOf("from", ignoreCase = true)
             if (fromIndex == -1)
@@ -123,7 +123,7 @@ class ParserQuery(private val rawQueryString: String) {
     }
 
     @Throws(IllegalArgumentException::class)
-    private fun getDMLData(): Token.Data? = when (command) {
+    private fun getDMLData(): Token.Data? = when (tokenCommand) {
         Token.Command.DELETE, Token.Command.SELECT -> {
             return null
         }
