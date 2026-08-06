@@ -96,7 +96,10 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
             viewModel.showTimeList.collect { chooseInfoAdapter.showTimeList = it }
         }
         lifecycleScope.launch {
-            viewModel.seatList.collect { chooseInfoAdapter.seats = it }
+            viewModel.seatList.collect {
+                println("Need To Fix!!!! : " + it)
+//                chooseInfoAdapter.seats = it
+            }
         }
         // Action on viewCreated using ViewModel
         viewModel.actionOnViewCreated()
