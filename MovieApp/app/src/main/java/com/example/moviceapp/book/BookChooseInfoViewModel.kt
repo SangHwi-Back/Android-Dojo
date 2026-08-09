@@ -58,7 +58,7 @@ class BookChooseInfoViewModel @AssistedInject constructor(
      * Change showtime date model
      */
     fun selectShowDate(date: String) {
-        _model.update { it.copy(selectedShowtime = BookShowtime(date)) }
+        _model.update { it.copy(selectedShowtime = BookShowtime(selectedShowDate = date, selectedShowtimeSlot = null)) }
     }
     /**
      * Change showtime time model
