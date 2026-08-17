@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.moviceapp.R
 import com.example.moviceapp.book.BookChooseInfoModel
 import com.example.moviceapp.book.BookChooseInfoViewModel
+import com.example.moviceapp.common.GridSpanDecoration
 import com.example.moviceapp.databinding.ItemBookChooseItemSeatBinding
 import com.example.moviceapp.databinding.ItemBookChooseSeatBinding
 import com.example.moviceapp.repo.SeatSlot
@@ -18,14 +19,39 @@ class BookChooseSeatViewHolder(
     val parent: ViewGroup,
     val binding: ItemBookChooseSeatBinding,
 ) : BookChooseViewHolder(binding) {
+    private var decoration: GridSpanDecoration? = null
     private val adapter = SeatListAdapter { seat ->
         viewModel.selectSeat(seat)
     }
     init {
-        binding.theaterSeatRecyclerView.layoutManager = GridLayoutManager(parent.context, 4)
+        binding.theaterSeatRecyclerView.layoutManager = GridLayoutManager(
+            parent.context, 4
+        )
+        GridSpanDecoration(4, 8).apply {
+            this@BookChooseSeatViewHolder.decoration = this
+            binding.theaterSeatRecyclerView.addItemDecoration(this)
+        }
         binding.theaterSeatRecyclerView.adapter = adapter
     }
     fun setSeats(seats: List<SeatSlot>) {
+        val maxRowCount = if (seats.isEmpty())
+            4
+        else
+            seats.groupBy { it.rowLabel }
+                .maxBy { it.value.size }
+                .value
+                .size
+        // 불필요한 Decoration 지움
+        decoration?.let {
+            binding.theaterSeatRecyclerView.removeItemDecoration(it)
+        }
+        binding.theaterSeatRecyclerView.layoutManager = GridLayoutManager(
+            parent.context, maxRowCount
+        )
+        GridSpanDecoration(maxRowCount, 8).apply {
+            this@BookChooseSeatViewHolder.decoration = this
+            binding.theaterSeatRecyclerView.addItemDecoration(this)
+        }
         adapter.seats = seats
     }
     override fun bind(model: BookChooseInfoModel) {

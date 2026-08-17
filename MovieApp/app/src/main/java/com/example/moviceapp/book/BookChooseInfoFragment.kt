@@ -26,7 +26,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.milliseconds
 
 @AndroidEntryPoint
 class BookChooseInfoFragment : Fragment(), BookChooseHandler {
@@ -58,7 +57,7 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
                 Toast.LENGTH_SHORT
             ).show()
             viewLifecycleOwner.lifecycleScope.launch {
-                delay(Toast.LENGTH_SHORT.toLong().milliseconds)
+                delay(2000L)
                 pendingExitConfirmation = false
             }
         }
@@ -127,9 +126,7 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
             viewModel.showTimeList.collect { chooseInfoAdapter.showTimeList = it }
         }
         lifecycleScope.launch {
-            viewModel.seatList.collect {
-                println("Need To Fix!!!! : " + it)
-            }
+            viewModel.seatList.collect { chooseInfoAdapter.seats = it }
         }
         // Action on viewCreated using ViewModel
         viewModel.actionOnViewCreated()
