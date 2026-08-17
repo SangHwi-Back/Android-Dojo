@@ -5,11 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.drawToBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
 import com.example.moviceapp.R
@@ -20,8 +23,12 @@ import com.example.moviceapp.book.choose.adapter.BookChooseInformationAdapter
 import com.example.moviceapp.book.choose.adapter.MoviePagerAdapter
 import com.example.moviceapp.databinding.FragmentBookChooseInfoBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
+
+private const val EXIT_CONFIRMATION_WINDOW_MS = 2000L
 
 @AndroidEntryPoint
 class BookChooseInfoFragment : Fragment(), BookChooseHandler {
@@ -33,6 +40,31 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
     lateinit var movieAssistedFactory: BookChooseInfoViewModel.MovieAssistedFactory
     private lateinit var movieAdapter: MoviePagerAdapter
     private lateinit var chooseInfoAdapter: BookChooseInformationAdapter
+    // 뒤로가기를 두 번 눌러야 실제로 나가지도록 하는 확인용 플래그.
+    // EXIT_CONFIRMATION_WINDOW_MS 안에 다시 누르면 확정, 아니면 창이 닫히고 처음부터 다시 안내.
+    private var pendingExitConfirmation = false
+    val callback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (viewModel.currentBookInfo.currentItem == 0) {
+                findNavController().popBackStack()
+                return
+            }
+            if (pendingExitConfirmation) {
+                findNavController().popBackStack()
+                return
+            }
+            pendingExitConfirmation = true
+            Toast.makeText(
+                requireActivity(),
+                "한번 더 누르면 예약정보가 초기화 되요.",
+                Toast.LENGTH_SHORT
+            ).show()
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(Toast.LENGTH_SHORT.toLong().milliseconds)
+                pendingExitConfirmation = false
+            }
+        }
+    }
     private val viewModel: BookChooseInfoViewModel by viewModels {
         BookChooseInfoViewModel.provideFactory(
             movieAssistedFactory, args.selectedMovie)
@@ -47,6 +79,7 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
         chooseInfoAdapter = BookChooseInformationAdapter(viewModel)
         movieAdapter = MoviePagerAdapter(args.movies.toList())
         viewModel.chooseHandler = this
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         return binding.root
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -107,6 +140,7 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        callback.remove()
         _binding = null
     }
 

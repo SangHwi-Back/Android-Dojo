@@ -29,6 +29,8 @@ class BookChooseInfoViewModel @AssistedInject constructor(
     private var _model = MutableStateFlow(BookChooseInfoModel(initialBookInfo, initialMovie))
     val model: StateFlow<BookChooseInfoModel>
         get() = _model.asStateFlow()
+    val currentBookInfo: BookInfo
+        get() = _model.value.currentBookInfo
     private var _theaterList = MutableStateFlow<List<Theater>>(listOf())
     val theaterList: StateFlow<List<Theater>>
         get() = _theaterList.asStateFlow()
@@ -72,7 +74,7 @@ class BookChooseInfoViewModel @AssistedInject constructor(
     fun selectSeat(seat: SeatSlot) {
         _model.update { it.copy(selectedSeat = seat) }
     }
-    private fun getNextBookInfo(): BookInfo = when (model.value.currentBookInfo) {
+    private fun getNextBookInfo(): BookInfo = when (currentBookInfo) {
         THEATER ->  SHOWTIME
         SHOWTIME -> SEAT
         else ->     THEATER
