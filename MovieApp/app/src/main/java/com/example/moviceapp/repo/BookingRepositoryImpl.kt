@@ -7,6 +7,7 @@ interface BookingRepository {
     suspend fun getShowtimeDates(movieId: Int): APIResult<List<String>>
     suspend fun getTheaters(movieId: Int): APIResult<List<Theater>>
     suspend fun getShowtimeSlots(movieId: Int, theaterId: Int, date: String): APIResult<List<ShowtimeSlot>>
+    suspend fun getSeatSlots(theaterId: Int, date: String): APIResult<List<SeatSlot>>
 }
 
 @Singleton
@@ -21,4 +22,7 @@ class BookingRepositoryImpl @Inject constructor(
 
     override suspend fun getShowtimeSlots(movieId: Int, theaterId: Int, date: String): APIResult<List<ShowtimeSlot>> =
         service.getShowtimeSlots(movieId, theaterId, date).toAPIResult()
+
+    override suspend fun getSeatSlots(theaterId: Int, date: String): APIResult<List<SeatSlot>> =
+        service.getSeatSlots(theaterId, date).toAPIResult()
 }

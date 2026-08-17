@@ -40,8 +40,8 @@ class BookChooseInfoViewModel @AssistedInject constructor(
     private var _showDateList = MutableStateFlow<List<String>>(listOf())
     val showDateList: StateFlow<List<String>>
         get() = _showDateList.asStateFlow()
-    private var _seatList = MutableStateFlow<List<String>>(listOf())
-    val seatList: StateFlow<List<String>>
+    private var _seatList = MutableStateFlow<List<SeatSlot>>(listOf())
+    val seatList: StateFlow<List<SeatSlot>>
         get() = _seatList.asStateFlow()
     var chooseHandler: BookChooseHandler? = null
     /**
@@ -106,8 +106,10 @@ class BookChooseInfoViewModel @AssistedInject constructor(
                     }
                 }
                 SEAT -> {
-                    // TODO: Fetch seats from repository
-                    _seatList.value = listOf("Wait", "For", "A", "While")
+                    val theaterId = model.value.selectedTheater?.id
+                    val date = model.value.selectedShowtime?.selectedShowDate
+                    if (date != null && theaterId != null)
+                        _seatList.value = getSeatSlots(theaterId, date)
                 }
             }
         }
@@ -150,6 +152,11 @@ class BookChooseInfoViewModel @AssistedInject constructor(
         }
     private suspend fun getTheaters(movieId: Int): List<Theater> =
         when (val result = repository.getTheaters(movieId)) {
+            is APIResult.Success -> result.data
+            is APIResult.Failure -> emptyList()
+        }
+    private suspend fun getSeatSlots(theaterId: Int, date: String): List<SeatSlot> =
+        when (val result = repository.getSeatSlots(theaterId, date)) {
             is APIResult.Success -> result.data
             is APIResult.Failure -> emptyList()
         }

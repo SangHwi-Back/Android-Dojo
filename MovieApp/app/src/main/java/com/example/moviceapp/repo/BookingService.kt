@@ -17,4 +17,10 @@ interface BookingService {
         @Query("theaterId") theaterId: Int,
         @Query("date") date: String,
     ): Call<List<ShowtimeSlot>>
+
+    @GET("/api/seats")
+    fun getSeatSlots(
+        @Query("theaterId") theaterId: Int,
+        @Query("date") date: String,
+    ): Call<List<SeatSlot>>
 }

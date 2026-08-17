@@ -16,15 +16,20 @@ import { SeatStatus } from './entities/seat.entity';
 export class SeatsController {
   constructor(private readonly seatsService: SeatsService) {}
 
-  // GET /api/seats?theaterId=1&hall=IMAX%20Hall%201
   @Get()
   findAll(
-    @Query('theaterId') theaterId?: string,
-    @Query('hall') hall?: string,
+    @Query('theaterId') theaterId?: number,
+    @Query('date') dateString?: string,
   ) {
     if (!theaterId) throw new BadRequestException('theaterId is required');
-    if (!hall) throw new BadRequestException('hall is required');
-    return this.seatsService.findAll(parseInt(theaterId), hall);
+    if (!dateString) throw new BadRequestException('date is required');
+
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      throw new BadRequestException('Invalid date format');
+    }
+
+    return this.seatsService.findAll(theaterId, date);
   }
 
   // PATCH /api/seats/1/status  { "status": "OCCUPIED" }

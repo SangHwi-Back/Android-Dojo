@@ -28,8 +28,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
-private const val EXIT_CONFIRMATION_WINDOW_MS = 2000L
-
 @AndroidEntryPoint
 class BookChooseInfoFragment : Fragment(), BookChooseHandler {
     private var _binding: FragmentBookChooseInfoBinding? = null
@@ -131,7 +129,6 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
         lifecycleScope.launch {
             viewModel.seatList.collect {
                 println("Need To Fix!!!! : " + it)
-//                chooseInfoAdapter.seats = it
             }
         }
         // Action on viewCreated using ViewModel
