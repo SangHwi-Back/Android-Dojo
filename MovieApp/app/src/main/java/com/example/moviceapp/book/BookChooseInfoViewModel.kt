@@ -7,6 +7,7 @@ import com.example.moviceapp.book.BookInfo.SEAT
 import com.example.moviceapp.book.BookInfo.SHOWTIME
 import com.example.moviceapp.book.BookInfo.THEATER
 import com.example.moviceapp.repo.APIResult
+import com.example.moviceapp.repo.Booking
 import com.example.moviceapp.repo.BookingRepository
 import com.example.moviceapp.repo.Movie
 import com.example.moviceapp.repo.SeatSlot
@@ -15,8 +16,11 @@ import com.example.moviceapp.repo.Theater
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -43,6 +47,8 @@ class BookChooseInfoViewModel @AssistedInject constructor(
     private var _seatList = MutableStateFlow<List<SeatSlot>>(listOf())
     val seatList: StateFlow<List<SeatSlot>>
         get() = _seatList.asStateFlow()
+    private val _bookingResult = MutableSharedFlow<APIResult<Booking>>()
+    val bookingResult: SharedFlow<APIResult<Booking>> = _bookingResult.asSharedFlow()
     var chooseHandler: BookChooseHandler? = null
     /**
      * Change movie model
@@ -178,7 +184,11 @@ class BookChooseInfoViewModel @AssistedInject constructor(
             is APIResult.Success -> result.data
             is APIResult.Failure -> emptyList()
         }
-    suspend fun addBooking() = repository.postBooking(model.value)
+    fun addBooking() {
+        viewModelScope.launch {
+            _bookingResult.emit(repository.postBooking(model.value))
+        }
+    }
     @AssistedFactory
     interface MovieAssistedFactory {
         fun create(

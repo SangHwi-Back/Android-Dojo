@@ -22,8 +22,8 @@ import com.example.moviceapp.book.BookInfo.THEATER
 import com.example.moviceapp.book.choose.adapter.BookChooseInformationAdapter
 import com.example.moviceapp.book.choose.adapter.MoviePagerAdapter
 import com.example.moviceapp.databinding.FragmentBookChooseInfoBinding
+import com.example.moviceapp.repo.APIResult
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -100,9 +100,20 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
         // Go Next Button
         binding.goNextButton.setOnClickListener {
             if (viewModel.currentBookInfo == SEAT)
-                lifecycleScope.launch { viewModel.addBooking() }
+                viewModel.addBooking()
             else
                 viewModel.actionMoveButton(ActionMove.NEXT)
+        }
+        // Booking result
+        lifecycleScope.launch {
+            viewModel.bookingResult.collect { result ->
+                when (result) {
+                    is APIResult.Success<*> -> findNavController().navigate(R.id.action_myInfoFragment)
+                    is APIResult.Failure -> Toast.makeText(
+                        requireContext(), "예매에 실패했어요. 다시 시도해주세요.", Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
         // Subscribe viewModel
         lifecycleScope.launch {
