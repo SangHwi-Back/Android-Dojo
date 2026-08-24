@@ -54,7 +54,15 @@ class BookChooseInfoViewModel @AssistedInject constructor(
      * Change theater model
      */
     fun selectTheater(theater: Theater) {
-        _model.update { it.copy(selectedTheater = theater) }
+        val isSameTheater = model.value.selectedTheater?.id == theater.id
+        if (isSameTheater) {
+            _model.update { it.copy(selectedTheater = theater) }
+        } else {
+            _model.update { it.copy(selectedTheater = theater, selectedShowtime = null, selectedSeat = null) }
+            _showDateList.value = listOf()
+            _showTimeList.value = listOf()
+            _seatList.value = listOf()
+        }
     }
     /**
      * Change showtime date model
@@ -125,7 +133,10 @@ class BookChooseInfoViewModel @AssistedInject constructor(
             goBookInfo(next)
             when (next) {
                 THEATER -> loadMovieInfo(THEATER)
-                SHOWTIME -> loadMovieInfo(SHOWTIME, isShowDate = true)
+                SHOWTIME -> {
+                    val alreadyHasDate = model.value.selectedShowtime?.selectedShowDate != null
+                    loadMovieInfo(SHOWTIME, isShowDate = !alreadyHasDate)
+                }
                 SEAT -> loadMovieInfo(SEAT)
             }
         }

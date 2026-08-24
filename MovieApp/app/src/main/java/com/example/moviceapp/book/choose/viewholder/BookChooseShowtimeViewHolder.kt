@@ -8,7 +8,7 @@ import com.example.moviceapp.book.BookChooseInfoViewModel
 import com.example.moviceapp.book.choose.adapter.ShowtimeAdapter
 import com.example.moviceapp.databinding.ItemBookChooseShowtimeBinding
 import com.example.moviceapp.repo.ShowtimeSlot
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class BookChooseShowtimeViewHolder(
@@ -26,7 +26,7 @@ class BookChooseShowtimeViewHolder(
         binding.showtimeRecyclerView.adapter = dateAdapter
 
         viewModel.viewModelScope.launch {
-            viewModel.model.mapNotNull { it.selectedShowtime }.collect { showtime ->
+            viewModel.model.map { it.selectedShowtime }.collect { showtime ->
                 dateAdapter.setShowtime(showtime)
             }
         }
