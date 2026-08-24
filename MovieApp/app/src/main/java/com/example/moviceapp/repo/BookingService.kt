@@ -1,7 +1,10 @@
 package com.example.moviceapp.repo
 
+import okhttp3.RequestBody
 import retrofit2.Call
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface BookingService {
@@ -23,4 +26,7 @@ interface BookingService {
         @Query("theaterId") theaterId: Int,
         @Query("date") date: String,
     ): Call<List<SeatSlot>>
+
+    @POST("/api/bookings")
+    fun bookMovie(@Body body: CreateBookingRequest): Call<Booking>
 }

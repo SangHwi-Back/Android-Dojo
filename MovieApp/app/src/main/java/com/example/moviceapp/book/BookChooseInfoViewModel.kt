@@ -178,6 +178,7 @@ class BookChooseInfoViewModel @AssistedInject constructor(
             is APIResult.Success -> result.data
             is APIResult.Failure -> emptyList()
         }
+    suspend fun addBooking() = repository.postBooking(model.value)
     @AssistedFactory
     interface MovieAssistedFactory {
         fun create(

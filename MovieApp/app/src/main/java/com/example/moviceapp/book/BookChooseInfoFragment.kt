@@ -23,6 +23,7 @@ import com.example.moviceapp.book.choose.adapter.BookChooseInformationAdapter
 import com.example.moviceapp.book.choose.adapter.MoviePagerAdapter
 import com.example.moviceapp.databinding.FragmentBookChooseInfoBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -97,7 +98,12 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
         // Go Prev Button
         binding.goPrevButton.setOnClickListener { viewModel.actionMoveButton(ActionMove.PREV) }
         // Go Next Button
-        binding.goNextButton.setOnClickListener { viewModel.actionMoveButton(ActionMove.NEXT) }
+        binding.goNextButton.setOnClickListener {
+            if (viewModel.currentBookInfo == SEAT)
+                lifecycleScope.launch { viewModel.addBooking() }
+            else
+                viewModel.actionMoveButton(ActionMove.NEXT)
+        }
         // Subscribe viewModel
         lifecycleScope.launch {
             viewModel.model.collect { model ->
@@ -110,6 +116,7 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
                 binding.goPrevButton.visibility = if (model.currentBookInfo.currentItem > 0) View.VISIBLE else View.GONE
                 // Go Next Button Status
                 binding.goNextButton.isEnabled = isEnabled
+                binding.goNextButton.text = getString(if (model.currentBookInfo == SEAT) R.string.action_confirm else R.string.action_next)
                 // Go Next Button Background color
                 val tint = if (isEnabled) R.color.green_accent else R.color.background_secondary
                 binding.goNextButton.backgroundTintList = ContextCompat.getColorStateList(
