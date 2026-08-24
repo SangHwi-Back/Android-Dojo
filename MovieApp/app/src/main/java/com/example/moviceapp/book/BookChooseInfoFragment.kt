@@ -93,9 +93,11 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
         // Booking ChooseInfo ViewPager2
         binding.movieChooseInfoViewPager.adapter = chooseInfoAdapter
         binding.movieChooseInfoViewPager.currentItem = 0
-        binding.movieChooseInfoViewPager.isEnabled = false
+        binding.movieChooseInfoViewPager.isUserInputEnabled = false
+        // Go Prev Button
+        binding.goPrevButton.setOnClickListener { viewModel.actionMoveButton(ActionMove.PREV) }
         // Go Next Button
-        binding.goNextButton.setOnClickListener { viewModel.actionGoNextButton() }
+        binding.goNextButton.setOnClickListener { viewModel.actionMoveButton(ActionMove.NEXT) }
         // Subscribe viewModel
         lifecycleScope.launch {
             viewModel.model.collect { model ->
@@ -104,6 +106,8 @@ class BookChooseInfoFragment : Fragment(), BookChooseHandler {
                     SHOWTIME -> (model.selectedShowtime?.selectedShowtimeSlot != null)
                     SEAT ->     (model.selectedSeat != null)
                 }
+                // Go Prev Button Status
+                binding.goPrevButton.visibility = if (model.currentBookInfo.currentItem > 0) View.VISIBLE else View.GONE
                 // Go Next Button Status
                 binding.goNextButton.isEnabled = isEnabled
                 // Go Next Button Background color

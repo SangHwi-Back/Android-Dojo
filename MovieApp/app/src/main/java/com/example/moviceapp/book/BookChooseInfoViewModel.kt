@@ -79,6 +79,11 @@ class BookChooseInfoViewModel @AssistedInject constructor(
         SHOWTIME -> SEAT
         else ->     THEATER
     }
+    private fun getPrevBookInfo(): BookInfo? = when (currentBookInfo) {
+        THEATER -> null
+        SHOWTIME -> THEATER
+        SEAT -> SHOWTIME
+    }
     private fun goBookInfo(bookInfo: BookInfo? = null) {
         val target = bookInfo ?: getNextBookInfo()
         _model.update { it.copy(currentBookInfo = target) }
@@ -114,13 +119,15 @@ class BookChooseInfoViewModel @AssistedInject constructor(
             }
         }
     }
-    fun actionGoNextButton() {
-        val next = getNextBookInfo()
-        goBookInfo(next)
-        when (next) {
-            THEATER ->  loadMovieInfo(THEATER)
-            SHOWTIME -> loadMovieInfo(SHOWTIME, isShowDate = true)
-            SEAT ->     loadMovieInfo(SEAT)
+    fun actionMoveButton(action: ActionMove) {
+        val next = if (action == ActionMove.NEXT) getNextBookInfo() else getPrevBookInfo()
+        if (next != null) {
+            goBookInfo(next)
+            when (next) {
+                THEATER -> loadMovieInfo(THEATER)
+                SHOWTIME -> loadMovieInfo(SHOWTIME, isShowDate = true)
+                SEAT -> loadMovieInfo(SEAT)
+            }
         }
     }
     fun actionMoviePageMoved(movie: Movie) {
@@ -193,3 +200,6 @@ data class BookShowtime(
     var selectedShowDate: String,
     var selectedShowtimeSlot: ShowtimeSlot? = null,
 )
+enum class ActionMove {
+    PREV, NEXT
+}
