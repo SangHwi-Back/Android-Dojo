@@ -1,6 +1,5 @@
 import {BadRequestException, Body, Controller, Get, Post, Query} from '@nestjs/common';
-import { BookingsService } from './bookings.service';
-import {Booking} from "./entities/booking.entity";
+import { BookingsService, CreateBookingDto } from './bookings.service';
 
 @Controller('bookings')
 export class BookingsController {
@@ -39,7 +38,7 @@ export class BookingsController {
   }
 
   @Post()
-  bookMovie(@Body() booking: Booking) {
-    return this.bookingsService.saveBooking(booking)
+  bookMovie(@Body() dto: CreateBookingDto) {
+    return this.bookingsService.saveBooking(dto)
   }
 }

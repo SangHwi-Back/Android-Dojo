@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinColumn, JoinTable } from 'typeorm';
 import { Movie } from '../../movies/entities/movie.entity';
 import { Theater } from '../../theaters/entities/theater.entity';
+import { Seat } from '../../seats/entities/seat.entity';
 
 @Entity('bookings')
 export class Booking {
@@ -21,8 +22,9 @@ export class Booking {
   @Column()
   time: string;
 
-  @Column('text', { array: true })
-  seats: string[];
+  @ManyToMany(() => Seat, { eager: true })
+  @JoinTable({ name: 'booking_seats' })
+  seats: Seat[];
 
   @Column({ name: 'is_upcoming', default: true })
   isUpcoming: boolean;
