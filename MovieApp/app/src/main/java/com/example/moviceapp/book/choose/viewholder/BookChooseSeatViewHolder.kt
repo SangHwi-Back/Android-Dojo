@@ -2,6 +2,7 @@ package com.example.moviceapp.book.choose.viewholder
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
@@ -9,70 +10,84 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.moviceapp.R
 import com.example.moviceapp.book.BookChooseInfoModel
 import com.example.moviceapp.book.BookChooseInfoViewModel
-import com.example.moviceapp.common.GridSpanDecoration
 import com.example.moviceapp.databinding.ItemBookChooseItemSeatBinding
 import com.example.moviceapp.databinding.ItemBookChooseSeatBinding
 import com.example.moviceapp.repo.SeatSlot
 
-private const val MIN_WIDTH_HEIGHT: Float = 50f
-private const val GRID_SPACE: Float = 8f
+private const val MIN_SEAT_WIDTH: Float = 50f
+private const val ROW_AISLE_HEIGHT: Float = 20f
+// 좌석 1칸 = SEAT_SPAN 단위, 통로 1칸 = AISLE_SPAN 단위 (너비 비율)
+private const val SEAT_SPAN = 3
+private const val AISLE_SPAN = 1
+
+sealed class SeatGridItem {
+    data class Seat(val slot: SeatSlot) : SeatGridItem()
+    object ColumnAisle : SeatGridItem()
+    object RowAisle : SeatGridItem()
+}
+
+private fun buildGridItems(seats: List<SeatSlot>): Pair<List<SeatGridItem>, Int> {
+    if (seats.isEmpty())
+        return emptyList<SeatGridItem>() to 4 * SEAT_SPAN
+    val byRow = seats.groupBy { it.rowIndex }.toSortedMap()
+    // 가장 긴 행을 기준으로 spanCount 계산
+    val refRow = byRow.values.maxByOrNull { it.size }?.sortedBy { it.columnIndex }
+    if (refRow == null)
+        return emptyList<SeatGridItem>() to 4 * SEAT_SPAN
+    val spanCount = refRow.sumOf {
+        SEAT_SPAN + (if (it.hasAisleAfterColumn) AISLE_SPAN else 0) // 좌석과 통로 사이의 간격
+    }.let {
+        + 2 * AISLE_SPAN // 양 옆 Span
+    }
+    val items = mutableListOf<SeatGridItem>()
+    byRow.forEach { (_, rowSeats) ->
+        // 맨 왼쪽 통로
+        items.add(SeatGridItem.ColumnAisle)
+        // 왼쪽 좌석부터 중간 통로
+        rowSeats.sortedBy { it.columnIndex }.forEachIndexed { _, seat ->
+            items.add(SeatGridItem.Seat(seat))
+            if (seat.hasAisleAfterColumn) items.add(SeatGridItem.ColumnAisle)
+        }
+        // 맨 오른쪽 통로
+        items.add(SeatGridItem.ColumnAisle)
+        // 좌석 아래 통로
+        if (rowSeats.any { it.hasAisleAfterRow }) {
+            items.add(SeatGridItem.RowAisle)
+        }
+    }
+    return items to spanCount
+}
 
 class BookChooseSeatViewHolder(
     private val viewModel: BookChooseInfoViewModel,
     val parent: ViewGroup,
     val binding: ItemBookChooseSeatBinding,
 ) : BookChooseViewHolder(binding) {
-    private var decoration: GridSpanDecoration? = null
     private val adapter = SeatListAdapter { seat ->
         viewModel.selectSeat(seat)
     }
     init {
-        binding.theaterSeatRecyclerView.layoutManager = GridLayoutManager(
-            parent.context, 4
-        )
-        GridSpanDecoration(4, 8).apply {
-            this@BookChooseSeatViewHolder.decoration = this
-            binding.theaterSeatRecyclerView.addItemDecoration(this)
-        }
         binding.theaterSeatRecyclerView.adapter = adapter
     }
     fun setSeats(seats: List<SeatSlot>) {
-        val maxRowCount = if (seats.isEmpty()) {
-            4
-        } else {
-            seats.groupBy { it.rowLabel }
-                .maxBy { it.value.size }
-                .value
-                .size
-        }
+        val (items, spanCount) = buildGridItems(seats)
         val density = parent.context.resources.displayMetrics.density
-        // item minWidth = 50dp
-        val itemWidthPx = (MIN_WIDTH_HEIGHT * density).toInt()
-        // GridSpanDecoration gap = 8dp
-        val gapPx = (GRID_SPACE * density).toInt()
-        // Length of Recyclerview grid width
-        val totalWidthPx = maxRowCount * itemWidthPx + (maxRowCount - 1) * gapPx
-        // Remove unused ItemDecoration
-        decoration?.let { binding.theaterSeatRecyclerView.removeItemDecoration(it) }
-        // Set new layout properties
+        val totalWidthPx = (spanCount * MIN_SEAT_WIDTH * density / SEAT_SPAN).toInt()
+
         binding.theaterSeatRecyclerView.layoutParams.width = totalWidthPx
-        binding.theaterSeatRecyclerView.layoutManager = GridLayoutManager(
-            parent.context, maxRowCount
-        )
-        GridSpanDecoration(maxRowCount, GRID_SPACE.toInt()).apply {
-            this@BookChooseSeatViewHolder.decoration = this
-            binding.theaterSeatRecyclerView.addItemDecoration(this)
+        val lm = GridLayoutManager(parent.context, spanCount)
+        lm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int) = adapter.getSpanSize(position, spanCount)
         }
-        adapter.seats = seats
+        binding.theaterSeatRecyclerView.layoutManager = lm
+        adapter.items = items
     }
-    override fun bind(model: BookChooseInfoModel) {
-        // 선택 상태는 SeatListAdapter 가 클릭 시점에 자체적으로 추적한다
-    }
+    override fun bind(model: BookChooseInfoModel) {}
 
     class SeatListAdapter(
         private val onSelected: (SeatSlot) -> Unit
-    ) : RecyclerView.Adapter<SeatViewHolder>() {
-        var seats: List<SeatSlot> = listOf()
+    ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+        var items: List<SeatGridItem> = listOf()
             set(value) {
                 field = value
                 selectedPosition = -1
@@ -80,28 +95,60 @@ class BookChooseSeatViewHolder(
             }
         private var selectedPosition = -1
 
-        override fun getItemCount(): Int = seats.size
+        override fun getItemCount() = items.size
+        override fun getItemViewType(position: Int) = when (items[position]) {
+            is SeatGridItem.Seat     -> 0
+            SeatGridItem.ColumnAisle -> 1
+            SeatGridItem.RowAisle    -> 2
+        }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SeatViewHolder {
-            val inflater = LayoutInflater.from(parent.context)
-            return SeatViewHolder(ItemBookChooseItemSeatBinding.inflate(inflater, parent, false))
+        fun getSpanSize(position: Int, spanCount: Int) = when (items.getOrNull(position)) {
+            SeatGridItem.RowAisle    -> spanCount
+            SeatGridItem.ColumnAisle -> AISLE_SPAN
+            else                     -> SEAT_SPAN
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+            val density = parent.context.resources.displayMetrics.density
+            return when (viewType) {
+                0 -> SeatViewHolder(
+                    ItemBookChooseItemSeatBinding.inflate(
+                        LayoutInflater.from(parent.context), parent, false
+                    )
+                )
+                1 -> AisleViewHolder(View(parent.context).apply {
+                    layoutParams = RecyclerView.LayoutParams(
+                        RecyclerView.LayoutParams.MATCH_PARENT,
+                        (MIN_SEAT_WIDTH * density).toInt()
+                    )
+                })
+                else -> AisleViewHolder(View(parent.context).apply {
+                    layoutParams = RecyclerView.LayoutParams(
+                        RecyclerView.LayoutParams.MATCH_PARENT,
+                        (ROW_AISLE_HEIGHT * density).toInt()
+                    )
+                })
+            }
         }
 
         override fun onBindViewHolder(
-            holder: SeatViewHolder,
+            holder: RecyclerView.ViewHolder,
             @SuppressLint("RecyclerView") position: Int
         ) {
-            val seat = seats[position]
-            holder.bind(seat, position == selectedPosition)
+            if (holder !is SeatViewHolder) return
+            val item = items[position] as SeatGridItem.Seat
+            holder.bind(item.slot, position == selectedPosition)
             holder.itemView.setOnClickListener {
                 val prev = selectedPosition
                 selectedPosition = position
                 if (prev != -1) notifyItemChanged(prev)
                 notifyItemChanged(selectedPosition)
-                onSelected(seat)
+                onSelected(item.slot)
             }
         }
     }
+
+    class AisleViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
     class SeatViewHolder(
         private val binding: ItemBookChooseItemSeatBinding
