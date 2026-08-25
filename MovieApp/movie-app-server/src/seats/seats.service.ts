@@ -18,19 +18,20 @@ export class SeatsService {
     private readonly seatsRepo: Repository<Seat>,
   ) {}
 
-  async findAll(theaterId: number, date: Date): Promise<Seat[]> {
+  async findAll(theaterId: number, date: Date, hall: string): Promise<Seat[]> {
     // 조회 시점에 만료된 HELD 좌석을 AVAILABLE 로 정리 (별도 스케줄러 없이 lazy expiry)
     await this.seatsRepo
       .createQueryBuilder()
       .update(Seat)
       .set({ status: SeatStatus.AVAILABLE, heldByUserId: null, heldUntil: null })
       .where('theater_id = :theaterId', { theaterId })
+      .andWhere('hall = :hall', { hall })
       .andWhere('status = :held', { held: SeatStatus.HELD })
       .andWhere('held_until < :now', { now: date })
       .execute();
 
     return this.seatsRepo.find({
-      where: { theater: { id: theaterId } },
+      where: { theater: { id: theaterId }, hall },
       order: { rowIndex: 'ASC', columnIndex: 'ASC' },
     });
   }

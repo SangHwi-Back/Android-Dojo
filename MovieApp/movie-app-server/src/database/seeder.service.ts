@@ -249,7 +249,7 @@ export class SeederService implements OnModuleInit {
         theater: theaters[0], // IMAX Cineplex Downtown
         date: 'May 15, 2026',
         time: '6:45 PM',
-        seats: ['D4', 'D5'],
+        seats: [],
         isUpcoming: true,
       },
       {
@@ -257,7 +257,7 @@ export class SeederService implements OnModuleInit {
         theater: theaters[1], // Galaxy Multiplex
         date: 'May 20, 2026',
         time: '9:30 PM',
-        seats: ['E2', 'E3', 'E4'],
+        seats: [],
         isUpcoming: true,
       },
       {
@@ -265,7 +265,7 @@ export class SeederService implements OnModuleInit {
         theater: theaters[2], // Starlight Cinema
         date: 'May 28, 2026',
         time: '7:00 PM',
-        seats: ['B1', 'B2'],
+        seats: [],
         isUpcoming: true,
       },
       {
@@ -273,7 +273,7 @@ export class SeederService implements OnModuleInit {
         theater: theaters[0], // IMAX Cineplex Downtown
         date: 'April 5, 2026',
         time: '3:00 PM',
-        seats: ['F5', 'F6', 'F7'],
+        seats: [],
         isUpcoming: false,
       },
     ]);

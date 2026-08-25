@@ -20,16 +20,18 @@ export class SeatsController {
   findAll(
     @Query('theaterId') theaterId?: number,
     @Query('date') dateString?: string,
+    @Query('hall') hall?: string,
   ) {
     if (!theaterId) throw new BadRequestException('theaterId is required');
     if (!dateString) throw new BadRequestException('date is required');
+    if (!hall) throw new BadRequestException('hall is required');
 
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
       throw new BadRequestException('Invalid date format');
     }
 
-    return this.seatsService.findAll(theaterId, date);
+    return this.seatsService.findAll(theaterId, date, hall);
   }
 
   // PATCH /api/seats/1/status  { "status": "OCCUPIED" }
