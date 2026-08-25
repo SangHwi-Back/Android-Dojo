@@ -79,19 +79,6 @@ data class SeatSlot(
         get() = "$rowLabel$columnIndex"
 }
 
-data class UserStats(
-    val moviesCount: Int,
-    val points: String,            // "1.2K"
-    val saved: Int,                // 89  → "$89"
-)
-
-data class UserProfile(
-    val name: String,
-    val isGuest: Boolean,
-    val stats: UserStats,
-    val upcomingBookings: List<Booking>,
-)
-
 // ================================================================
 //  Mock Data — 뷰 단위로 분리된 object
 // ================================================================
@@ -171,76 +158,12 @@ object MoviesMock {
                 "shadow organization threatens global infrastructure.",
     )
 
-    /** 현재 상영 중 (SearchFragment 수평 리스트) */
-    val nowPlaying: List<Movie> = listOf(
-        dunePartThree,
-        oceansElevenLegacy,
-        neonKnights,
-        starfallChronicles,
-    )
-
     /** 곧 개봉 */
     val comingSoon: List<Movie> = listOf(
         midnightSonata,
         ironVeilRising,
     )
 
-    /** 상단 피처드 배너 (ViewPager2) */
-    val featured: List<Movie> = listOf(
-        dunePartThree,
-        ironVeilRising,
-        starfallChronicles,
-    )
-
-    /** 전체 목록 */
-    val all: List<Movie> = nowPlaying + comingSoon
-}
-
-// ----------------------------------------------------------------
-
-/**
- * 극장 목록 (BookMovieFragment — Select Theater 화면)
- *
- * 사용 예:
- *   val theaters = TheatersMock.list
- */
-object TheatersMock {
-
-    val imaxCineplexDowntown = Theater(
-        id = 1,
-        name = "IMAX Cineplex Downtown",
-        address = "123 Main Street, Downtown",
-        distanceKm = 1.2,
-    )
-
-    val galaxyMultiplex = Theater(
-        id = 2,
-        name = "Galaxy Multiplex",
-        address = "456 Oak Avenue, Midtown",
-        distanceKm = 2.8,
-    )
-
-    val starlightCinema = Theater(
-        id = 3,
-        name = "Starlight Cinema",
-        address = "789 Park Boulevard, Uptown",
-        distanceKm = 4.5,
-    )
-
-    val grandScreenArena = Theater(
-        id = 4,
-        name = "Grand Screen Arena",
-        address = "321 River Road, Eastside",
-        distanceKm = 6.1,
-    )
-
-    /** 거리순 정렬된 전체 극장 리스트 */
-    val list: List<Theater> = listOf(
-        imaxCineplexDowntown,
-        galaxyMultiplex,
-        starlightCinema,
-        grandScreenArena,
-    )
 }
 
 // ----------------------------------------------------------------
