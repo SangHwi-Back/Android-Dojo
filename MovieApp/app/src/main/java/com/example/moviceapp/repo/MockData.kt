@@ -32,10 +32,24 @@ data class Booking(
     val id: Int,
     val movie: Movie,
     val theater: Theater,
-    val date: String,              // "May 15, 2026"
-    val time: String,              // "6:45 PM"
-    val seats: List<String>,       // ["D4", "D5"]
+    val date: String,
+    val time: String,
+    val seats: List<SeatSlot>,
 )
+
+// POST /api/bookings 요청 body
+data class CreateBookingRequest(
+    val movie: MovieRef,
+    val theater: TheaterRef,
+    val date: String,
+    val time: String,
+    val seatIds: List<Int>,
+    val isUpcoming: Boolean = true,
+) {
+    data class MovieRef(val id: Int)
+    data class TheaterRef(val id: Int)
+}
+
 
 // GET /api/showtimes 응답 매핑용 — 특정 movie+theater+date 의 상영 시간 슬롯
 data class ShowtimeSlot(

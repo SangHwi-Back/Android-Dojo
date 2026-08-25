@@ -127,8 +127,9 @@ class BookChooseInfoViewModel @AssistedInject constructor(
                 SEAT -> {
                     val theaterId = model.value.selectedTheater?.id
                     val date = model.value.selectedShowtime?.selectedShowDate
-                    if (date != null && theaterId != null)
-                        _seatList.value = getSeatSlots(theaterId, date)
+                    val hall = model.value.selectedShowtime?.selectedShowtimeSlot?.hall
+                    if (date != null && theaterId != null && hall != null)
+                        _seatList.value = getSeatSlots(theaterId, date, hall)
                 }
             }
         }
@@ -179,8 +180,8 @@ class BookChooseInfoViewModel @AssistedInject constructor(
             is APIResult.Success -> result.data
             is APIResult.Failure -> emptyList()
         }
-    private suspend fun getSeatSlots(theaterId: Int, date: String): List<SeatSlot> =
-        when (val result = repository.getSeatSlots(theaterId, date)) {
+    private suspend fun getSeatSlots(theaterId: Int, date: String, hall: String): List<SeatSlot> =
+        when (val result = repository.getSeatSlots(theaterId, date, hall)) {
             is APIResult.Success -> result.data
             is APIResult.Failure -> emptyList()
         }

@@ -8,7 +8,7 @@ interface BookingRepository {
     suspend fun getShowtimeDates(movieId: Int): APIResult<List<String>>
     suspend fun getTheaters(movieId: Int): APIResult<List<Theater>>
     suspend fun getShowtimeSlots(movieId: Int, theaterId: Int, date: String): APIResult<List<ShowtimeSlot>>
-    suspend fun getSeatSlots(theaterId: Int, date: String): APIResult<List<SeatSlot>>
+    suspend fun getSeatSlots(theaterId: Int, date: String, hall: String): APIResult<List<SeatSlot>>
     suspend fun postBooking(booking: BookChooseInfoModel): APIResult<Booking>
 }
 
@@ -25,8 +25,8 @@ class BookingRepositoryImpl @Inject constructor(
     override suspend fun getShowtimeSlots(movieId: Int, theaterId: Int, date: String): APIResult<List<ShowtimeSlot>> =
         service.getShowtimeSlots(movieId, theaterId, date).toAPIResult()
 
-    override suspend fun getSeatSlots(theaterId: Int, date: String): APIResult<List<SeatSlot>> =
-        service.getSeatSlots(theaterId, date).toAPIResult()
+    override suspend fun getSeatSlots(theaterId: Int, date: String, hall: String): APIResult<List<SeatSlot>> =
+        service.getSeatSlots(theaterId, date, hall).toAPIResult()
 
     override suspend fun postBooking(booking: BookChooseInfoModel): APIResult<Booking> {
         val theaterId = booking.selectedTheater?.id ?: return APIResult.Failure(Error("Invalid theater id"))
