@@ -24,6 +24,12 @@ object RetrofitModule {
         }
         return OkHttpClient.Builder()
             .addInterceptor(httpLoggingInterceptor)
+            .addInterceptor { chain ->
+                val request = chain.request().newBuilder()
+                    .addHeader("ngrok-skip-browser-warning", "true")
+                    .build()
+                chain.proceed(request)
+            }
             .build()
     }
 
@@ -32,7 +38,7 @@ object RetrofitModule {
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl("https://${BuildConfig.IP_API_SERVER}:${BuildConfig.PORT_API_SERVER}/")
+            .baseUrl("https://${BuildConfig.IP_API_SERVER}/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
