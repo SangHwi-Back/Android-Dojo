@@ -2,7 +2,8 @@
 <FrameLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/chip_background"
+    android:background="@drawable/rounded_accent_background"
+    android:backgroundTint="@color/chip_background"
     app:cardCornerRadius="8dp"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"

@@ -26,6 +26,7 @@ class MovieBottomSheet(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.Theme_CineBook_BottomSheetDialog)
         movie = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) {
             requireArguments().getParcelable(ARG_MOVIE, Movie::class.java)!!
         } else {
