@@ -29,6 +29,7 @@
         <item name="android:textColorSecondary">@color/text_secondary</item>
         <item name="android:textColorHint">@color/text_hint</item>
         <item name="colorControlHighlight">@color/ripple_color</item>
+        <item name="materialAlertDialogTheme">@style/Theme.CineBook.Dialog</item>
         <item name="toolbarStyle">@style/Widget.CineBook.Toolbar</item>
         <item name="bottomNavigationStyle">@style/Widget.CineBook.BottomNavigationView</item>
         <item name="materialCardViewStyle">@style/Widget.CineBook.CardView</item>
@@ -326,6 +327,17 @@
     <!-- ======================== -->
     <!--   DIALOG / BOTTOM SHEET  -->
     <!-- ======================== -->
+
+    <style name="Theme.CineBook.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.6</item>
+        <item name="backgroundTint">@color/background_secondary</item>
+        <item name="colorSurfaceContainerHigh">@color/background_primary</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorPrimary">@color/green_primary</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.CineBook.LargeComponent</item>
+    </style>
 
     <style name="Theme.CineBook.BottomSheetDialog" parent="Theme.Material3.DayNight.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/Widget.CineBook.BottomSheet</item>

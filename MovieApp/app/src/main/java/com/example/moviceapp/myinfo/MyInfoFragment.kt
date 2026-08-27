@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.moviceapp.R
+import com.example.moviceapp.common.CommonDialog
 import com.example.moviceapp.databinding.FragmentMyInfoBinding
 import com.example.moviceapp.databinding.ItemMyInfoHistoryBinding
 import com.example.moviceapp.databinding.ItemMyInfoUpcomingMovieBinding
@@ -57,7 +58,15 @@ class MyInfoFragment : Fragment() {
         ))
 
         // UPCOMING_MOVIE
-        val upcomingAdapter = UpcomingMovieListAdapter()
+        val upcomingAdapter = UpcomingMovieListAdapter { movie ->
+            CommonDialog.newInstance(
+                "This is ${movie.title}",
+                movie.description,
+            ).show(
+                childFragmentManager,
+                "CommonDialog"
+            )
+        }
         binding.myInfoUpcomingMovieRecyclerView.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
         binding.myInfoUpcomingMovieRecyclerView.adapter = upcomingAdapter
@@ -108,7 +117,7 @@ class MyInfoFragment : Fragment() {
     }
 
     // --- Upcoming Movie ---
-    class UpcomingMovieListAdapter : ListAdapter<Movie, UpcomingMovieViewHolder>(MovieDiffCallback) {
+    class UpcomingMovieListAdapter(val onClick: (Movie) -> Unit) : ListAdapter<Movie, UpcomingMovieViewHolder>(MovieDiffCallback) {
         object MovieDiffCallback : DiffUtil.ItemCallback<Movie>() {
             override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean =
                 oldItem.title == newItem.title
@@ -117,7 +126,11 @@ class MyInfoFragment : Fragment() {
         }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UpcomingMovieViewHolder {
             val inflater = LayoutInflater.from(parent.context)
-            return UpcomingMovieViewHolder(ItemMyInfoUpcomingMovieBinding.inflate(inflater, parent, false))
+            return UpcomingMovieViewHolder(ItemMyInfoUpcomingMovieBinding.inflate(inflater, parent, false)).apply {
+                binding.root.setOnClickListener {
+                    onClick.invoke(getItem(bindingAdapterPosition))
+                }
+            }
         }
         override fun onBindViewHolder(holder: UpcomingMovieViewHolder, position: Int) =
             holder.bind(getItem(position))
