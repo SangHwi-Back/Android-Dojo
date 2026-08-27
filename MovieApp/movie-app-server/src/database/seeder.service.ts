@@ -84,7 +84,7 @@ export class SeederService implements OnModuleInit {
         genres: ['Sci-Fi', 'Adventure'],
         description:
           'The epic conclusion to the Dune saga follows Paul Atreides as he unites with the Fremen people of the desert planet Arrakis.',
-        posterUrl: null,
+        posterUrl: "https://picsum.photos/seed/dune/300/450",
         backdropUrl: null,
         isNowPlaying: true,
         isComingSoon: false,
@@ -99,7 +99,7 @@ export class SeederService implements OnModuleInit {
         genres: ['Thriller', 'Comedy'],
         description:
           'A new crew of master thieves attempts the most daring casino heist in Las Vegas history.',
-        posterUrl: null,
+        posterUrl: "https://picsum.photos/seed/oceans/300/450",
         backdropUrl: null,
         isNowPlaying: true,
         isComingSoon: false,
@@ -114,7 +114,7 @@ export class SeederService implements OnModuleInit {
         genres: ['Action', 'Sci-Fi'],
         description:
           'In a neon-lit dystopian city, a rogue detective uncovers a conspiracy that threatens the last free zone on Earth.',
-        posterUrl: null,
+        posterUrl: "https://picsum.photos/seed/neon/300/450",
         backdropUrl: null,
         isNowPlaying: true,
         isComingSoon: false,
@@ -129,7 +129,7 @@ export class SeederService implements OnModuleInit {
         genres: ['Adventure', 'Drama'],
         description:
           'An astronaut stranded on a dying moon must choose between survival and saving an alien civilization.',
-        posterUrl: null,
+        posterUrl: "https://picsum.photos/seed/starfall/300/450",
         backdropUrl: null,
         isNowPlaying: true,
         isComingSoon: false,
@@ -144,7 +144,7 @@ export class SeederService implements OnModuleInit {
         genres: ['Drama', 'Romance'],
         description:
           'A blind pianist rediscovers passion when a mysterious composer leaves unfinished scores on his doorstep.',
-        posterUrl: null,
+        posterUrl: "https://picsum.photos/seed/midnight/300/450",
         backdropUrl: null,
         isNowPlaying: false,
         isComingSoon: true,
@@ -159,7 +159,7 @@ export class SeederService implements OnModuleInit {
         genres: ['Action', 'Adventure'],
         description:
           "The world's last supersoldier comes out of hiding when a shadow organization threatens global infrastructure.",
-        posterUrl: null,
+        posterUrl: "https://picsum.photos/seed/ironveil/300/450",
         backdropUrl: null,
         isNowPlaying: false,
         isComingSoon: true,
