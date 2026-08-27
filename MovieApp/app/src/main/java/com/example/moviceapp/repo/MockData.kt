@@ -16,7 +16,7 @@ data class Movie(
     val releaseDate: String,       // "2026-03-15"
     val genres: List<String>,
     val description: String,
-    val posterURL: String? = null,
+    val posterUrl: String? = null,
     val backdropURL: String? = null,
 ) : Parcelable
 
@@ -145,6 +145,7 @@ object MoviesMock {
         genres = listOf("Drama", "Romance"),
         description = "A blind pianist rediscovers passion when a mysterious " +
                 "composer leaves unfinished scores on his doorstep.",
+        posterUrl = "https://picsum.photos/seed/midnight/300/450",
     )
 
     val ironVeilRising = Movie(
@@ -156,6 +157,7 @@ object MoviesMock {
         genres = listOf("Action", "Adventure"),
         description = "The world's last supersoldier comes out of hiding when a " +
                 "shadow organization threatens global infrastructure.",
+        posterUrl = "https://picsum.photos/seed/ironveil/300/450",
     )
 
     /** 곧 개봉 */

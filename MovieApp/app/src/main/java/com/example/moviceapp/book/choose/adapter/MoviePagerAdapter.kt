@@ -29,7 +29,7 @@ class MoviePagerAdapter(
         private val binding: ItemBookChooseItemMovieInfoBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(movie: Movie) {
-            binding.movieImageView.load(movie.posterURL ?: R.drawable.ic_launcher_background)
+            binding.movieImageView.load(movie.posterUrl ?: R.drawable.ic_launcher_background)
             binding.movieNameTextView.text = movie.title
             binding.movieRuntimeTextView.text = movie.duration
             binding.moviePointTextView.text = movie.rating.toString()

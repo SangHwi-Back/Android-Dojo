@@ -49,7 +49,7 @@ class ThumbnailViewHolder(
     fun bind(item: Movie) {
         binding.nameTextView.text = item.title
         binding.pointTextView.text = item.rating.toString()
-        binding.movieImageView.load(item.posterURL ?: R.drawable.ic_launcher_background)
+        binding.movieImageView.load(item.posterUrl ?: R.drawable.ic_launcher_background)
         binding.root.setOnClickListener { setOnClickViewListener(item) }
     }
 }

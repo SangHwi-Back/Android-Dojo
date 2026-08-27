@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -168,7 +167,7 @@ class MyInfoFragment : Fragment() {
         fun bind(movie: Movie) {
             binding.nameTextView.text = movie.title
             binding.pointTextView.text = movie.rating.toString()
-            binding.movieImageView.load(movie.posterURL ?: R.drawable.ic_launcher_background)
+            binding.movieImageView.load(movie.posterUrl ?: R.drawable.ic_launcher_background)
         }
     }
 

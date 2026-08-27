@@ -27,7 +27,6 @@ import { DatabaseModule } from './database/database.module';
       database: process.env.DB_NAME ?? 'movieappdb',
       entities: [Movie, Theater, Showtime, Booking, User, Seat],
       synchronize: true,
-      dropSchema: true,
     }),
     DatabaseModule,
     MoviesModule,
