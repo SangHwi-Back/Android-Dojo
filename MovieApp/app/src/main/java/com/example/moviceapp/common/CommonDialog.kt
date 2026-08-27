@@ -12,11 +12,11 @@ class CommonDialog : DialogFragment() {
         private const val ARG_MESSAGE = "message"
         private const val ARG_LAYOUT_RESOURCE_ID = "resource_layout_id"
 
-        fun newInstance(title: String, message: String, layout: Int? = null): CommonDialog {
+        fun newInstance(title: String, message: String?, layout: Int? = null): CommonDialog {
             val dialog = CommonDialog()
             val args = Bundle()
             args.putString(ARG_TITLE, title)
-            args.putString(ARG_MESSAGE, message)
+            if (message != null) args.putString(ARG_MESSAGE, message)
             if (layout != null) args.putInt(ARG_LAYOUT_RESOURCE_ID, layout)
             dialog.arguments = args
             return dialog
@@ -25,7 +25,7 @@ class CommonDialog : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val title = arguments?.getString(ARG_TITLE) ?: ""
-        val message = arguments?.getString(ARG_MESSAGE) ?: ""
+        val message = arguments?.getString(ARG_MESSAGE)
 
         val builder = MaterialAlertDialogBuilder(requireContext(), R.style.Theme_CineBook_Dialog)
 
@@ -35,8 +35,8 @@ class CommonDialog : DialogFragment() {
 
         builder.apply {
             setTitle(title)
-            setMessage(message)
 
+            if (message != null) setMessage(message)
             if (view != null) setView(view)
 
             setPositiveButton(android.R.string.ok) { _, _ ->

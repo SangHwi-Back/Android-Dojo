@@ -33,11 +33,21 @@ class MyInfoFragment : Fragment() {
         return binding.root
     }
 
+    private fun showCommonDialog(title: String, message: String? = null) {
+        CommonDialog.newInstance(title, message).show(
+            childFragmentManager,
+            "CommonDialog"
+        )
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.userProfileNameTextView.text = "Guest User"
         binding.userProfileStatusTextView.text = "Sign in to access your bookings"
+        binding.userSignInButton.setOnClickListener {
+            showCommonDialog("Developing in progress")
+        }
 
         // HISTORY
         val historyAdapter = HistoryListAdapter()
@@ -59,13 +69,7 @@ class MyInfoFragment : Fragment() {
 
         // UPCOMING_MOVIE
         val upcomingAdapter = UpcomingMovieListAdapter { movie ->
-            CommonDialog.newInstance(
-                "This is ${movie.title}",
-                movie.description,
-            ).show(
-                childFragmentManager,
-                "CommonDialog"
-            )
+            showCommonDialog("This is ${movie.title}", movie.description)
         }
         binding.myInfoUpcomingMovieRecyclerView.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
@@ -73,7 +77,9 @@ class MyInfoFragment : Fragment() {
         upcomingAdapter.submitList(MoviesMock.comingSoon)
 
         // USER_STATUS_SECTION
-        val statusAdapter = UserStatusSectionListAdapter()
+        val statusAdapter = UserStatusSectionListAdapter {
+            showCommonDialog(it.title, it.subTitle)
+        }
         binding.myInfoUserStatusRecyclerView.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
         binding.myInfoUserStatusRecyclerView.adapter = statusAdapter
@@ -137,7 +143,7 @@ class MyInfoFragment : Fragment() {
     }
 
     // --- User Status Section ---
-    class UserStatusSectionListAdapter : ListAdapter<MyInfoStatusSection, UserStatusSectionViewHolder>(StatusDiffCallback) {
+    class UserStatusSectionListAdapter(val onClick: (MyInfoStatusSection) -> Unit) : ListAdapter<MyInfoStatusSection, UserStatusSectionViewHolder>(StatusDiffCallback) {
         object StatusDiffCallback : DiffUtil.ItemCallback<MyInfoStatusSection>() {
             override fun areItemsTheSame(oldItem: MyInfoStatusSection, newItem: MyInfoStatusSection): Boolean =
                 oldItem.title == newItem.title
@@ -146,7 +152,11 @@ class MyInfoFragment : Fragment() {
         }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserStatusSectionViewHolder {
             val inflater = LayoutInflater.from(parent.context)
-            return UserStatusSectionViewHolder(ItemMyInfoUserStatusSectionBinding.inflate(inflater, parent, false))
+            return UserStatusSectionViewHolder(ItemMyInfoUserStatusSectionBinding.inflate(inflater, parent, false)).apply {
+                binding.root.setOnClickListener {
+                    onClick.invoke(getItem(bindingAdapterPosition))
+                }
+            }
         }
         override fun onBindViewHolder(holder: UserStatusSectionViewHolder, position: Int) =
             holder.bind(getItem(position))
