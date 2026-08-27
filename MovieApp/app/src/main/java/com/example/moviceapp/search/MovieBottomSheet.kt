@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -55,6 +56,15 @@ class MovieBottomSheet(
         binding.durationTextView.text = movie.duration
         binding.releaseDateTextView.text = movie.releaseDate
         binding.descriptionTextView.text = movie.description
+        binding.bookNowButton.setOnClickListener {
+            dismiss()
+            findNavController().navigate(SearchFragmentDirections
+                .actionSearchFragmentToBookChooseInfoFragment(
+                    listOf(movie).toTypedArray(),
+                    movie
+                )
+            )
+        }
         binding.closeButton.setOnClickListener { dismiss() }
     }
 
