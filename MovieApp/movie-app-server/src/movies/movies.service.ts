@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Movie } from './entities/movie.entity';
 
 @Injectable()
@@ -12,6 +12,10 @@ export class MoviesService {
 
   findAll(): Promise<Movie[]> {
     return this.moviesRepo.find();
+  }
+
+  search(q: string): Promise<Movie[]> {
+    return this.moviesRepo.find({ where: { title: ILike(`%${q}%`) } });
   }
 
   findNowPlaying(): Promise<Movie[]> {

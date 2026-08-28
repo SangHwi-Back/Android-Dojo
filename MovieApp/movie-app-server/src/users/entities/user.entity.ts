@@ -8,6 +8,12 @@ export class User {
   @Column()
   name: string;
 
+  @Column({ name: 'firebase_uid', unique: true, nullable: true })
+  firebaseUid: string | null;
+
+  @Column({ nullable: true })
+  email: string | null;
+
   @Column({ name: 'is_guest', default: true })
   isGuest: boolean;
 

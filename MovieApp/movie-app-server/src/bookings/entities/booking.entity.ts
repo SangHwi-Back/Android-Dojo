@@ -28,4 +28,7 @@ export class Booking {
 
   @Column({ name: 'is_upcoming', default: true })
   isUpcoming: boolean;
+
+  @Column({ name: 'user_uid', nullable: true })
+  userUid: string | null;
 }

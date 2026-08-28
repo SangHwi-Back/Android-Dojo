@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Between, In, Repository } from 'typeorm';
 import { Booking } from './entities/booking.entity';
 import { Seat } from '../seats/entities/seat.entity';
+import { Ticket } from '../tickets/entities/ticket.entity';
+import { randomUUID } from 'crypto';
 
 export interface CreateBookingDto {
   movie: { id: number };
@@ -11,6 +13,7 @@ export interface CreateBookingDto {
   time: string;
   seatIds: number[];
   isUpcoming?: boolean;
+  userUid?: string;
 }
 
 @Injectable()
@@ -20,6 +23,8 @@ export class BookingsService {
       private readonly bookingsRepo: Repository<Booking>,
       @InjectRepository(Seat)
       private readonly seatsRepo: Repository<Seat>,
+      @InjectRepository(Ticket)
+      private readonly ticketsRepo: Repository<Ticket>,
   ) {}
 
   findAll(): Promise<Booking[]> {
@@ -44,6 +49,10 @@ export class BookingsService {
     });
   }
 
+  findByUserUid(userUid: string): Promise<Booking[]> {
+    return this.bookingsRepo.find({ where: { userUid }, relations: { seats: true } });
+  }
+
   async saveBooking(dto: CreateBookingDto): Promise<Booking> {
     const seats = await this.seatsRepo.find({ where: { id: In(dto.seatIds) } });
     const booking = this.bookingsRepo.create({
@@ -53,7 +62,17 @@ export class BookingsService {
       time: dto.time,
       seats,
       isUpcoming: dto.isUpcoming ?? true,
+      userUid: dto.userUid ?? null,
     });
-    return this.bookingsRepo.save(booking);
+    const savedBooking = await this.bookingsRepo.save(booking);
+
+    // 티켓 자동 생성
+    const ticket = this.ticketsRepo.create({
+      booking: savedBooking,
+      qrCode: randomUUID(),
+    });
+    await this.ticketsRepo.save(ticket);
+
+    return savedBooking;
   }
 }

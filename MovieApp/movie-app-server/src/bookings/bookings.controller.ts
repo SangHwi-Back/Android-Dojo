@@ -1,5 +1,6 @@
-import {BadRequestException, Body, Controller, Get, Post, Query} from '@nestjs/common';
+import {BadRequestException, Body, Controller, Get, Post, Query, Req, UseGuards} from '@nestjs/common';
 import { BookingsService, CreateBookingDto } from './bookings.service';
+import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 
 @Controller('bookings')
 export class BookingsController {
@@ -35,6 +36,12 @@ export class BookingsController {
   @Get('schedules')
   findAllSchedules(@Query('movie_id') movieId?: string) {
     return this.bookingsService.findSchedules(movieId, undefined, undefined);
+  }
+
+  @UseGuards(FirebaseAuthGuard)
+  @Get('my')
+  findMy(@Req() req: any) {
+    return this.bookingsService.findByUserUid(req.user.uid);
   }
 
   @Post()
