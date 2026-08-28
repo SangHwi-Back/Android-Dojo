@@ -116,6 +116,10 @@
     <string name="menu_help_support">Help &amp; Support</string>
     <string name="menu_about">About CineBook</string>
 
+    <!-- My Bookings -->
+    <string name="upcoming_button">Upcoming</string>
+    <string name="past_button">Past</string>
+
     <!-- ======================== -->
     <!--      SEARCH SCREEN       -->
     <!-- ======================== -->
