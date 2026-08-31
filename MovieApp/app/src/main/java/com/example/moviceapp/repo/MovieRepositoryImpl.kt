@@ -1,8 +1,5 @@
 package com.example.moviceapp.repo
 
-import retrofit2.Call
-import retrofit2.await
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 

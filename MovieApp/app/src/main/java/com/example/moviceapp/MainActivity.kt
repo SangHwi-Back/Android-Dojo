@@ -1,7 +1,6 @@
 package com.example.moviceapp
 
 import android.os.Bundle
-import android.util.Size
 import android.view.Menu
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -9,12 +8,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.example.moviceapp.common.screenWidth
 import com.example.moviceapp.databinding.ActivityMainBinding
-import com.example.moviceapp.repo.MovieService
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import javax.inject.Singleton
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -33,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // WindowInsets 처리 - 시스템 바와 겹치지 않도록 패딩 추가
-        ViewCompat.setOnApplyWindowInsetsListener(binding.mainRoot) { view, windowInsets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.mainRoot) { _, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
 
             // AppBarLayout 상단에 패딩 추가

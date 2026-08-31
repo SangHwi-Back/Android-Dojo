@@ -9,7 +9,6 @@ import com.example.moviceapp.databinding.ItemSearchCategorizedMovieBinding
 import com.example.moviceapp.databinding.ItemSearchQueryResultBinding
 import com.example.moviceapp.repo.Movie
 import com.example.moviceapp.search.category.SearchCategorizedMovieViewHolder
-import javax.inject.Inject
 
 abstract class SearchViewHolder(
     binding: ViewBinding

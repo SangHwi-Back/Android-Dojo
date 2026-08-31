@@ -35,21 +35,6 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    suspend fun toggleScreen(query: String = "") {
-        _currentScreen.value = when (_currentScreen.value) {
-            is QueryResultMovie -> CategorizedMovie(
-                _featuredMovies,
-                _browseAllMovies
-            )
-            is CategorizedMovie -> QueryResultMovie(
-                when (val result = searchMovies(query)) {
-                    is APIResult.Success -> result.data
-                    is APIResult.Failure -> emptyList()
-                }
-            )
-        }
-    }
-
     fun search(query: String) {
         viewModelScope.launch {
             val results = when (val result = searchMovies(query)) {
