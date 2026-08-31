@@ -86,24 +86,20 @@ class SearchContentsViewPagerAdapter(val screenAttribute: ScreenAttribute): Recy
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): SearchViewHolder {
-        val entity = currentScreenEntity
-        return SearchViewHolderFactory.createViewHolder(parent, screenAttribute, when (entity) {
-            is SearchFragmentEntity.CategorizedMovie ->
-                SearchViewHolderEntity.CategorizedMovieEntity(entity.trending, entity.browseAll)
-            is SearchFragmentEntity.QueryResultMovie ->
-                SearchViewHolderEntity.QueryResultEntity(entity.movies)
-        })
-    }
+    ): SearchViewHolder = SearchViewHolderFactory.createViewHolder(
+        parent, screenAttribute, currentScreenEntity::class)
 
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
-        val entity = when (val e = currentScreenEntity) {
+        holder.bind(when (val entity = currentScreenEntity) {
             is SearchFragmentEntity.CategorizedMovie ->
-                SearchViewHolderEntity.CategorizedMovieEntity(e.trending, e.browseAll)
+                SearchViewHolderEntity.CategorizedMovieEntity(
+                    entity.trending, entity.browseAll
+                )
             is SearchFragmentEntity.QueryResultMovie ->
-                SearchViewHolderEntity.QueryResultEntity(e.movies)
-        }
-        holder.bind(entity)
+                SearchViewHolderEntity.QueryResultEntity(
+                    entity.movies
+                )
+        })
     }
 
     override fun getItemCount(): Int = 1
@@ -113,7 +109,7 @@ class SearchContentsViewPagerAdapter(val screenAttribute: ScreenAttribute): Recy
 
     fun setCurrentScreenEntity(entity: SearchFragmentEntity) {
         currentScreenEntity = entity
-        notifyDataSetChanged()
+        notifyItemChanged(0)
     }
 }
 

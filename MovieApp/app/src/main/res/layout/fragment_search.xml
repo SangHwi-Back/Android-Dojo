@@ -25,6 +25,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="24dp"
             android:background="@color/background_secondary"
+            app:endIconMode="clear_text"
             app:boxCornerRadiusBottomEnd="@dimen/cardview_default_radius">
 
         <com.google.android.material.textfield.TextInputEditText

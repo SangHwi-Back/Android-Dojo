@@ -11,11 +11,13 @@
             android:id="@+id/query_result_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/text_sm"
             tools:text="24 results for &quot;search query&quot;"/>
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/query_result_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginHorizontal="4dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 </LinearLayout>

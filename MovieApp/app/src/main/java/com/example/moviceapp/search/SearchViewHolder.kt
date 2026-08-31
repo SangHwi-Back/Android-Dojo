@@ -9,6 +9,7 @@ import com.example.moviceapp.databinding.ItemSearchCategorizedMovieBinding
 import com.example.moviceapp.databinding.ItemSearchQueryResultBinding
 import com.example.moviceapp.repo.Movie
 import com.example.moviceapp.search.category.SearchCategorizedMovieViewHolder
+import kotlin.reflect.KClass
 
 abstract class SearchViewHolder(
     binding: ViewBinding
@@ -20,13 +21,13 @@ object SearchViewHolderFactory {
     fun createViewHolder(
         parent: ViewGroup,
         screenAttribute: ScreenAttribute,
-        entity: SearchViewHolderEntity,
+        entity: KClass<out SearchFragmentEntity>,
     ): SearchViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (entity) {
-            is SearchViewHolderEntity.CategorizedMovieEntity -> SearchCategorizedMovieViewHolder(parent,
+            SearchFragmentEntity.CategorizedMovie::class -> SearchCategorizedMovieViewHolder(parent,
                 ItemSearchCategorizedMovieBinding.inflate(inflater, parent, false), screenAttribute)
-            is SearchViewHolderEntity.QueryResultEntity -> SearchQueryResultViewHolder(parent,
+            else -> SearchQueryResultViewHolder(parent,
                 ItemSearchQueryResultBinding.inflate(inflater, parent, false)
             )
         }
