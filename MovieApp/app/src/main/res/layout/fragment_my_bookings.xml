@@ -19,7 +19,7 @@
                 android:fontFamily="@font/dm_sans_extrabold"
                 android:layout_width="0dp"
                 android:layout_height="43dp"
-                android:layout_weight="1f"
+                android:layout_weight="1"
                 android:background="@drawable/rounded_accent_background"/>
         <com.google.android.material.button.MaterialButton
                 android:text="@string/past_button"
@@ -27,7 +27,7 @@
                 android:textColor="@color/text_secondary"
                 android:layout_width="0dp"
                 android:layout_height="43dp"
-                android:layout_weight="1f"
+                android:layout_weight="1"
                 android:layout_marginStart="5dp"
                 android:background="@drawable/rounded_accent_background"
                 app:backgroundTint="@color/background_secondary"/>

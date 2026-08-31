@@ -10,6 +10,7 @@ interface MovieRepository {
     suspend fun getMovies(): APIResult<List<Movie>>
     suspend fun getMovies(path: String): APIResult<List<Movie>>
     suspend fun getMovieDetail(id: String): APIResult<Movie>
+    suspend fun searchMovies(query: String): APIResult<List<Movie>>
 }
 
 @Singleton
@@ -22,4 +23,6 @@ class MovieRepositoryImpl @Inject constructor(
         service.getMovies(path).toAPIResult()
     override suspend fun getMovieDetail(id: String): APIResult<Movie> =
         service.getMovieDetail(id).toAPIResult()
+    override suspend fun searchMovies(query: String): APIResult<List<Movie>> =
+        service.searchMovies(query).toAPIResult()
 }
