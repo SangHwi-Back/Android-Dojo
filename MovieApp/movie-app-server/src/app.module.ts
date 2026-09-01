@@ -18,6 +18,7 @@ import { SeatsModule } from './seats/seats.module';
 import { DatabaseModule } from './database/database.module';
 import { CardsModule } from './cards/cards.module';
 import { AuthModule } from './auth/auth.module';
+import { TicketsModule } from './tickets/tickets.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { AuthModule } from './auth/auth.module';
     SeatsModule,
     CardsModule,
     AuthModule,
+    TicketsModule,
   ],
 })
 export class AppModule {}
