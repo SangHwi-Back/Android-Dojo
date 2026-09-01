@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Ticket } from './entities/ticket.entity';
@@ -21,20 +21,11 @@ export class TicketsService {
       throw new NotFoundException(`Booking with ID ${bookingId} not found`);
     }
 
-    // Check if ticket already exists for this booking
-    const existingTicket = await this.ticketRepository.findOne({
-      where: { booking: { id: bookingId } }
-    });
-
-    if (existingTicket) {
-      throw new ConflictException(`Ticket already exists for booking ID ${bookingId}`);
-    }
-
     // Create new ticket
     const ticket = new Ticket();
     ticket.booking = booking;
     ticket.qrCode = crypto.randomUUID();
 
-    return this.ticketRepository.save(ticket);
+    return ticket
   }
 }
