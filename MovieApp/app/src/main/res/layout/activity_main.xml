@@ -47,6 +47,18 @@
         app:itemTextColor="@color/bottom_nav_icon_unselected"
         app:menu="@menu/bottom_nav_menu" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/ticket_floating_action_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:src="@drawable/ticket_24px"
+            android:contentDescription="@string/label_ticket_price"
+            android:layout_margin="16dp"
+            app:backgroundTint="@color/green_avatar_bg"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/navigation_view"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

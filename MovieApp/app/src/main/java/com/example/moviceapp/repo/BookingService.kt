@@ -29,4 +29,7 @@ interface BookingService {
 
     @POST("/api/bookings")
     fun bookMovie(@Body body: CreateBookingRequest): Call<Booking>
+
+    @GET("/api/bookings")
+    fun getBookings(): Call<List<Booking>>
 }

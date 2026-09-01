@@ -10,6 +10,7 @@ interface BookingRepository {
     suspend fun getShowtimeSlots(movieId: Int, theaterId: Int, date: String): APIResult<List<ShowtimeSlot>>
     suspend fun getSeatSlots(theaterId: Int, date: String, hall: String): APIResult<List<SeatSlot>>
     suspend fun postBooking(booking: BookChooseInfoModel): APIResult<Booking>
+    suspend fun getBookings(): APIResult<List<Booking>>
 }
 
 @Singleton
@@ -41,4 +42,6 @@ class BookingRepositoryImpl @Inject constructor(
             seatIds = listOf(seatIds)
         )).toAPIResult()
     }
+    override suspend fun getBookings(): APIResult<List<Booking>> =
+        service.getBookings().toAPIResult()
 }

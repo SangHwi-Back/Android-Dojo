@@ -1,6 +1,7 @@
 package com.example.moviceapp.repo
 
 import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 // ================================================================
@@ -28,6 +29,17 @@ data class Theater(
     val distanceKm: Double,        // 1.2
 ) : Parcelable
 
+@Parcelize
+data class Ticket(
+    val id: Int,
+    val booking: Booking,
+    @SerializedName("qr_code")
+    val qrCode: String,
+    @SerializedName("created_at")
+    val createdAt: String,
+) : Parcelable
+
+@Parcelize
 data class Booking(
     val id: Int,
     val movie: Movie,
@@ -35,7 +47,7 @@ data class Booking(
     val date: String,
     val time: String,
     val seats: List<SeatSlot>,
-)
+) : Parcelable
 
 // POST /api/bookings 요청 body
 data class CreateBookingRequest(
@@ -60,6 +72,7 @@ data class ShowtimeSlot(
     val availableSeats: Int,
 )
 
+@Parcelize
 data class SeatSlot(
     val id: Int,
     val theater: Theater,
@@ -74,7 +87,7 @@ data class SeatSlot(
     val status: String,
     val heldByUserId: String?,
     val heldUntil: Long?,
-) {
+) : Parcelable {
     val name: String
         get() = "$rowLabel$columnIndex"
 }
@@ -91,51 +104,6 @@ data class SeatSlot(
  *   val featured = MoviesMock.featured
  */
 object MoviesMock {
-
-    val dunePartThree = Movie(
-        id = 1,
-        title = "Dune: Part Three",
-        duration = "2h 45m",
-        rating = 9.2,
-        releaseDate = "2026-03-15",
-        genres = listOf("Sci-Fi", "Adventure"),
-        description = "The epic conclusion to the Dune saga follows Paul Atreides " +
-                "as he unites with the Fremen people of the desert planet Arrakis.",
-    )
-
-    val oceansElevenLegacy = Movie(
-        id = 2,
-        title = "Ocean's Eleven: Legacy",
-        duration = "2h 12m",
-        rating = 8.1,
-        releaseDate = "2026-02-20",
-        genres = listOf("Thriller", "Comedy"),
-        description = "A new crew of master thieves attempts the most daring " +
-                "casino heist in Las Vegas history.",
-    )
-
-    val neonKnights = Movie(
-        id = 3,
-        title = "Neon Knights",
-        duration = "1h 58m",
-        rating = 7.6,
-        releaseDate = "2026-04-10",
-        genres = listOf("Action", "Sci-Fi"),
-        description = "In a neon-lit dystopian city, a rogue detective uncovers " +
-                "a conspiracy that threatens the last free zone on Earth.",
-    )
-
-    val starfallChronicles = Movie(
-        id = 4,
-        title = "Starfall Chronicles",
-        duration = "2h 30m",
-        rating = 8.5,
-        releaseDate = "2026-05-01",
-        genres = listOf("Adventure", "Drama"),
-        description = "An astronaut stranded on a dying moon must choose between " +
-                "survival and saving an alien civilization.",
-    )
-
     val midnightSonata = Movie(
         id = 5,
         title = "Midnight Sonata",

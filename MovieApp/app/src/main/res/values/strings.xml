@@ -272,4 +272,12 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- ============================== -->
+    <!--      TICKET BOTTOM SEAT LABELS -->
+    <!-- ============================== -->
+
+    <string name="qr_description">SCAN AT ENTRANCE</string>
+    <string name="seat_header">SEATS</string>
+    <string name="cancel_block_button">Cancel Booking</string>
+
 </resources>

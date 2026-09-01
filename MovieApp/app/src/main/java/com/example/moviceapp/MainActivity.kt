@@ -5,21 +5,27 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.example.moviceapp.book.BookViewModel
 import com.example.moviceapp.databinding.ActivityMainBinding
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var screenAttributes: ScreenAttribute
+    private val viewModel: BookViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +37,21 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.ticketFloatingActionButton.setOnClickListener {
+            val booking = viewModel.bookings.value.firstOrNull()
+
+            if (booking != null) {
+                val modal = TicketBottomSheet.newInstance(booking)
+                modal.show(supportFragmentManager, TicketBottomSheet.TAG)
+            } else {
+                Toast.makeText(
+                    this,
+                    "No booking found",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
 
         // WindowInsets 처리 - 시스템 바와 겹치지 않도록 패딩 추가
         ViewCompat.setOnApplyWindowInsetsListener(binding.mainRoot) { _, windowInsets ->
@@ -61,6 +82,10 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.main_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         binding.navigationView.setupWithNavController(navController)
+
+        lifecycleScope.launch {
+            viewModel.fetchBookings()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

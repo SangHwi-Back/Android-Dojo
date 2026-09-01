@@ -1,7 +1,6 @@
 package com.example.moviceapp.repo
 
 import com.example.moviceapp.BuildConfig
-import com.example.moviceapp.repo.MovieService
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -51,6 +50,11 @@ object RetrofitModule {
     @Provides
     fun provideBookingService(retrofit: Retrofit): BookingService =
         retrofit.create(BookingService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideTicketService(retrofit: Retrofit): TicketService =
+        retrofit.create(TicketService::class.java)
 }
 
 @Module
@@ -67,4 +71,10 @@ abstract class RetrofitRepositoryModule {
     abstract fun bindBookingRepository(
         impl: BookingRepositoryImpl
     ) : BookingRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTicketRepository(
+        impl: TicketRepositoryImpl
+    ) : TicketRepository
 }
