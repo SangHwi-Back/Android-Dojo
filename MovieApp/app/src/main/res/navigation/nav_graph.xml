@@ -34,6 +34,9 @@
         android:name="com.example.moviceapp.myinfo.MyInfoFragment"
         android:label="fragment_my_info"
         tools:layout="@layout/fragment_my_info">
+        <action
+                android:id="@+id/action_myInfoFragment_to_signInFragment"
+                app:destination="@id/signInFragment"/>
     </fragment>
 
     <!-- NAVIGATION VIEW -->
@@ -64,4 +67,6 @@
                 android:name="selectedMovie"
                 app:argType="com.example.moviceapp.repo.Movie" />
     </fragment>
+    <fragment android:id="@+id/signInFragment" android:name="com.example.moviceapp.myinfo.SignInFragment"
+              android:label="SignInFragment"/>
 </navigation>

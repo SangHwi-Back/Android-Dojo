@@ -6,12 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.moviceapp.R
+import com.example.moviceapp.book.BookFragmentDirections
 import com.example.moviceapp.common.CommonDialog
 import com.example.moviceapp.databinding.FragmentMyInfoBinding
 import com.example.moviceapp.databinding.ItemMyInfoHistoryBinding
@@ -19,10 +21,14 @@ import com.example.moviceapp.databinding.ItemMyInfoUpcomingMovieBinding
 import com.example.moviceapp.databinding.ItemMyInfoUserStatusSectionBinding
 import com.example.moviceapp.repo.Movie
 import com.example.moviceapp.repo.MoviesMock
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 class MyInfoFragment : Fragment() {
     private var _binding: FragmentMyInfoBinding? = null
     private val binding get() = _binding!!
+    private val isSignedIn: Boolean
+        get() = Firebase.auth.currentUser == null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,10 +48,14 @@ class MyInfoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.userProfileNameTextView.text = "Guest User"
-        binding.userProfileStatusTextView.text = "Sign in to access your bookings"
+        val user = Firebase.auth.currentUser
+        binding.userProfileNameTextView.text = user?.displayName
+            ?: getString(R.string.label_guest_user)
+        binding.userProfileStatusTextView.text = user?.providerData?.firstOrNull()?.providerId
+            ?: getString(R.string.label_guest_subtitle)
         binding.userSignInButton.setOnClickListener {
-            showCommonDialog("Developing in progress")
+            val directions = MyInfoFragmentDirections.actionMyInfoFragmentToSignInFragment()
+            findNavController().navigate(directions)
         }
 
         // HISTORY

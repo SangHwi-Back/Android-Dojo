@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.navigation.safeargs)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -40,6 +41,8 @@ android {
 
         buildConfigField("String", "IP_API_SERVER", "\""+properties.getValue(
             "network.ip.local").toString()+"\"")
+        buildConfigField("String", "GOOGLE_SERVER_CLIENT_ID", "\""+properties.getProperty(
+            "google.server.client.id", "")+"\"")
         buildConfigField("String", "PORT_API_SERVER", "\""+properties.getValue(
             "network.port.local").toString()+"\"")
         resValue("string", "IP_API_SERVER", properties.getValue(
@@ -94,6 +97,14 @@ dependencies {
     implementation(libs.coil)
     // Hilt Dependency Injection
     implementation(libs.hilt.android)
+    // Import the Firebase BoM
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.play.services.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
+    implementation(libs.facebook.login)
     ksp(libs.hilt.android.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

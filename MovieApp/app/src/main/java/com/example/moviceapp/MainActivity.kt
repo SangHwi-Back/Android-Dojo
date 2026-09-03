@@ -17,6 +17,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.moviceapp.book.BookViewModel
 import com.example.moviceapp.databinding.ActivityMainBinding
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,6 +29,10 @@ class MainActivity : AppCompatActivity() {
     lateinit var screenAttributes: ScreenAttribute
     private val viewModel: BookViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
+    override fun onStart() {
+        super.onStart()
+        val currentUser = Firebase.auth.currentUser
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

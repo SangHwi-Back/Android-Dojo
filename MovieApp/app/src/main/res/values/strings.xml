@@ -190,13 +190,27 @@
 
     <string name="screen_title_sign_in">Sign In</string>
     <string name="hint_email">Email address</string>
+    <string name="email">Email</string>
     <string name="hint_password">Password</string>
+    <string name="password">Password</string>
     <string name="action_forgot_password">Forgot password?</string>
+    <string name="sign_in_alert_message">Please Fill out email or password</string>
     <string name="label_or">or</string>
+    <string name="sns_sign_in_header">or continue with</string>
+    <string name="google">Google</string>
     <string name="action_sign_in_google">Continue with Google</string>
+    <string name="apple">Apple</string>
     <string name="action_sign_in_apple">Continue with Apple</string>
+    <string name="facebook">Facebook</string>
+    <string name="action_sign_in_facebook">Continue with Facebook</string>
     <string name="label_no_account">Don\'t have an account?</string>
     <string name="action_create_account">Create Account</string>
+    <string name="welcome_back">Welcome back</string>
+    <string name="sign_in_description">Sign in to access your bookings and rewards</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_in_success_message">Sign In Succeeded</string>
+    <string name="sign_in_failure_message">Please try again.</string>
+    <string name="password_reset_email_sent_message">Password reset email sent. Please check your inbox.</string>
 
     <!-- ======================== -->
     <!--     ERROR / EMPTY STATES -->
