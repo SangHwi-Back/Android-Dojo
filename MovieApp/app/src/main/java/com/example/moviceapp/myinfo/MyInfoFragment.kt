@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.moviceapp.R
-import com.example.moviceapp.book.BookFragmentDirections
 import com.example.moviceapp.common.CommonDialog
 import com.example.moviceapp.databinding.FragmentMyInfoBinding
 import com.example.moviceapp.databinding.ItemMyInfoHistoryBinding
@@ -27,8 +26,6 @@ import com.google.firebase.auth.auth
 class MyInfoFragment : Fragment() {
     private var _binding: FragmentMyInfoBinding? = null
     private val binding get() = _binding!!
-    private val isSignedIn: Boolean
-        get() = Firebase.auth.currentUser == null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
