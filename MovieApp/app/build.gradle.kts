@@ -45,10 +45,18 @@ android {
             "google.server.client.id", "")+"\"")
         buildConfigField("String", "PORT_API_SERVER", "\""+properties.getValue(
             "network.port.local").toString()+"\"")
+        buildConfigField("String", "FACEBOOK_APPLICATION_ID", "\""+properties.getValue(
+            "facebook.application.id")+"\"")
+        buildConfigField("String", "FACEBOOK_CLIENT_TOKEN", "\""+properties.getValue(
+            "facebook.client.token")+"\"")
         resValue("string", "IP_API_SERVER", properties.getValue(
             "network.ip.local").toString())
         resValue("string", "PORT_API_SERVER", properties.getValue(
             "network.port.local").toString())
+        resValue("string", "FACEBOOK_APPLICATION_ID", properties.getValue(
+            "facebook.application.id").toString())
+        resValue("string", "FACEBOOK_CLIENT_TOKEN", properties.getValue(
+            "facebook.client.token").toString())
     }
 
     buildTypes {

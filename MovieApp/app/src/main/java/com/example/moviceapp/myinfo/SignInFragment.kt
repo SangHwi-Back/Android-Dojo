@@ -12,10 +12,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.moviceapp.BuildConfig
 import com.example.moviceapp.R
 import com.example.moviceapp.databinding.FragmentSignInBinding
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
+import com.facebook.FacebookSdk
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import dagger.hilt.android.AndroidEntryPoint
@@ -102,6 +104,9 @@ class SignInFragment : Fragment() {
     }
 
     private fun setupFacebookLogin() {
+        FacebookSdk.setApplicationId(BuildConfig.FACEBOOK_APPLICATION_ID)
+        FacebookSdk.setClientToken(BuildConfig.FACEBOOK_CLIENT_TOKEN)
+        FacebookSdk.sdkInitialize(requireContext())
         requireActivity().activityResultRegistry.register(
             "facebook_login",
             ActivityResultContracts.StartActivityForResult()
