@@ -33,12 +33,9 @@ class SignInFragment : Fragment() {
     private val viewModel: SignInViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        FragmentSignInBinding.inflate(inflater, container, false).let {
-            _binding = it
-            return it.root
-        }
+        _binding = FragmentSignInBinding.inflate(inflater, container, false)
+        return _binding!!.root
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -101,11 +98,19 @@ class SignInFragment : Fragment() {
                 this, viewModel.callbackManager, listOf("email", "public_profile")
             )
         }
+
+        lifecycleScope.launch {
+            // Observe loading state
+            viewModel.isLoading.collect { isLoading ->
+                if (isLoading) showLoading() else hideLoading()
+            }
+        }
     }
 
     private fun setupFacebookLogin() {
         FacebookSdk.setApplicationId(BuildConfig.FACEBOOK_APPLICATION_ID)
         FacebookSdk.setClientToken(BuildConfig.FACEBOOK_CLIENT_TOKEN)
+        @Suppress("DEPRECATION")
         FacebookSdk.sdkInitialize(requireContext())
         requireActivity().activityResultRegistry.register(
             "facebook_login",
@@ -159,5 +164,15 @@ class SignInFragment : Fragment() {
         )
         val toastMessage = if (isSuccess) successMessage else failureMessage
         Toast.makeText(requireContext(), toastMessage, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showLoading() {
+        binding.loadingOverlay.visibility = View.VISIBLE
+        binding.root.alpha = 0.5f
+    }
+
+    private fun hideLoading() {
+        binding.loadingOverlay.visibility = View.GONE
+        binding.root.alpha = 1.0f
     }
 }
