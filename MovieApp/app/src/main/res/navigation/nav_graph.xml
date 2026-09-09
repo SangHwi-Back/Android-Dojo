@@ -37,6 +37,8 @@
         <action
                 android:id="@+id/action_myInfoFragment_to_signInFragment"
                 app:destination="@id/signInFragment"/>
+        <action android:id="@+id/action_myInfoFragment_to_accountSettingFragment"
+                app:destination="@id/accountSettingFragment"/>
     </fragment>
 
     <!-- NAVIGATION VIEW -->
@@ -69,4 +71,7 @@
     </fragment>
     <fragment android:id="@+id/signInFragment" android:name="com.example.moviceapp.myinfo.SignInFragment"
               android:label="SignInFragment"/>
+    <fragment android:id="@+id/accountSettingFragment"
+              android:name="com.example.moviceapp.myinfo.AccountSettingFragment"
+              android:label="AccountSettingFragment"/>
 </navigation>

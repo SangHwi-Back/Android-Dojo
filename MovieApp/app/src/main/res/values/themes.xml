@@ -127,6 +127,14 @@
         <item name="android:minHeight">52dp</item>
     </style>
 
+    <!-- Outlined Button -->
+    <style name="Widget.CineBook.Button.OutlinedCancel" parent="Widget.CineBook.Button.Outlined">
+        <item name="android:backgroundTint">@color/transparent</item>
+        <item name="strokeColor">@color/error_red</item>
+        <item name="android:textColor">@color/error_red</item>
+        <item name="cornerRadius">10dp</item>
+    </style>
+
     <!-- Borderless / Text Button -->
     <style name="Widget.CineBook.Button.Borderless" parent="Widget.Material3.Button.TextButton">
         <item name="android:textColor">@color/green_primary</item>

@@ -46,6 +46,10 @@ class MyInfoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val user = Firebase.auth.currentUser
+        binding.userProfileImageView.setOnClickListener {
+            val destination = MyInfoFragmentDirections.actionMyInfoFragmentToAccountSettingFragment()
+            findNavController().navigate(destination)
+        }
         binding.userProfileNameTextView.text = user?.displayName
             ?: getString(R.string.label_guest_user)
         binding.userProfileStatusTextView.text = user?.providerData?.firstOrNull()?.providerId

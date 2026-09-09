@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   xmlns:tools="http://schemas.android.com/tools"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="match_parent">
+    <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/log_out_button">
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:orientation="vertical">
+            <!-- Profile Picture Section -->
+            <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="16dp">
+
+                <com.google.android.material.button.MaterialButton
+                        android:id="@+id/profile_image_button"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:background="@drawable/circle_background"
+                        app:backgroundTint="@color/surface_card"
+                        android:backgroundTint="@color/icon_default"
+                        android:contentDescription="Profile Image"
+                        app:cornerRadius="60dp"
+                        app:iconSize="48dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                        android:id="@+id/star_button"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/circle_background"
+                        app:backgroundTint="@color/green_primary"
+                        app:cornerRadius="20dp"
+                        android:contentDescription="Star Button"
+                        android:layout_gravity="end|bottom"
+                        android:layout_marginEnd="8dp"
+                        app:strokeColor="@color/background_primary"
+                        app:strokeWidth="2dp"/>
+            </FrameLayout>
+
+            <!-- Name Section -->
+            <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
+                                                               android:layout_height="wrap_content"
+                                                               android:layout_marginBottom="16dp"
+                                                               android:theme="@style/Widget.CineBook.CardView">
+                <LinearLayout android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:layout_margin="12dp"
+                              android:layout_gravity="center"
+                              android:orientation="horizontal">
+                    <LinearLayout android:layout_width="0dp"
+                                  android:layout_height="match_parent"
+                                  android:orientation="vertical"
+                                  android:layout_weight="1">
+                        <com.google.android.material.textview.MaterialTextView android:layout_width="wrap_content"
+                                                                               android:layout_height="wrap_content"
+                                                                               android:layout_marginBottom="4dp"
+                                                                               android:textSize="14sp"
+                                                                               android:text="Name"/>
+                        <com.google.android.material.textview.MaterialTextView android:id="@+id/name_text_view"
+                                                                               android:layout_width="wrap_content"
+                                                                               android:layout_height="wrap_content"
+                                                                               android:textSize="18sp"
+                                                                               android:fontFamily="@font/dm_sans_bold"
+                                                                               android:textColor="@color/text_primary"
+                                                                               tools:text="Alex Rivera"/>
+                    </LinearLayout>
+                    <Button android:id="@+id/name_edit_button"
+                            android:background="@drawable/chevron_forward_24px"
+                            android:drawableTint="@color/background_tertiary"
+                            android:backgroundTint="@color/background_tertiary"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+            <!-- Email Section -->
+            <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
+                                                               android:layout_height="wrap_content"
+                                                               android:layout_marginBottom="16dp"
+                                                               android:theme="@style/Widget.CineBook.CardView">
+                <LinearLayout android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:layout_margin="12dp"
+                              android:layout_gravity="center"
+                              android:orientation="horizontal">
+                    <LinearLayout android:layout_width="0dp"
+                                  android:layout_height="match_parent"
+                                  android:orientation="vertical"
+                                  android:layout_weight="1">
+                        <com.google.android.material.textview.MaterialTextView android:layout_width="wrap_content"
+                                                                               android:layout_height="wrap_content"
+                                                                               android:layout_marginBottom="4dp"
+                                                                               android:textSize="14sp"
+                                                                               android:text="Email"/>
+                        <com.google.android.material.textview.MaterialTextView android:id="@+id/email_text_view"
+                                                                               android:layout_width="wrap_content"
+                                                                               android:layout_height="wrap_content"
+                                                                               android:textSize="18sp"
+                                                                               android:fontFamily="@font/dm_sans_bold"
+                                                                               android:textColor="@color/text_primary"
+                                                                               tools:text="alex.rivera@email.com"/>
+                    </LinearLayout>
+                    <Button android:id="@+id/email_edit_button"
+                            android:background="@drawable/chevron_forward_24px"
+                            android:drawableTint="@color/background_tertiary"
+                            android:backgroundTint="@color/background_tertiary"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+            <!-- Phone Section -->
+            <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
+                                                               android:layout_height="wrap_content"
+                                                               android:layout_marginBottom="16dp"
+                                                               android:theme="@style/Widget.CineBook.CardView">
+                <LinearLayout android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:layout_margin="12dp"
+                              android:layout_gravity="center"
+                              android:orientation="horizontal">
+                    <LinearLayout android:layout_width="0dp"
+                                  android:layout_height="match_parent"
+                                  android:orientation="vertical"
+                                  android:layout_weight="1">
+                        <com.google.android.material.textview.MaterialTextView android:layout_width="wrap_content"
+                                                                               android:layout_height="wrap_content"
+                                                                               android:layout_marginBottom="4dp"
+                                                                               android:textSize="14sp"
+                                                                               android:text="Phone"/>
+                        <com.google.android.material.textview.MaterialTextView android:id="@+id/phone_text_view"
+                                                                               android:layout_width="wrap_content"
+                                                                               android:layout_height="wrap_content"
+                                                                               android:textSize="18sp"
+                                                                               android:fontFamily="@font/dm_sans_bold"
+                                                                               android:textColor="@color/text_primary"
+                                                                               tools:text="+1 (555) 012-3344"/>
+                    </LinearLayout>
+                    <Button android:id="@+id/phone_edit_button"
+                            android:background="@drawable/chevron_forward_24px"
+                            android:drawableTint="@color/background_tertiary"
+                            android:backgroundTint="@color/background_tertiary"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+            <!-- Push Notification Section -->
+            <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
+                                                               android:layout_height="wrap_content"
+                                                               android:theme="@style/Widget.CineBook.CardView">
+                <LinearLayout android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:layout_margin="12dp"
+                              android:layout_gravity="center"
+                              android:orientation="horizontal">
+                    <com.google.android.material.textview.MaterialTextView android:layout_width="0dp"
+                                                                           android:layout_height="wrap_content"
+                                                                           android:layout_weight="1"
+                                                                           android:textSize="18sp"
+                                                                           android:fontFamily="@font/dm_sans_bold"
+                                                                           android:textColor="@color/text_primary"
+                                                                           tools:text="Push Notification"/>
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/push_notification_switch"
+                                                                               android:layout_width="wrap_content"
+                                                                               android:layout_height="wrap_content"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+            android:id="@+id/log_out_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="@string/action_sign_out"
+            android:textColor="@color/error_red"
+            android:textSize="16sp"
+            app:cornerRadius="10dp"
+            android:theme="@style/Widget.CineBook.Button.OutlinedCancel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
