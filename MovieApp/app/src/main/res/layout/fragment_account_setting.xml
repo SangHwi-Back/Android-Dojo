@@ -23,30 +23,34 @@
                     android:orientation="horizontal"
                     android:layout_gravity="center"
                     android:layout_marginBottom="16dp">
-
-                <com.google.android.material.button.MaterialButton
+                <FrameLayout
                         android:id="@+id/profile_image_button"
                         android:layout_width="120dp"
                         android:layout_height="120dp"
                         android:background="@drawable/circle_background"
                         app:backgroundTint="@color/surface_card"
-                        android:backgroundTint="@color/icon_default"
-                        android:contentDescription="Profile Image"
-                        app:cornerRadius="60dp"
-                        app:iconSize="48dp"/>
+                        android:foreground="?attr/selectableItemBackgroundBorderless">
+                    <ImageView android:layout_width="48dp"
+                               android:layout_height="48dp"
+                               android:src="@drawable/person_outlined_24px"
+                               android:layout_gravity="center"
+                               android:contentDescription="Star Button"/>
+                </FrameLayout>
 
-                <com.google.android.material.button.MaterialButton
+                <FrameLayout
                         android:id="@+id/star_button"
                         android:layout_width="36dp"
                         android:layout_height="36dp"
-                        android:background="@drawable/circle_background"
-                        app:backgroundTint="@color/green_primary"
-                        app:cornerRadius="20dp"
-                        android:contentDescription="Star Button"
-                        android:layout_gravity="end|bottom"
-                        android:layout_marginEnd="8dp"
-                        app:strokeColor="@color/background_primary"
-                        app:strokeWidth="2dp"/>
+                        android:background="@drawable/border_circle"
+                        android:foreground="?attr/selectableItemBackgroundBorderless"
+                        android:layout_gravity="end|bottom">
+                    <ImageView android:layout_width="20dp"
+                               android:layout_height="20dp"
+                               android:src="@drawable/edit_24px"
+                               android:layout_gravity="center"
+                               app:tint="@color/background_primary"
+                               android:contentDescription="Star Button"/>
+                </FrameLayout>
             </FrameLayout>
 
             <!-- Name Section -->
@@ -76,12 +80,12 @@
                                                                                android:textColor="@color/text_primary"
                                                                                tools:text="Alex Rivera"/>
                     </LinearLayout>
-                    <Button android:id="@+id/name_edit_button"
-                            android:background="@drawable/chevron_forward_24px"
-                            android:drawableTint="@color/background_tertiary"
-                            android:backgroundTint="@color/background_tertiary"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"/>
+                    <ImageButton android:id="@+id/name_edit_button"
+                                 android:src="@drawable/edit_24px"
+                                 android:drawableTint="@color/background_tertiary"
+                                 android:backgroundTint="@color/background_tertiary"
+                                 android:layout_width="48dp"
+                                 android:layout_height="48dp"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <!-- Email Section -->
@@ -111,12 +115,12 @@
                                                                                android:textColor="@color/text_primary"
                                                                                tools:text="alex.rivera@email.com"/>
                     </LinearLayout>
-                    <Button android:id="@+id/email_edit_button"
-                            android:background="@drawable/chevron_forward_24px"
-                            android:drawableTint="@color/background_tertiary"
-                            android:backgroundTint="@color/background_tertiary"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"/>
+                    <ImageButton android:id="@+id/email_edit_button"
+                                 android:src="@drawable/edit_24px"
+                                 android:drawableTint="@color/background_tertiary"
+                                 android:backgroundTint="@color/background_tertiary"
+                                 android:layout_width="48dp"
+                                 android:layout_height="48dp"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <!-- Phone Section -->
@@ -146,12 +150,12 @@
                                                                                android:textColor="@color/text_primary"
                                                                                tools:text="+1 (555) 012-3344"/>
                     </LinearLayout>
-                    <Button android:id="@+id/phone_edit_button"
-                            android:background="@drawable/chevron_forward_24px"
-                            android:drawableTint="@color/background_tertiary"
-                            android:backgroundTint="@color/background_tertiary"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"/>
+                    <ImageButton android:id="@+id/phone_edit_button"
+                                 android:src="@drawable/edit_24px"
+                                 android:drawableTint="@color/background_tertiary"
+                                 android:backgroundTint="@color/background_tertiary"
+                                 android:layout_width="48dp"
+                                 android:layout_height="48dp"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <!-- Push Notification Section -->
