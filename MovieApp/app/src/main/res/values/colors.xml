@@ -81,6 +81,10 @@
     <!-- Green icon (location pin, booking icon) -->
     <color name="icon_green">#4CAF50</color>
 
+    <!-- Green icon opacity                      -->
+    <color name="icon_green_50">#804CAF50</color>
+    <color name="icon_green_10">#1A4CAF50</color>
+
     <!-- ======================== -->
     <!--    BORDER / DIVIDER      -->
     <!-- ======================== -->

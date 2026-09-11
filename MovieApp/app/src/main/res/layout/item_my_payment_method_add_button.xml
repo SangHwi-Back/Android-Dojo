@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.button.MaterialButton
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/add_payment_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_dashed_background"
+        android:text="Add Payment method"
+        android:textColor="@color/green_accent"
+        android:padding="0dp"
+        app:icon="@drawable/close_24px"
+        app:iconTint="@color/green_accent"
+        android:fontFamily="@font/dm_sans_bold"
+        android:textSize="18sp" />

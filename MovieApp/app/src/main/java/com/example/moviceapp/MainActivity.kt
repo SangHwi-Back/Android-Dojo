@@ -12,7 +12,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.moviceapp.book.BookViewModel
 import com.example.moviceapp.databinding.ActivityMainBinding
@@ -27,6 +31,9 @@ class MainActivity : AppCompatActivity() {
     lateinit var screenAttributes: ScreenAttribute
     private val viewModel: BookViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
+    private lateinit var navController: NavController
+    private lateinit var appBarConfiguration: AppBarConfiguration
+
     override fun onStart() {
         super.onStart()
     }
@@ -83,12 +90,21 @@ class MainActivity : AppCompatActivity() {
 
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.main_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
+        navController = navHostFragment.navController
+
+        appBarConfiguration = AppBarConfiguration(
+            setOf(R.id.searchFragment, R.id.bookFragment, R.id.myInfoFragment)
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
         binding.navigationView.setupWithNavController(navController)
 
         lifecycleScope.launch {
             viewModel.fetchBookings()
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

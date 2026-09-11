@@ -39,6 +39,7 @@
                 app:destination="@id/signInFragment"/>
         <action android:id="@+id/action_myInfoFragment_to_accountSettingFragment"
                 app:destination="@id/accountSettingFragment"/>
+        <action android:id="@+id/action_myInfoFragment_to_myPaymentMethod" app:destination="@id/myPaymentMethod"/>
     </fragment>
 
     <!-- NAVIGATION VIEW -->
@@ -74,4 +75,6 @@
     <fragment android:id="@+id/accountSettingFragment"
               android:name="com.example.moviceapp.myinfo.AccountSettingFragment"
               android:label="AccountSettingFragment"/>
+    <fragment android:id="@+id/myPaymentMethod" android:name="com.example.moviceapp.myinfo.MyPaymentMethod"
+              android:label="결제 수단"/>
 </navigation>

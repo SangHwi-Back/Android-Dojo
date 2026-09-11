@@ -88,6 +88,11 @@ class MyInfoFragment : Fragment() {
 
         // USER_STATUS_SECTION
         val statusAdapter = UserStatusSectionListAdapter {
+            if (it.title.lowercase().trim().contains("payment")) {
+                val direction = MyInfoFragmentDirections.actionMyInfoFragmentToMyPaymentMethod()
+                findNavController().navigate(direction)
+                return@UserStatusSectionListAdapter
+            }
             showCommonDialog(it.title, it.subTitle)
         }
         binding.myInfoUserStatusRecyclerView.layoutManager =
