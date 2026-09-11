@@ -55,6 +55,11 @@ object RetrofitModule {
     @Provides
     fun provideTicketService(retrofit: Retrofit): TicketService =
         retrofit.create(TicketService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideUserService(retrofit: Retrofit): MovieAppUserService =
+        retrofit.create(MovieAppUserService::class.java)
 }
 
 @Module
@@ -77,4 +82,10 @@ abstract class RetrofitRepositoryModule {
     abstract fun bindTicketRepository(
         impl: TicketRepositoryImpl
     ) : TicketRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUserRepository(
+        impl: MovieAppUserServiceImpl
+    ) : MovieAppUserRepository
 }

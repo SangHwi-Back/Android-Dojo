@@ -92,6 +92,19 @@ data class SeatSlot(
         get() = "$rowLabel$columnIndex"
 }
 
+@Parcelize
+data class UserEntity(
+    val id: Int,
+    val name: String,
+    val firebaseUid: String?,
+    val email: String?,
+    val phone: String?,
+    val pushNotification: Boolean,
+    val isGuest: Boolean,
+    val moviesCount: Int,
+    val points: String,
+    val saved: Int,
+) : Parcelable
 // ================================================================
 //  Mock Data — 뷰 단위로 분리된 object
 // ================================================================
