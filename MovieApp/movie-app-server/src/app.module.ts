@@ -8,7 +8,7 @@ import { Booking } from './bookings/entities/booking.entity';
 import { User } from './users/entities/user.entity';
 import { Seat } from './seats/entities/seat.entity';
 import { Ticket } from './tickets/entities/ticket.entity';
-import { Card } from './cards/entities/card.entity';
+import { PaymentMethod } from './cards/entities/card.entity';
 import { MoviesModule } from './movies/movies.module';
 import { TheatersModule } from './theaters/theaters.module';
 import { ShowtimesModule } from './showtimes/showtimes.module';
@@ -30,7 +30,7 @@ import { TicketsModule } from './tickets/tickets.module';
       username: process.env.DB_USER ?? 'movieapp',
       password: process.env.DB_PASSWORD ?? 'movieapp123',
       database: process.env.DB_NAME ?? 'movieappdb',
-      entities: [Movie, Theater, Showtime, Booking, User, Seat, Ticket, Card],
+      entities: [Movie, Theater, Showtime, Booking, User, Seat, Ticket, PaymentMethod],
       synchronize: true,
       dropSchema: true,
     }),

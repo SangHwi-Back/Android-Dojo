@@ -1,50 +1,67 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Card } from './entities/card.entity';
+import { PaymentMethod, PaymentMethodType } from './entities/card.entity';
 
-export interface CreateCardDto {
-  cardNumber: string;
-  expiryDate: string;
-  cvv: string;
-  nickname: string;
+export interface CreatePaymentMethodDto {
+  type: PaymentMethodType;
+  billingKey?: string;
+  maskedNumber?: string;
+  cardCompany?: string;
+  expiryDate?: string;
+  cardholderName?: string;
+  pgCustomerUid?: string;
+  isDefault?: boolean;
+  nickname?: string;
 }
 
-export interface UpdateCardDto {
-  cardNumber?: string;
+export interface UpdatePaymentMethodDto {
+  billingKey?: string;
+  maskedNumber?: string;
+  cardCompany?: string;
   expiryDate?: string;
-  cvv?: string;
+  cardholderName?: string;
+  pgCustomerUid?: string;
+  isDefault?: boolean;
+  isActive?: boolean;
   nickname?: string;
 }
 
 @Injectable()
 export class CardsService {
   constructor(
-    @InjectRepository(Card)
-    private readonly cardsRepo: Repository<Card>,
+    @InjectRepository(PaymentMethod)
+    private readonly paymentMethodRepo: Repository<PaymentMethod>,
   ) {}
 
-  findAll(uid: string): Promise<Card[]> {
-    return this.cardsRepo.find({ where: { userUid: uid } });
+  findAll(uid: string): Promise<PaymentMethod[]> {
+    return this.paymentMethodRepo.find({ where: { userUid: uid, isActive: true } });
   }
 
-  create(uid: string, dto: CreateCardDto): Promise<Card> {
-    const card = this.cardsRepo.create({ ...dto, userUid: uid });
-    return this.cardsRepo.save(card);
+  async create(uid: string, dto: CreatePaymentMethodDto): Promise<PaymentMethod> {
+    if (dto.isDefault) {
+      await this.paymentMethodRepo.update({ userUid: uid }, { isDefault: false });
+    }
+    const paymentMethod = this.paymentMethodRepo.create({ ...dto, userUid: uid });
+    return this.paymentMethodRepo.save(paymentMethod);
   }
 
-  async update(id: number, uid: string, dto: UpdateCardDto): Promise<Card> {
-    const card = await this.cardsRepo.findOne({ where: { id } });
-    if (!card) throw new NotFoundException(`Card #${id} not found`);
-    if (card.userUid !== uid) throw new ForbiddenException('You do not own this card');
-    Object.assign(card, dto);
-    return this.cardsRepo.save(card);
+  async update(id: number, uid: string, dto: UpdatePaymentMethodDto): Promise<PaymentMethod> {
+    const paymentMethod = await this.paymentMethodRepo.findOne({ where: { id } });
+    if (!paymentMethod) throw new NotFoundException(`PaymentMethod #${id} not found`);
+    if (paymentMethod.userUid !== uid) throw new ForbiddenException('You do not own this payment method');
+    if (dto.isDefault) {
+      await this.paymentMethodRepo.update({ userUid: uid }, { isDefault: false });
+    }
+    Object.assign(paymentMethod, dto);
+    return this.paymentMethodRepo.save(paymentMethod);
   }
 
   async remove(id: number, uid: string): Promise<void> {
-    const card = await this.cardsRepo.findOne({ where: { id } });
-    if (!card) throw new NotFoundException(`Card #${id} not found`);
-    if (card.userUid !== uid) throw new ForbiddenException('You do not own this card');
-    await this.cardsRepo.remove(card);
+    const paymentMethod = await this.paymentMethodRepo.findOne({ where: { id } });
+    if (!paymentMethod) throw new NotFoundException(`PaymentMethod #${id} not found`);
+    if (paymentMethod.userUid !== uid) throw new ForbiddenException('You do not own this payment method');
+    paymentMethod.isActive = false;
+    await this.paymentMethodRepo.save(paymentMethod);
   }
 }
