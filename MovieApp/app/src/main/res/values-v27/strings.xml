@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="label_card_number">Card Number</string>
+    <string name="hint_card_number">1234 5678 9012 3456</string>
+    <string name="label_expiry">Expiry</string>
+    <string name="hint_expiry">MM/YY</string>
+    <string name="label_cvv">CVV</string>
+    <string name="hint_cvv">***</string>
+    <string name="label_name_on_card">Name on Card</string>
+    <string name="hint_name_on_card">John Doe</string>
+    <string name="action_save_card">Save Card</string>
+</resources>

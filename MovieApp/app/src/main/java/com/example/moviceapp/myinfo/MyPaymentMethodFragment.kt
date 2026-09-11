@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -17,7 +19,7 @@ import com.example.moviceapp.databinding.ItemMyPaymentMethodBinding
 import kotlinx.parcelize.Parcelize
 import java.util.Date
 
-class MyPaymentMethod : Fragment() {
+class MyPaymentMethodFragment : Fragment() {
     private var _binding: FragmentMyPaymentMethodBinding? = null
     private val binding get() = _binding!!
 
@@ -29,7 +31,7 @@ class MyPaymentMethod : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = MyPaymentAdapter()
+        val adapter = MyPaymentAdapter(navController = findNavController())
         binding.paymentRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.paymentRecyclerView.adapter = adapter
 
@@ -89,7 +91,7 @@ class MyPaymentMethod : Fragment() {
         ),
     )
 
-    class MyPaymentAdapter : ListAdapter<PaymentMethod, MyPaymentAdapter.ViewHolder>(DiffCallback) {
+    class MyPaymentAdapter(val navController: NavController) : ListAdapter<PaymentMethod, MyPaymentAdapter.ViewHolder>(DiffCallback) {
 
         companion object {
             private const val VIEW_TYPE_ITEM = 0
@@ -104,7 +106,12 @@ class MyPaymentMethod : Fragment() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             return if (viewType == VIEW_TYPE_ADD)
-                ViewHolder(ItemMyPaymentMethodAddButtonBinding.inflate(inflater, parent, false))
+                ViewHolder(ItemMyPaymentMethodAddButtonBinding.inflate(inflater, parent, false)).apply {
+                    binding.root.setOnClickListener {
+                        val directions = MyPaymentMethodFragmentDirections.actionMyPaymentMethodToAddCardFragment()
+                        navController.navigate(directions)
+                    }
+                }
             else
                 ViewHolder(ItemMyPaymentMethodBinding.inflate(inflater, parent, false))
         }

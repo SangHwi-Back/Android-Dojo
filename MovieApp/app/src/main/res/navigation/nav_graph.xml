@@ -71,10 +71,14 @@
                 app:argType="com.example.moviceapp.repo.Movie" />
     </fragment>
     <fragment android:id="@+id/signInFragment" android:name="com.example.moviceapp.myinfo.SignInFragment"
-              android:label="SignInFragment"/>
+    />
     <fragment android:id="@+id/accountSettingFragment"
               android:name="com.example.moviceapp.myinfo.AccountSettingFragment"
-              android:label="AccountSettingFragment"/>
-    <fragment android:id="@+id/myPaymentMethod" android:name="com.example.moviceapp.myinfo.MyPaymentMethod"
-              android:label="결제 수단"/>
+              android:label="Account"/>
+    <fragment android:id="@+id/myPaymentMethod" android:name="com.example.moviceapp.myinfo.MyPaymentMethodFragment"
+              android:label="Payment Methods">
+        <action android:id="@+id/action_myPaymentMethod_to_addCardFragment" app:destination="@id/addCardFragment"/>
+    </fragment>
+    <fragment android:id="@+id/addCardFragment" android:name="com.example.moviceapp.myinfo.AddCardFragment"
+              android:label="Add Card"/>
 </navigation>
