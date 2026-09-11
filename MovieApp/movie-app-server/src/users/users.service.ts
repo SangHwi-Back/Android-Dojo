@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -32,5 +33,14 @@ export class UsersService {
     const user = await this.usersRepo.findOne({ where: { firebaseUid: uid } });
     if (!user) throw new NotFoundException(`User with uid ${uid} not found`);
     return user;
+  }
+
+  async updateByUid(uid: string, dto: UpdateUserDto): Promise<User> {
+    const user = await this.findByUid(uid);
+    if (dto.name !== undefined) user.name = dto.name;
+    if (dto.email !== undefined) user.email = dto.email;
+    if (dto.phone !== undefined) user.phone = dto.phone;
+    if (dto.pushNotification !== undefined) user.pushNotification = dto.pushNotification;
+    return this.usersRepo.save(user);
   }
 }

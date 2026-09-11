@@ -25,4 +25,10 @@ export class User {
 
   @Column({ default: 0 })
   saved: number;
+
+  @Column({ nullable: true })
+  phone: string | null;
+
+  @Column({ name: 'push_notification', default: true })
+  pushNotification: boolean;
 }
