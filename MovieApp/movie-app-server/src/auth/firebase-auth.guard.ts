@@ -27,10 +27,12 @@ function initFirebase() {
   });
 }
 
-initFirebase();
-
 @Injectable()
 export class FirebaseAuthGuard implements CanActivate {
+  constructor() {
+    initFirebase();
+  }
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const authHeader: string | undefined = request.headers['authorization'];
