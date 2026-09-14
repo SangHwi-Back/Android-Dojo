@@ -6,6 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,12 +23,19 @@ import com.example.moviceapp.databinding.ItemMyInfoUpcomingMovieBinding
 import com.example.moviceapp.databinding.ItemMyInfoUserStatusSectionBinding
 import com.example.moviceapp.repo.Movie
 import com.example.moviceapp.repo.MoviesMock
+import com.google.android.material.appbar.AppBarLayout
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MyInfoFragment : Fragment() {
+    private val accountSettingViewModel: AccountSettingViewModel by viewModels()
     private var _binding: FragmentMyInfoBinding? = null
     private val binding get() = _binding!!
+    private val isLoggedIn
+        get() = accountSettingViewModel.currentUser.value != null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,19 +52,34 @@ class MyInfoFragment : Fragment() {
         )
     }
 
+    override fun onStart() {
+        super.onStart()
+        lifecycleScope.launch {
+            accountSettingViewModel.currentUser.collect { currentUser ->
+                binding.userSignInButton.visibility = if (currentUser == null)
+                    View.VISIBLE else View.GONE
+            }
+        }
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val user = Firebase.auth.currentUser
         binding.userProfileImageView.setOnClickListener {
-            val destination = MyInfoFragmentDirections.actionMyInfoFragmentToAccountSettingFragment()
-            findNavController().navigate(destination)
+            findNavController().navigate(if (isLoggedIn)
+                MyInfoFragmentDirections.actionMyInfoFragmentToAccountSettingFragment()
+            else
+                MyInfoFragmentDirections.actionMyInfoFragmentToSignInFragment()
+            )
         }
         binding.userProfileNameTextView.text = user?.displayName
             ?: getString(R.string.label_guest_user)
         binding.userProfileStatusTextView.text = user?.providerData?.firstOrNull()?.providerId
             ?: getString(R.string.label_guest_subtitle)
         binding.userSignInButton.setOnClickListener {
+            requireActivity().setupAppBar(false)
             val directions = MyInfoFragmentDirections.actionMyInfoFragmentToSignInFragment()
             findNavController().navigate(directions)
         }
@@ -218,3 +243,15 @@ data class MyInfoStatusSection(
     val title: String,
     val subTitle: String? = null,
 )
+
+fun FragmentActivity.setupAppBar(isVisible: Boolean) {
+    // This assumes you're using a toolbar with AppBarLayout
+    // You'll need to adjust this based on your actual layout structure
+    findViewById<AppBarLayout>(
+        R.id.app_bar_layout // You'll need to define this in your activity layout
+    ).visibility = if (isVisible) View.VISIBLE else View.GONE
+
+    // Make navigation icon visible (back button)
+    actionBar?.setDisplayHomeAsUpEnabled(isVisible)
+    actionBar?.setDisplayShowHomeEnabled(isVisible)
+}

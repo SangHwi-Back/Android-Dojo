@@ -32,6 +32,15 @@ class SignInFragment : Fragment() {
         get() = _binding!!
     private val viewModel: SignInViewModel by viewModels()
 
+    override fun onDestroy() {
+        super.onDestroy()
+        requireActivity().setupAppBar(true)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requireActivity().setupAppBar(false)
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentSignInBinding.inflate(inflater, container, false)
         return _binding!!.root

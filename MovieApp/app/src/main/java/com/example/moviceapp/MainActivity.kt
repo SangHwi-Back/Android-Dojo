@@ -20,6 +20,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.moviceapp.book.BookViewModel
 import com.example.moviceapp.databinding.ActivityMainBinding
+import com.example.moviceapp.myinfo.AccountSettingViewModel
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -30,12 +31,16 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var screenAttributes: ScreenAttribute
     private val viewModel: BookViewModel by viewModels()
+    private val accountViewModel: AccountSettingViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onStart() {
         super.onStart()
+        lifecycleScope.launch {
+            accountViewModel.getUserMe()
+        }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

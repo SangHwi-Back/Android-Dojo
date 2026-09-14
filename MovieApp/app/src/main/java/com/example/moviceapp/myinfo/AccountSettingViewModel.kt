@@ -21,7 +21,10 @@ class AccountSettingViewModel @Inject constructor(
 
     suspend fun getUserMe(): UserEntity? {
         return when (val result = userRepository.getUser()) {
-            is APIResult.Success -> result.data
+            is APIResult.Success -> {
+                _currentUser.value = result.data
+                result.data
+            }
             is APIResult.Failure -> null
         }
     }
