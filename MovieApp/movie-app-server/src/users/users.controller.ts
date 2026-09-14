@@ -15,7 +15,8 @@ export class UsersController {
   @UseGuards(FirebaseAuthGuard)
   @Get('me')
   getMe(@Req() req: any) {
-    return this.usersService.findByUid(req.user.uid);
+    const { uid, email, name } = req.user;
+    return this.usersService.findOrCreate(uid, email, name ?? email ?? uid);
   }
 
   @UseGuards(FirebaseAuthGuard)
