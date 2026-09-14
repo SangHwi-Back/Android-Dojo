@@ -67,14 +67,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textAppearance="@style/TextAppearance.CineBook.VenueName"
-                            tools:text="Guest User"/>
+                            android:text="@string/label_guest_user"/>
 
                     <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/user_profile_status_text_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textAppearance="@style/TextAppearance.CineBook.Body.Medium"
-                            tools:text="Sign in to access your bookings"/>
+                            android:text="@string/sign_in_description"/>
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton

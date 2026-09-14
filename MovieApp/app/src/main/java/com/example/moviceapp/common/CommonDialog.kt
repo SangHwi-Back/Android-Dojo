@@ -10,6 +10,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.io.Serializable
 
 class CommonDialog : DialogFragment() {
+    var contentsView: View? = null
     interface CommonDialogListener: Serializable {
         fun onPositive(view: View)
         fun onNegative(view: View) {}
@@ -46,6 +47,8 @@ class CommonDialog : DialogFragment() {
         val view = arguments?.getInt(ARG_LAYOUT_RESOURCE_ID)?.let {
             if (it == 0) null else layoutInflater.inflate(it, null)
         }
+
+        contentsView = view
 
         builder.apply {
             setTitle(title)

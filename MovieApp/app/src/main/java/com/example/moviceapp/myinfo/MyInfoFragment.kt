@@ -54,14 +54,17 @@ class MyInfoFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        accountSettingViewModel.getUserMe()
         lifecycleScope.launch {
             accountSettingViewModel.currentUser.collect { currentUser ->
                 binding.userSignInButton.visibility = if (currentUser == null)
                     View.VISIBLE else View.GONE
+                binding.userProfileNameTextView.text = currentUser?.name ?: getString(R.string.label_guest_user)
+                binding.userProfileStatusTextView.visibility = if (currentUser == null)
+                    View.VISIBLE else View.GONE
             }
         }
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -2,6 +2,7 @@ package com.example.moviceapp
 
 import android.graphics.Rect
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
@@ -36,15 +37,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
 
-    override fun onStart() {
-        super.onStart()
-        lifecycleScope.launch {
-            accountViewModel.getUserMe()
-        }
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        accountViewModel.getUserMe()
         val displayMetrics = resources.displayMetrics
         screenAttributes.screenWidth = displayMetrics.widthPixels
         screenAttributes.screenHeight = displayMetrics.heightPixels

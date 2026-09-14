@@ -5,11 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.moviceapp.repo.APIResult
 import com.example.moviceapp.repo.MovieAppUserRepository
 import com.example.moviceapp.repo.UserEntity
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,13 +22,20 @@ class AccountSettingViewModel @Inject constructor(
     var _currentUser = MutableStateFlow<UserEntity?>(null)
     var currentUser: StateFlow<UserEntity?> = _currentUser.asStateFlow()
 
-    suspend fun getUserMe(): UserEntity? {
-        return when (val result = userRepository.getUser()) {
-            is APIResult.Success -> {
-                _currentUser.value = result.data
-                result.data
+    fun getUserMe() {
+        viewModelScope.launch {
+            var tokenResult = Firebase.auth.currentUser?.getIdToken(false)?.await()
+            if (tokenResult == null)
+                tokenResult = Firebase.auth.currentUser?.getIdToken(true)?.await()
+
+            val token = tokenResult?.token ?: return@launch
+
+            when (val result = userRepository.getUser("Bearer $token")) {
+                is APIResult.Success ->
+                    _currentUser.value = result.data
+                is APIResult.Failure ->
+                    _currentUser.value = null
             }
-            is APIResult.Failure -> null
         }
     }
 

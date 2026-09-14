@@ -173,6 +173,8 @@ class SignInFragment : Fragment() {
         )
         val toastMessage = if (isSuccess) successMessage else failureMessage
         Toast.makeText(requireContext(), toastMessage, Toast.LENGTH_SHORT).show()
+
+        if (isSuccess) findNavController().popBackStack()
     }
 
     private fun showLoading() {
