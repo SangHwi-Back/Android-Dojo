@@ -14,6 +14,7 @@ class CommonDialog : DialogFragment() {
     interface CommonDialogListener: Serializable {
         fun onPositive(view: View)
         fun onNegative(view: View) {}
+        fun onCreated(view: View) {}
     }
     companion object {
         private const val ARG_TITLE = "title"
@@ -69,6 +70,7 @@ class CommonDialog : DialogFragment() {
         return builder.create().apply {
             // Dismiss when tapping outside the dialog
             setCanceledOnTouchOutside(true)
+            view?.let { listener?.onCreated(it) }
         }
     }
 }

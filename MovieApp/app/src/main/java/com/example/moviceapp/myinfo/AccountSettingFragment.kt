@@ -1,16 +1,19 @@
 package com.example.moviceapp.myinfo
 
 import android.os.Bundle
-import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.moviceapp.R
 import com.example.moviceapp.common.CommonDialog
 import com.example.moviceapp.databinding.FragmentAccountSettingBinding
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -21,6 +24,58 @@ class AccountSettingFragment : Fragment() {
     private val binding: FragmentAccountSettingBinding
         get() = _binding!!
     private val viewModel: AccountSettingViewModel by viewModels()
+    private val countryCodes = listOf(
+        Pair("한국", "+82"),
+        Pair("미국", "+1"),
+        Pair("일본", "+81"),
+    )
+    private val editDialogListener: (DataName) -> CommonDialog.CommonDialogListener = { dataName ->
+        object : CommonDialog.CommonDialogListener {
+            override fun onPositive(view: View) =
+                handleResult(dataName, view)
+
+            override fun onCreated(view: View) {
+                val editTextView = view.findViewById<TextInputEditText>(R.id.edit_text_view)
+                if (dataName == DataName.PHONE && editTextView != null) {
+                    // Country code picker logic here
+                    val countryCodeButton = view.findViewById<MaterialButton>(R.id.country_code_button)
+                    countryCodeButton?.setOnClickListener {
+                        val items = countryCodes.map { "${it.first} (${it.second})" }.toTypedArray()
+                        AlertDialog.Builder(requireContext())
+                            .setItems(items) { _, index ->
+                                countryCodeButton.text = countryCodes[index].second
+                            }.show()
+                    }
+                    // Sets user's current phone number logic here
+                    editTextView.doOnTextChanged { text, _, _, _ ->
+                        // phone number
+                        val text = text?.toString() ?: return@doOnTextChanged
+                        // country code
+                        val countryCode = countryCodeButton.text.toString()
+                        // phone number + country code validating and formatting logic here
+                        when (val result = viewModel.parsePhoneNumber(text, countryCode)) {
+                            is AccountSettingViewModel.ParsingResult.Success -> {
+                                view.findViewById<TextView>(R.id.phone_number_text).text = result.phoneNumber
+                            }
+
+                            else -> return@doOnTextChanged
+                        }
+                    }
+                    // Sets user's current phone number
+                    val phoneNumber = viewModel.currentUser.value?.phone
+                    if (phoneNumber != null) {
+                        view.findViewById<TextView>(R.id.phone_number_text).text = phoneNumber
+                        val split = viewModel.splitCountryCode(phoneNumber)
+                        if (split != null) {
+                            countryCodeButton.text = split.first
+                            editTextView.setText(split.second.filter { it.isDigit() })
+                        }
+                    }
+
+                }
+            }
+        }
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         lifecycleScope.launch {
@@ -37,17 +92,12 @@ class AccountSettingFragment : Fragment() {
         fun createEditDialog(dataName: DataName, title: String) {
             CommonDialog.newInstance(
                 title = title,
-                layout = R.layout.dialog_edit_single_text,
-                listener = object : CommonDialog.CommonDialogListener {
-                    override fun onPositive(view: View) =
-                        handleResult(dataName, view)
-                }
-            ).let { dialog ->
-                val textView = dialog.view?.findViewById<TextInputEditText>(R.id.edit_text_view)
-                if (dataName == DataName.PHONE && textView != null)
-                    Linkify.addLinks(textView, Linkify.PHONE_NUMBERS)
-                dialog
-            }.show(childFragmentManager, "NameEditDialog")
+                layout = if (dataName == DataName.PHONE)
+                    R.layout.dialog_edit_phone_text
+                else
+                    R.layout.dialog_edit_single_text,
+                listener = editDialogListener(dataName)
+            ).show(childFragmentManager, title)
         }
         binding.nameEditButton.setOnClickListener {
             createEditDialog(DataName.NAME, "Name editing")
@@ -68,7 +118,11 @@ class AccountSettingFragment : Fragment() {
             when (type) {
                 DataName.NAME -> viewModel.setName(value)
                 DataName.EMAIL -> viewModel.setEmail(value)
-                DataName.PHONE -> viewModel.setPhoneNumber(value)
+                DataName.PHONE -> {
+                    val phoneNumber = view.findViewById<TextInputEditText>(R.id.edit_text_view).text.toString()
+                    val countryCode = view.findViewById<MaterialButton>(R.id.country_code_button).text.toString()
+                    viewModel.setPhoneNumber(phoneNumber, countryCode)
+                }
             }
         }
     }
