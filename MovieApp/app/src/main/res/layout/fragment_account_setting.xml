@@ -173,7 +173,7 @@
                                                                            android:textSize="18sp"
                                                                            android:fontFamily="@font/dm_sans_bold"
                                                                            android:textColor="@color/text_primary"
-                                                                           tools:text="Push Notification"/>
+                                                                           android:text="@string/push_notification"/>
                     <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/push_notification_switch"
                                                                                android:layout_width="wrap_content"
                                                                                android:layout_height="wrap_content"/>

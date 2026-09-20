@@ -304,5 +304,6 @@
     <string name="hint_name_on_card">John Doe</string>
     <string name="label_default_payment_method">Set as default payment method</string>
     <string name="action_save_card">Save Card</string>
+    <string name="push_notification">Push Notification</string>
 
 </resources>
