@@ -217,6 +217,7 @@
     <!-- ======================== -->
 
     <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="error_device_no_google_auth">Add Google sign in on device (Setting > Accounts / Google)</string>
     <string name="error_network">No internet connection. Please check your network.</string>
     <string name="error_not_found">Content not found.</string>
     <string name="error_loading_movies">Failed to load movies. Tap to retry.</string>

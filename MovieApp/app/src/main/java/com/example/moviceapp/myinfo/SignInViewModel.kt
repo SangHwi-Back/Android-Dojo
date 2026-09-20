@@ -5,6 +5,7 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.ViewModel
 import com.example.moviceapp.BuildConfig
 import com.facebook.CallbackManager
@@ -109,6 +110,9 @@ class SignInViewModel @Inject constructor() : ViewModel() {
                 _isLoading.value = false
                 Result.failure(Exception("Invalid credential type"))
             }
+        } catch (e: NoCredentialException) {
+            _isLoading.value = false
+            Result.failure(e)
         } catch (e: GetCredentialException) {
             if (isAuthorizedBefore) {
                 // Try again without filtering by authorized accounts
