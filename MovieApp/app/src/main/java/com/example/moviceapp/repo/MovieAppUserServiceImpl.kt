@@ -5,7 +5,7 @@ import javax.inject.Singleton
 
 interface MovieAppUserRepository {
     suspend fun getUser(token: String?): APIResult<UserEntity>
-    suspend fun updateUser(user: UserEntity): APIResult<UserEntity>
+    suspend fun updateUser(token: String?, user: UserEntity): APIResult<UserEntity>
 }
 
 @Singleton
@@ -15,6 +15,6 @@ class MovieAppUserServiceImpl @Inject constructor(
     override suspend fun getUser(token: String?): APIResult<UserEntity> =
         service.getUser(token).toAPIResult()
 
-    override suspend fun updateUser(user: UserEntity): APIResult<UserEntity> =
-        service.updateUser(user).toAPIResult()
+    override suspend fun updateUser(token: String?, user: UserEntity): APIResult<UserEntity> =
+        service.updateUser(token, user).toAPIResult()
 }

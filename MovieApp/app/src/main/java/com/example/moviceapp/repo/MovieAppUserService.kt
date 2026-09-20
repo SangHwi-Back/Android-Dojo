@@ -13,5 +13,5 @@ interface MovieAppUserService {
     @GET("/api/users/me")
     fun getUser(@Header("Authorization") token: String?): Call<UserEntity>
     @PATCH("/api/users/me")
-    fun updateUser(@Body user: UserEntity): Call<UserEntity>
+    fun updateUser(@Header("Authorization") token: String?, @Body user: UserEntity): Call<UserEntity>
 }

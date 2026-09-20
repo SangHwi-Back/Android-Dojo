@@ -40,7 +40,11 @@ class AccountSettingViewModel @Inject constructor(
     }
 
     suspend fun updateUser(user: UserEntity): UserEntity {
-        return when (val result = userRepository.updateUser(user)) {
+        var tokenResult = Firebase.auth.currentUser?.getIdToken(false)?.await()
+        if (tokenResult == null)
+            tokenResult = Firebase.auth.currentUser?.getIdToken(true)?.await()
+        val token = tokenResult?.token?.let { "Bearer $it" }
+        return when (val result = userRepository.updateUser(token, user)) {
             is APIResult.Success -> result.data
             is APIResult.Failure -> user
         }
