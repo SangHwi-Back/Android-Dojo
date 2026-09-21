@@ -31,4 +31,7 @@ export class User {
 
   @Column({ name: 'push_notification', default: true })
   pushNotification: boolean;
+
+  @Column({ name: 'profile_image_id', nullable: true })
+  profileImageId: string | null;
 }

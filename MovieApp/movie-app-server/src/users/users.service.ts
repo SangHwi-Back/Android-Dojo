@@ -3,6 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class UsersService {
@@ -42,5 +45,38 @@ export class UsersService {
     if (dto.phone !== undefined) user.phone = dto.phone;
     if (dto.pushNotification !== undefined) user.pushNotification = dto.pushNotification;
     return this.usersRepo.save(user);
+  }
+
+  async saveProfileImage(uid: string, fileBuffer: Buffer, mimeType: string): Promise<User> {
+    const user = await this.findByUid(uid);
+
+    if (user.profileImageId) {
+      const oldPath = this.resolveImagePath(user.profileImageId);
+      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    }
+
+    const ext = mimeType === 'image/png' ? 'png' : mimeType === 'image/webp' ? 'webp' : 'jpg';
+    const imageId = `${crypto.randomUUID()}.${ext}`;
+    const uploadDir = path.resolve(process.cwd(), 'uploads', 'profile-images');
+    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+
+    fs.writeFileSync(path.join(uploadDir, imageId), fileBuffer);
+    user.profileImageId = imageId;
+    return this.usersRepo.save(user);
+  }
+
+  async deleteProfileImage(uid: string): Promise<User> {
+    const user = await this.findByUid(uid);
+    if (user.profileImageId) {
+      const imagePath = this.resolveImagePath(user.profileImageId);
+      if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+      user.profileImageId = null;
+      return this.usersRepo.save(user);
+    }
+    return user;
+  }
+
+  resolveImagePath(imageId: string): string {
+    return path.resolve(process.cwd(), 'uploads', 'profile-images', imageId);
   }
 }
