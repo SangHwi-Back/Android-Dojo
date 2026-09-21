@@ -46,13 +46,11 @@
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_margin="16dp"
-                        android:background="@color/green_avatar_bg"
-                        android:contentDescription="@string/content_desc_profile_avatar"
-                        android:src="@drawable/person_outlined_24px"
-                        android:layout_gravity="center"
-                        android:theme="@style/ShapeAppearance.CineBook.BottomNavIndicator"
-                        app:tint="@color/green_dark"
-                        tools:src="@tools:sample/avatars"/>
+                        android:scaleType="centerCrop"
+                        android:background="@drawable/circle_background"
+                        app:backgroundTint="@color/surface_card"
+                        android:foreground="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/person_outlined_24px"/>
 
                 <LinearLayout
                         android:id="@+id/user_profile_status_linear_layout"
