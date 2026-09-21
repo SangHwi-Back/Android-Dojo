@@ -1,5 +1,6 @@
 package com.example.moviceapp.myinfo
 
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moviceapp.repo.APIResult
@@ -24,13 +25,9 @@ class AccountSettingViewModel @Inject constructor(
 
     fun getUserMe() {
         viewModelScope.launch {
-            var tokenResult = Firebase.auth.currentUser?.getIdToken(false)?.await()
-            if (tokenResult == null)
-                tokenResult = Firebase.auth.currentUser?.getIdToken(true)?.await()
+            val token = getAuthToken() ?: return@launch
 
-            val token = tokenResult?.token ?: return@launch
-
-            when (val result = userRepository.getUser("Bearer $token")) {
+            when (val result = userRepository.getUser(token)) {
                 is APIResult.Success ->
                     _currentUser.value = result.data
                 is APIResult.Failure ->
@@ -40,10 +37,7 @@ class AccountSettingViewModel @Inject constructor(
     }
 
     suspend fun updateUser(user: UserEntity): UserEntity {
-        var tokenResult = Firebase.auth.currentUser?.getIdToken(false)?.await()
-        if (tokenResult == null)
-            tokenResult = Firebase.auth.currentUser?.getIdToken(true)?.await()
-        val token = tokenResult?.token?.let { "Bearer $it" }
+        val token = getAuthToken()
         return when (val result = userRepository.updateUser(token, user)) {
             is APIResult.Success -> result.data
             is APIResult.Failure -> user
@@ -175,8 +169,25 @@ class AccountSettingViewModel @Inject constructor(
         }
     }
 
+    fun setProfilePhoto(bitmap: Bitmap) {
+        viewModelScope.launch {
+            val token = getAuthToken()
+            when (val result = userRepository.updateUserProfile(token, bitmap)) {
+                is APIResult.Success -> _currentUser.value = result.data
+                is APIResult.Failure -> Unit
+            }
+        }
+    }
+
     sealed class ParsingResult {
         data class Success(val phoneNumber: String) : ParsingResult()
         data class Failure(val exception: Exception) : ParsingResult()
     }
+}
+
+suspend fun getAuthToken(): String? {
+    var tokenResult = Firebase.auth.currentUser?.getIdToken(false)?.await()
+    if (tokenResult == null)
+        tokenResult = Firebase.auth.currentUser?.getIdToken(true)?.await()
+    return tokenResult?.token?.let { "Bearer $it" }
 }

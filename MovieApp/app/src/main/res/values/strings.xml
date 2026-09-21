@@ -305,5 +305,11 @@
     <string name="label_default_payment_method">Set as default payment method</string>
     <string name="action_save_card">Save Card</string>
     <string name="push_notification">Push Notification</string>
+    <string name="action_profile_edit">action profile edit</string>
+    <string name="str_name">Name</string>
+    <string name="action_edit_name">action edit name</string>
+    <string name="action_edit_email">action edit email</string>
+    <string name="str_phone">Phone</string>
+    <string name="action_edit_phone_number">action edit phone number</string>
 
 </resources>

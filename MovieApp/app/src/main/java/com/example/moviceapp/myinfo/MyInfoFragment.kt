@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import coil.transform.CircleCropTransformation
+import com.example.moviceapp.BuildConfig
 import com.example.moviceapp.R
 import com.example.moviceapp.common.CommonDialog
 import com.example.moviceapp.databinding.FragmentMyInfoBinding
@@ -62,6 +64,7 @@ class MyInfoFragment : Fragment() {
                 binding.userProfileNameTextView.text = currentUser?.name ?: getString(R.string.label_guest_user)
                 binding.userProfileStatusTextView.visibility = if (currentUser == null)
                     View.VISIBLE else View.GONE
+                setProfileImage(currentUser?.profileImageUrl)
             }
         }
     }
@@ -140,6 +143,22 @@ class MyInfoFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private suspend fun setProfileImage(profileImageUrl: String?) {
+        val token = getAuthToken()
+        if (profileImageUrl != null && token != null) {
+            val fullUrl = "https://${BuildConfig.IP_API_SERVER}$profileImageUrl"
+            binding.userProfileImageView.load(fullUrl) {
+                addHeader("Authorization", token)
+                addHeader("ngrok-skip-browser-warning", "true")
+                transformations(CircleCropTransformation())
+                placeholder(R.drawable.person_outlined_24px)
+                error(R.drawable.person_outlined_24px)
+            }
+        } else {
+            binding.userProfileImageView.setImageResource(R.drawable.person_outlined_24px)
+        }
     }
 
     // --- History ---

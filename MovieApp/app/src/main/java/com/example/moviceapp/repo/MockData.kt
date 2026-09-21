@@ -104,6 +104,7 @@ data class UserEntity(
     val moviesCount: Int,
     val points: String,
     val saved: Int,
+    val profileImageUrl: String?
 ) : Parcelable
 // ================================================================
 //  Mock Data — 뷰 단위로 분리된 object

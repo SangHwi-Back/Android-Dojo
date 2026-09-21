@@ -1,6 +1,10 @@
 package com.example.moviceapp.myinfo
 
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +14,9 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import coil.load
+import coil.transform.CircleCropTransformation
+import com.example.moviceapp.BuildConfig
 import com.example.moviceapp.R
 import com.example.moviceapp.common.CommonDialog
 import com.example.moviceapp.databinding.FragmentAccountSettingBinding
@@ -76,6 +83,21 @@ class AccountSettingFragment : Fragment() {
             }
         }
     }
+    private val profileImageListener = object : ProfileImageDialogFragment.Listener {
+        override fun onConfirm(result: ProfileImageDialogFragment.ProfileImageResult) {
+            when (result) {
+                is ProfileImageDialogFragment.ProfileImageResult.ResultBitmap -> {
+                    handleProfilePhotoResult(result.bitmap)
+                }
+                is ProfileImageDialogFragment.ProfileImageResult.ResultUri ->
+                    handleProfilePhotoResult(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        ImageDecoder.decodeBitmap(ImageDecoder.createSource(requireContext().contentResolver, result.uri))
+                    } else {
+                        MediaStore.Images.Media.getBitmap(requireContext().contentResolver, result.uri)
+                    })
+            }
+        }
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         lifecycleScope.launch {
@@ -85,11 +107,19 @@ class AccountSettingFragment : Fragment() {
                 binding.emailTextView.text = currentUser.email
                 binding.phoneTextView.text = currentUser.phone
                 binding.pushNotificationSwitch.isChecked = currentUser.pushNotification
+                loadProfileImage(currentUser.profileImageUrl)
             }
         }
         viewModel.getUserMe()
         // Helper function to create edit dialog
         fun createEditDialog(dataName: DataName, title: String) {
+            if (dataName == DataName.PHOTO) {
+                ProfileImageDialogFragment
+                    .newInstance(listener = profileImageListener)
+                    .show(childFragmentManager, title)
+                return
+            }
+
             CommonDialog.newInstance(
                 title = title,
                 layout = if (dataName == DataName.PHONE)
@@ -98,6 +128,9 @@ class AccountSettingFragment : Fragment() {
                     R.layout.dialog_edit_single_text,
                 listener = editDialogListener(dataName)
             ).show(childFragmentManager, title)
+        }
+        binding.profileImageButton.setOnClickListener {
+            createEditDialog(DataName.PHOTO, "Profile photo editing")
         }
         binding.nameEditButton.setOnClickListener {
             createEditDialog(DataName.NAME, "Name editing")
@@ -113,16 +146,43 @@ class AccountSettingFragment : Fragment() {
         }
     }
     private fun handleResult(type: DataName, view: View) {
-        view.findViewById<TextInputEditText>(R.id.edit_text_view).text?.let { text ->
-            val value = text.toString()
-            when (type) {
-                DataName.NAME -> viewModel.setName(value)
-                DataName.EMAIL -> viewModel.setEmail(value)
-                DataName.PHONE -> {
+        when (type) {
+            DataName.NAME, DataName.EMAIL, DataName.PHONE -> {
+                if (type == DataName.PHONE) {
                     val phoneNumber = view.findViewById<TextInputEditText>(R.id.edit_text_view).text.toString()
                     val countryCode = view.findViewById<MaterialButton>(R.id.country_code_button).text.toString()
                     viewModel.setPhoneNumber(phoneNumber, countryCode)
+                } else {
+                    val value = view.findViewById<TextInputEditText>(R.id.edit_text_view).text.toString()
+
+                    if (type == DataName.NAME)
+                        viewModel.setName(value)
+                    else
+                        viewModel.setEmail(value)
                 }
+            }
+            DataName.PHOTO -> return
+        }
+    }
+    private fun handleProfilePhotoResult(bitmap: Bitmap) {
+        viewModel.setProfilePhoto(bitmap)
+    }
+
+    private fun loadProfileImage(profileImageUrl: String?) {
+        val imageView = binding.profileImageView
+        if (profileImageUrl == null) {
+            imageView.setImageResource(R.drawable.person_outlined_24px)
+            return
+        }
+        lifecycleScope.launch {
+            val token = getAuthToken() ?: return@launch
+            val fullUrl = "https://${BuildConfig.IP_API_SERVER}$profileImageUrl"
+            imageView.load(fullUrl) {
+                addHeader("Authorization", token)
+                addHeader("ngrok-skip-browser-warning", "true")
+                transformations(CircleCropTransformation())
+                placeholder(R.drawable.person_outlined_24px)
+                error(R.drawable.person_outlined_24px)
             }
         }
     }
@@ -137,6 +197,6 @@ class AccountSettingFragment : Fragment() {
         _binding = null
     }
     enum class DataName {
-        NAME, EMAIL, PHONE
+        NAME, EMAIL, PHONE, PHOTO
     }
 }
