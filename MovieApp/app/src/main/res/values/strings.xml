@@ -311,5 +311,7 @@
     <string name="action_edit_email">action edit email</string>
     <string name="str_phone">Phone</string>
     <string name="action_edit_phone_number">action edit phone number</string>
+    <string name="take_picture">Take Picture</string>
+    <string name="select_gallery">Select Gallery</string>
 
 </resources>

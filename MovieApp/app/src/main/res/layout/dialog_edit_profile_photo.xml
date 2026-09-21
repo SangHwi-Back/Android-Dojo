@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
                 android:layout_weight="1"
-                android:text="사진 찍기"
+                android:text="@string/take_picture"
                 style="@style/Widget.CineBook.Button.Outlined"
                 android:layout_marginEnd="8dp"
                 app:icon="@drawable/ic_camera"/>
@@ -69,7 +69,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="앨범에서 선택"
+                android:text="@string/select_gallery"
                 style="@style/Widget.CineBook.Button.Outlined"
                 app:icon="@drawable/ic_photo_library"/>
     </LinearLayout>
