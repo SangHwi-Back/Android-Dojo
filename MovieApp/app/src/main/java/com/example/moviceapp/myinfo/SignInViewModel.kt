@@ -17,8 +17,6 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.Co
 import com.google.firebase.Firebase
 import com.google.firebase.auth.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -29,15 +27,10 @@ class SignInViewModel @Inject constructor() : ViewModel() {
     private var credentialManager: CredentialManager? = null
     val callbackManager: CallbackManager = CallbackManager.Factory.create()
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
-
     suspend fun signUpButtonTapped(email: String, password: String): Result<AuthResult> =
         suspendCancellableCoroutine { continuation ->
-            _isLoading.value = true
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
-                    _isLoading.value = false
                     if (task.isSuccessful) continuation.resume(Result.success(task.result))
                     else continuation.resume(Result.failure(task.exception ?: Exception("Unknown error")))
                 }
@@ -45,10 +38,8 @@ class SignInViewModel @Inject constructor() : ViewModel() {
 
     suspend fun signInWithEmailAndPasswordButtonTapped(email: String, password: String): Result<AuthResult> =
         suspendCancellableCoroutine { continuation ->
-            _isLoading.value = true
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
-                    _isLoading.value = false
                     if (task.isSuccessful) continuation.resume(Result.success(task.result))
                     else continuation.resume(Result.failure(task.exception ?: Exception("Unknown error")))
                 }
@@ -56,10 +47,8 @@ class SignInViewModel @Inject constructor() : ViewModel() {
 
     suspend fun forgotPasswordButtonTapped(email: String): Result<Unit> =
         suspendCancellableCoroutine { continuation ->
-            _isLoading.value = true
             auth.sendPasswordResetEmail(email)
                 .addOnCompleteListener { task ->
-                    _isLoading.value = false
                     if (task.isSuccessful) continuation.resume(Result.success(Unit))
                     else continuation.resume(Result.failure(task.exception ?: Exception("Unknown error")))
                 }
@@ -67,11 +56,9 @@ class SignInViewModel @Inject constructor() : ViewModel() {
 
     suspend fun handleFacebookLoginResult(loginResult: LoginResult): Result<AuthResult> =
         suspendCancellableCoroutine { continuation ->
-            _isLoading.value = true
             val credential = FacebookAuthProvider.getCredential(loginResult.accessToken.token)
             auth.signInWithCredential(credential)
                 .addOnCompleteListener { task ->
-                    _isLoading.value = false
                     if (task.isSuccessful) continuation.resume(Result.success(task.result))
                     else continuation.resume(Result.failure(task.exception ?: Exception("Unknown error")))
                 }
@@ -93,7 +80,6 @@ class SignInViewModel @Inject constructor() : ViewModel() {
         val manager = credentialManager!!
 
         return try {
-            _isLoading.value = true
             val credentialResult = manager.getCredential(context, request)
             val credential = credentialResult.credential
             if (credential is CustomCredential && credential.type == TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
@@ -102,20 +88,17 @@ class SignInViewModel @Inject constructor() : ViewModel() {
                     val firebaseCredential = GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
                     auth.signInWithCredential(firebaseCredential)
                         .addOnCompleteListener { task ->
-                            _isLoading.value = false
                             if (task.isSuccessful) continuation.resume(Result.success(task.result))
                             else continuation.resume(Result.failure(task.exception ?: Exception("Unknown error")))
                         }
                 }
             } else {
-                _isLoading.value = false
                 Result.failure(Exception("Invalid credential type"))
             }
         } catch (e: GetCredentialCancellationException) {
             // 사용자 취소 또는 계정 재인증 실패 — 재시도 없이 즉시 실패 반환
-            _isLoading.value = false
             Result.failure(e)
-        } catch (e: GetCredentialException) {
+        } catch (_: GetCredentialException) {
             if (isAuthorizedBefore) {
                 signInWithGoogleButtonTapped(false, context)
             } else {
@@ -123,7 +106,6 @@ class SignInViewModel @Inject constructor() : ViewModel() {
                 signInWithGoogleStandardPicker(context)
             }
         } catch (e: Exception) {
-            _isLoading.value = false
             Result.failure(e)
         }
     }
@@ -144,17 +126,14 @@ class SignInViewModel @Inject constructor() : ViewModel() {
                     val firebaseCredential = GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
                     auth.signInWithCredential(firebaseCredential)
                         .addOnCompleteListener { task ->
-                            _isLoading.value = false
                             if (task.isSuccessful) continuation.resume(Result.success(task.result))
                             else continuation.resume(Result.failure(task.exception ?: Exception("Unknown error")))
                         }
                 }
             } else {
-                _isLoading.value = false
                 Result.failure(Exception("Invalid credential type"))
             }
         } catch (e: Exception) {
-            _isLoading.value = false
             Result.failure(e)
         }
     }

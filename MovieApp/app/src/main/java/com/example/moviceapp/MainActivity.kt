@@ -2,7 +2,6 @@ package com.example.moviceapp
 
 import android.graphics.Rect
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
@@ -12,7 +11,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var screenAttributes: ScreenAttribute
     private val viewModel: BookViewModel by viewModels()
     private val accountViewModel: AccountSettingViewModel by viewModels()
+    private val appViewModel: AppViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -101,8 +103,28 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.fetchBookings()
         }
-    }
 
+        // Handle loading and error states from AppViewModel
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                appViewModel.isLoading.collect { isLoading ->
+                    binding.loadingOverlay.visibility = if (isLoading) android.view.View.VISIBLE else android.view.View.GONE
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                appViewModel.error.collect { message ->
+                    com.google.android.material.snackbar.Snackbar.make(
+                        binding.root,
+                        message,
+                        com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+    }
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }

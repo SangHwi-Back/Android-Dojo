@@ -10,9 +10,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.credentials.exceptions.NoCredentialException
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.moviceapp.AppViewModel
 import com.example.moviceapp.BuildConfig
 import com.example.moviceapp.R
 import com.example.moviceapp.databinding.FragmentSignInBinding
@@ -32,6 +34,7 @@ class SignInFragment : Fragment() {
     private val binding: FragmentSignInBinding
         get() = _binding!!
     private val viewModel: SignInViewModel by viewModels()
+    private val appViewModel: AppViewModel by activityViewModels<AppViewModel>()
 
     override fun onDestroy() {
         super.onDestroy()
@@ -42,10 +45,12 @@ class SignInFragment : Fragment() {
         super.onCreate(savedInstanceState)
         requireActivity().setupAppBar(false)
     }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentSignInBinding.inflate(inflater, container, false)
         return _binding!!.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -59,8 +64,10 @@ class SignInFragment : Fragment() {
             val (email, password) = getEmailPasswordOrShowAlert()
             if (email.isNotBlank() && password.isNotBlank()) {
                 lifecycleScope.launch {
-                    viewModel.signInWithEmailAndPasswordButtonTapped(email, password)
-                        .handleAuthResult("signInWithEmail", getString(R.string.sign_in_success_message))
+                    onLoadingCircle {
+                        viewModel.signInWithEmailAndPasswordButtonTapped(email, password)
+                            .handleAuthResult("signInWithEmail", getString(R.string.sign_in_success_message))
+                    }
                 }
             }
         }
@@ -78,8 +85,10 @@ class SignInFragment : Fragment() {
                 }.create().show()
             } else {
                 lifecycleScope.launch {
-                    viewModel.forgotPasswordButtonTapped(email)
-                        .handleAuthResult("Forgot Reset-Email", getString(R.string.password_reset_email_sent_message))
+                    onLoadingCircle {
+                        viewModel.forgotPasswordButtonTapped(email)
+                            .handleAuthResult("Forgot Reset-Email", getString(R.string.password_reset_email_sent_message))
+                    }
                 }
             }
         }
@@ -88,8 +97,10 @@ class SignInFragment : Fragment() {
             val (email, password) = getEmailPasswordOrShowAlert()
             if (email.isNotBlank() && password.isNotBlank()) {
                 lifecycleScope.launch {
-                    viewModel.signUpButtonTapped(email, password)
-                        .handleAuthResult("Create User With Email", getString(R.string.sign_in_success_message))
+                    onLoadingCircle {
+                        viewModel.signUpButtonTapped(email, password)
+                            .handleAuthResult("Create User With Email", getString(R.string.sign_in_success_message))
+                    }
                 }
             }
         }
@@ -97,8 +108,10 @@ class SignInFragment : Fragment() {
         binding.googleButton.setOnClickListener {
             Log.d(TAG, "Google sign in clicked")
             lifecycleScope.launch {
-                viewModel.signInWithGoogleButtonTapped(true, requireActivity())
-                    .handleAuthResult("Google Sign In", getString(R.string.sign_in_success_message))
+                onLoadingCircle {
+                    viewModel.signInWithGoogleButtonTapped(true, requireActivity())
+                        .handleAuthResult("Google Sign In", getString(R.string.sign_in_success_message))
+                }
             }
         }
 
@@ -108,12 +121,14 @@ class SignInFragment : Fragment() {
                 this, viewModel.callbackManager, listOf("email", "public_profile")
             )
         }
+    }
 
-        lifecycleScope.launch {
-            // Observe loading state
-            viewModel.isLoading.collect { isLoading ->
-                if (isLoading) showLoading() else hideLoading()
-            }
+    private suspend fun onLoadingCircle(handler: suspend () -> Unit) {
+        try {
+            appViewModel.showLoading()
+            handler()
+        } finally {
+            appViewModel.hideLoading()
         }
     }
 
@@ -138,8 +153,10 @@ class SignInFragment : Fragment() {
             }
             override fun onSuccess(result: LoginResult) {
                 lifecycleScope.launch {
-                    viewModel.handleFacebookLoginResult(result)
-                        .handleAuthResult("Facebook Sign In", getString(R.string.sign_in_success_message))
+                    onLoadingCircle {
+                        viewModel.handleFacebookLoginResult(result)
+                            .handleAuthResult("Facebook Sign In", getString(R.string.sign_in_success_message))
+                    }
                 }
             }
         })
@@ -181,15 +198,5 @@ class SignInFragment : Fragment() {
         Toast.makeText(requireContext(), toastMessage, Toast.LENGTH_SHORT).show()
 
         if (isSuccess) findNavController().popBackStack()
-    }
-
-    private fun showLoading() {
-        binding.loadingOverlay.visibility = View.VISIBLE
-        binding.root.alpha = 0.5f
-    }
-
-    private fun hideLoading() {
-        binding.loadingOverlay.visibility = View.GONE
-        binding.root.alpha = 1.0f
     }
 }
