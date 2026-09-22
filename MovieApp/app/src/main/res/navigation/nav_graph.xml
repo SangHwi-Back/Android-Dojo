@@ -6,33 +6,33 @@
     app:startDestination="@id/searchFragment">
     <!-- SEARCH TAB -->
     <fragment
-        android:id="@+id/searchFragment"
-        android:name="com.example.moviceapp.search.SearchFragment"
-        android:label="fragment_search"
-        tools:layout="@layout/fragment_search" >
+            android:id="@+id/searchFragment"
+            android:name="com.example.moviceapp.search.SearchFragment"
+            android:label="@string/app_name"
+            tools:layout="@layout/fragment_search">
         <action
-            android:id="@+id/action_searchFragment_to_movieBottomSheet"
-            app:destination="@id/movieBottomSheet" />
+                android:id="@+id/action_searchFragment_to_movieBottomSheet"
+                app:destination="@id/movieBottomSheet"/>
         <action android:id="@+id/action_searchFragment_to_bookChooseInfoFragment"
                 app:destination="@id/bookChooseInfoFragment"/>
     </fragment>
 
     <!-- BOOK TAB -->
     <fragment
-        android:id="@+id/bookFragment"
-        android:name="com.example.moviceapp.book.BookFragment"
-        android:label="fragment_book"
-        tools:layout="@layout/fragment_book" >
+            android:id="@+id/bookFragment"
+            android:name="com.example.moviceapp.book.BookFragment"
+            android:label="@string/app_name"
+            tools:layout="@layout/fragment_book">
         <action
                 android:id="@+id/action_bookFragment_to_bookChooseInfoFragment"
-                app:destination="@id/bookChooseInfoFragment" />
+                app:destination="@id/bookChooseInfoFragment"/>
     </fragment>
 
     <!-- MY INFO TAB -->
     <fragment
         android:id="@+id/myInfoFragment"
         android:name="com.example.moviceapp.myinfo.MyInfoFragment"
-        android:label="fragment_my_info"
+        android:label="@string/app_name"
         tools:layout="@layout/fragment_my_info">
         <action
                 android:id="@+id/action_myInfoFragment_to_signInFragment"
@@ -56,32 +56,32 @@
 
     <!-- BOTTOM SHEET -->
     <dialog
-        android:id="@+id/movieBottomSheet"
-        android:name="com.example.moviceapp.search.MovieBottomSheet"
-        android:label="MovieBottomSheet" />
+            android:id="@+id/movieBottomSheet"
+            android:name="com.example.moviceapp.search.MovieBottomSheet"
+            android:label="@string/app_name"/>
     <fragment
             android:id="@+id/bookChooseInfoFragment"
             android:name="com.example.moviceapp.book.BookChooseInfoFragment"
-            android:label="BookChooseInfoFragment"
-            tools:layout="@layout/fragment_book_choose_info" >
+            android:label="@string/app_name"
+            tools:layout="@layout/fragment_book_choose_info">
         <argument
                 android:name="movies"
-                app:argType="com.example.moviceapp.repo.Movie[]" />
+                app:argType="com.example.moviceapp.repo.Movie[]"/>
         <argument
                 android:name="selectedMovie"
-                app:argType="com.example.moviceapp.repo.Movie" />
+                app:argType="com.example.moviceapp.repo.Movie"/>
     </fragment>
     <fragment android:id="@+id/signInFragment" android:name="com.example.moviceapp.myinfo.SignInFragment"
     />
     <fragment android:id="@+id/accountSettingFragment"
               android:name="com.example.moviceapp.myinfo.AccountSettingFragment"
-              android:label="Account"/>
+              android:label="@string/app_name"/>
     <fragment android:id="@+id/myPaymentMethod" android:name="com.example.moviceapp.myinfo.MyPaymentMethodFragment"
-              android:label="Payment Methods">
+              android:label="@string/app_name">
         <action android:id="@+id/action_myPaymentMethod_to_addCardFragment" app:destination="@id/addCardFragment"/>
     </fragment>
     <fragment android:id="@+id/addCardFragment" android:name="com.example.moviceapp.myinfo.AddCardFragment"
-              android:label="Add Card"/>
+              android:label="@string/app_name"/>
     <fragment android:id="@+id/myBookingsFragment" android:name="com.example.moviceapp.myinfo.MyBookingsFragment"
-              android:label="MyBookingsFragment"/>
+              android:label="@string/app_name"/>
 </navigation>
