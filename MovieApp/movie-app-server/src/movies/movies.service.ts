@@ -30,6 +30,14 @@ export class MoviesService {
     return this.moviesRepo.find({ where: { isFeatured: true } });
   }
 
+  findRandom(limit = 4): Promise<Movie[]> {
+    return this.moviesRepo
+      .createQueryBuilder('movie')
+      .orderBy('RANDOM()')
+      .limit(limit)
+      .getMany();
+  }
+
   async findOne(id: number): Promise<Movie> {
     const movie = await this.moviesRepo.findOne({ where: { id } });
     if (!movie) throw new NotFoundException(`Movie #${id} not found`);
