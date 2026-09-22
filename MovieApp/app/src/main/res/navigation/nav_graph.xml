@@ -40,6 +40,7 @@
         <action android:id="@+id/action_myInfoFragment_to_accountSettingFragment"
                 app:destination="@id/accountSettingFragment"/>
         <action android:id="@+id/action_myInfoFragment_to_myPaymentMethod" app:destination="@id/myPaymentMethod"/>
+        <action android:id="@+id/action_myInfoFragment_to_myBookingsFragment" app:destination="@id/myBookingsFragment"/>
     </fragment>
 
     <!-- NAVIGATION VIEW -->
@@ -81,4 +82,6 @@
     </fragment>
     <fragment android:id="@+id/addCardFragment" android:name="com.example.moviceapp.myinfo.AddCardFragment"
               android:label="Add Card"/>
+    <fragment android:id="@+id/myBookingsFragment" android:name="com.example.moviceapp.myinfo.MyBookingsFragment"
+              android:label="MyBookingsFragment"/>
 </navigation>

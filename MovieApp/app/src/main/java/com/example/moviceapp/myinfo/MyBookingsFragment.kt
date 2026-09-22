@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,8 +17,10 @@ import com.example.moviceapp.R
 import com.example.moviceapp.databinding.FragmentMyBookingsBinding
 import com.example.moviceapp.databinding.ItemMyBookingsMovieBinding
 import com.example.moviceapp.repo.Booking
+import com.example.moviceapp.search.MovieBottomSheet
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MyBookingsFragment : Fragment() {
     private var _binding: FragmentMyBookingsBinding? = null
     val binding get() = _binding!!
@@ -33,20 +36,32 @@ class MyBookingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        myBookingsAdapter = MyBookingsAdapter()
+        myBookingsAdapter = MyBookingsAdapter {
+            lifecycleScope.launch {
+                viewModel.fetchMovie(it)?.let {
+                    val modal = MovieBottomSheet.newInstance(it)
+                    modal.show(childFragmentManager, MovieBottomSheet.TAG)
+                }
+            }
+        }
+
         binding.myBookingsRecyclerView.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
         binding.myBookingsRecyclerView.adapter = myBookingsAdapter
 
-        viewLifecycleOwner.lifecycleScope.launch {
+        lifecycleScope.launch {
             viewModel.myBookings.collect {
                 myBookingsAdapter.submitList(it)
             }
         }
+
+        viewModel.fetchBookings()
     }
 }
 
-class MyBookingsAdapter : ListAdapter<Booking, MyBookingsAdapter.MyBookingsViewHolder>(DiffCallback) {
+class MyBookingsAdapter(
+    val listener: (Booking) -> Unit
+) : ListAdapter<Booking, MyBookingsAdapter.MyBookingsViewHolder>(DiffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyBookingsViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = ItemMyBookingsMovieBinding.inflate(layoutInflater, parent, false)
@@ -54,7 +69,7 @@ class MyBookingsAdapter : ListAdapter<Booking, MyBookingsAdapter.MyBookingsViewH
     }
 
     override fun onBindViewHolder(holder: MyBookingsViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), listener)
     }
 
     object DiffCallback : DiffUtil.ItemCallback<Booking>() {
@@ -65,13 +80,16 @@ class MyBookingsAdapter : ListAdapter<Booking, MyBookingsAdapter.MyBookingsViewH
     }
 
     class MyBookingsViewHolder(val binding: ItemMyBookingsMovieBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(booking: Booking) {
+        fun bind(booking: Booking, listener: (Booking) -> Unit) {
             binding.movieImageView.load(
                 booking.movie.posterUrl ?: R.drawable.ic_launcher_background)
             binding.nameTextView.text = booking.movie.title
             binding.theaterTextView.text = booking.theater.name
             (booking.date + booking.time).also { binding.showTimeTextView.text = it }
             binding.seatTextView.text = booking.seats.toString()
+            binding.root.setOnClickListener {
+                listener(booking)
+            }
         }
     }
 }

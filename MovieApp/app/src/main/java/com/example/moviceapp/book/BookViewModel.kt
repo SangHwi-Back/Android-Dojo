@@ -1,6 +1,7 @@
 package com.example.moviceapp.book
 
 import androidx.lifecycle.ViewModel
+import com.example.moviceapp.myinfo.getAuthToken
 import com.example.moviceapp.repo.APIResult
 import com.example.moviceapp.repo.Booking
 import com.example.moviceapp.repo.BookingRepository
@@ -24,7 +25,8 @@ class BookViewModel @Inject constructor(
     val bookings: StateFlow<List<Booking>>
         get() = _bookings.asStateFlow()
     suspend fun fetchMovies() {
-        when (val result = movieRepository.getMovies()) {
+        val token = getAuthToken() ?: return
+        when (val result = movieRepository.getMovies(token)) {
             is APIResult.Success -> {
                 val movies = result.data
                 _movies.value = movies
@@ -37,7 +39,8 @@ class BookViewModel @Inject constructor(
     }
 
     suspend fun fetchBookings() {
-        when (val result = bookingRepository.getBookings()) {
+        val token = getAuthToken() ?: return
+        when (val result = bookingRepository.getBookings(token)) {
             is APIResult.Success -> {
                 val bookings = result.data
                 _bookings.value = bookings

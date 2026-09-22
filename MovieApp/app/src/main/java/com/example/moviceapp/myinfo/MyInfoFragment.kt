@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -119,12 +120,22 @@ class MyInfoFragment : Fragment() {
 
         // USER_STATUS_SECTION
         val statusAdapter = UserStatusSectionListAdapter {
-            if (it.title.lowercase().trim().contains("payment")) {
-                val direction = MyInfoFragmentDirections.actionMyInfoFragmentToMyPaymentMethod()
-                findNavController().navigate(direction)
-                return@UserStatusSectionListAdapter
+            val title = it.title.lowercase().trim()
+
+            val direction = if (title.contains("payment")) {
+                MyInfoFragmentDirections.actionMyInfoFragmentToMyPaymentMethod()
             }
-            showCommonDialog(it.title, it.subTitle)
+            else if (title.contains("bookings")) {
+                MyInfoFragmentDirections.actionMyInfoFragmentToMyBookingsFragment()
+            }
+            else {
+                null
+            }
+
+            if (direction != null)
+                findNavController().navigate(direction)
+            else
+                showCommonDialog(it.title, it.subTitle)
         }
         binding.myInfoUserStatusRecyclerView.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
