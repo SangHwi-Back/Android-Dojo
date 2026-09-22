@@ -4,6 +4,7 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.view.Menu
 import android.view.MotionEvent
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -108,7 +109,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 appViewModel.isLoading.collect { isLoading ->
-                    binding.loadingOverlay.visibility = if (isLoading) android.view.View.VISIBLE else android.view.View.GONE
+                    binding.loadingOverlay.visibility = if (isLoading) View.VISIBLE else View.GONE
                 }
             }
         }
@@ -122,6 +123,12 @@ class MainActivity : AppCompatActivity() {
                         com.google.android.material.snackbar.Snackbar.LENGTH_LONG
                     ).show()
                 }
+            }
+        }
+
+        lifecycleScope.launch {
+            appViewModel.visibilityFloatingActionButton.collect {
+                binding.ticketFloatingActionButton.visibility = it
             }
         }
     }

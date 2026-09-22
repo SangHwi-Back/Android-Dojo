@@ -7,8 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.CircleCropTransformation
+import com.example.moviceapp.AppViewModel
 import com.example.moviceapp.BuildConfig
 import com.example.moviceapp.R
 import com.example.moviceapp.common.CommonDialog
@@ -34,8 +37,20 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MyInfoFragment : Fragment() {
     private val accountSettingViewModel: AccountSettingViewModel by viewModels()
+    private val appViewModel: AppViewModel by activityViewModels()
+    private val myInfoViewModel: MyInfoViewModel by viewModels()
     private var _binding: FragmentMyInfoBinding? = null
     private val binding get() = _binding!!
+    private lateinit var sectionAdapter: UserStatusSectionListAdapter
+    private lateinit var historyAdapter: HistoryListAdapter
+    private val sections = mutableListOf(
+        MyInfoStatusSection(MyInfoSections.BOOKING, ""),
+        MyInfoStatusSection(MyInfoSections.PAYMENT_METHOD, ""),
+    )
+    private val historyItems = mutableListOf(
+        MyInfoHistory("12", "Movies"),
+        MyInfoHistory("Developing", "in progress"),
+    )
     private val isLoggedIn
         get() = accountSettingViewModel.currentUser.value != null
 
@@ -57,6 +72,7 @@ class MyInfoFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         accountSettingViewModel.getUserMe()
+        myInfoViewModel.fetchBookings()
         lifecycleScope.launch {
             accountSettingViewModel.currentUser.collect { currentUser ->
                 binding.userSignInButton.visibility = if (currentUser == null)
@@ -67,10 +83,20 @@ class MyInfoFragment : Fragment() {
                 setProfileImage(currentUser?.profileImageUrl)
             }
         }
+        lifecycleScope.launch {
+            sections.first { it.sectionType == MyInfoSections.BOOKING }
+                .badge = myInfoViewModel.myBookings.value.size.toString()
+            sectionAdapter.submitList(sections)
+            historyItems.first { it.name == "Movies" }
+                .number = myInfoViewModel.myBookings.value.size.toString()
+            historyAdapter.submitList(historyItems)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        appViewModel.setVisibilityFloatingActionButton(View.GONE)
 
         val user = Firebase.auth.currentUser
         binding.userProfileImageView.setOnClickListener {
@@ -91,7 +117,7 @@ class MyInfoFragment : Fragment() {
         }
 
         // HISTORY
-        val historyAdapter = HistoryListAdapter()
+        historyAdapter = HistoryListAdapter()
         val spacingPx = (8 * resources.displayMetrics.density).toInt()
         binding.myInfoHistoryRecyclerView.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
@@ -102,11 +128,7 @@ class MyInfoFragment : Fragment() {
             }
         })
         binding.myInfoHistoryRecyclerView.adapter = historyAdapter
-        historyAdapter.submitList(listOf(
-            MyInfoHistory("12", "Movies"),
-            MyInfoHistory("1.2K", "Points"),
-            MyInfoHistory("$89", "Saved")
-        ))
+        historyAdapter.submitList(historyItems)
 
         // UPCOMING_MOVIE
         val upcomingAdapter = UpcomingMovieListAdapter { movie ->
@@ -118,40 +140,17 @@ class MyInfoFragment : Fragment() {
         upcomingAdapter.submitList(MoviesMock.comingSoon)
 
         // USER_STATUS_SECTION
-        val statusAdapter = UserStatusSectionListAdapter {
-            val title = it.title.lowercase().trim()
-
-            val direction = if (title.contains("payment")) {
-                MyInfoFragmentDirections.actionMyInfoFragmentToMyPaymentMethod()
-            }
-            else if (title.contains("bookings")) {
-                MyInfoFragmentDirections.actionMyInfoFragmentToMyBookingsFragment()
-            }
-            else {
-                null
-            }
-
-            if (direction != null)
-                findNavController().navigate(direction)
-            else
-                showCommonDialog(it.title, it.subTitle)
+        sectionAdapter = UserStatusSectionListAdapter {
+            findNavController().navigate(it.sectionType.direction)
         }
         binding.myInfoUserStatusRecyclerView.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-        binding.myInfoUserStatusRecyclerView.adapter = statusAdapter
-        statusAdapter.submitList(listOf(
-            MyInfoStatusSection(null, "3", "My Bookings"),
-            MyInfoStatusSection(null, "", "Payment Methods"),
-            MyInfoStatusSection(null, "5", "Notifications"),
-            MyInfoStatusSection(null, "", "Reward & Points",
-                "1,250 points"),
-            MyInfoStatusSection(null, "", "Settings"),
-            MyInfoStatusSection(null, "", "Help & Support"),
-        ))
+        binding.myInfoUserStatusRecyclerView.adapter = sectionAdapter
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        appViewModel.setVisibilityFloatingActionButton(View.VISIBLE)
         _binding = null
     }
 
@@ -183,8 +182,8 @@ class MyInfoFragment : Fragment() {
             val inflater = LayoutInflater.from(parent.context)
             val binding = ItemMyInfoHistoryBinding.inflate(inflater, parent, false)
             val spacingPx = (8 * parent.context.resources.displayMetrics.density).toInt()
-            // 아이템 3개, 사이 gap 2개(8dp) → 각 아이템 너비 = (RecyclerView 너비 - 8dp × 2) / 3
-            val itemWidth = (parent.measuredWidth - spacingPx * 2) / 3
+            // 아이템 2개, 사이 gap 2개(8dp) → 각 아이템 너비 = (RecyclerView 너비 - 8dp × 2) / 2
+            val itemWidth = (parent.measuredWidth - spacingPx * 2) / 2
             binding.root.layoutParams = binding.root.layoutParams.apply {
                 width = itemWidth
             }
@@ -218,9 +217,9 @@ class MyInfoFragment : Fragment() {
     class UserStatusSectionListAdapter(val onClick: (MyInfoStatusSection) -> Unit) : ListAdapter<MyInfoStatusSection, UserStatusSectionViewHolder>(StatusDiffCallback) {
         object StatusDiffCallback : DiffUtil.ItemCallback<MyInfoStatusSection>() {
             override fun areItemsTheSame(oldItem: MyInfoStatusSection, newItem: MyInfoStatusSection): Boolean =
-                oldItem.title == newItem.title
+                oldItem.sectionType == newItem.sectionType
             override fun areContentsTheSame(oldItem: MyInfoStatusSection, newItem: MyInfoStatusSection): Boolean =
-                oldItem.title == newItem.title && oldItem.badge == newItem.badge
+                oldItem.sectionType == newItem.sectionType && oldItem.badge == newItem.badge
         }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserStatusSectionViewHolder {
             val inflater = LayoutInflater.from(parent.context)
@@ -257,25 +256,38 @@ class MyInfoFragment : Fragment() {
         val binding: ItemMyInfoUserStatusSectionBinding
     ): RecyclerView.ViewHolder(binding.root) {
         fun bind(section: MyInfoStatusSection) {
-            binding.myInfoIcon.load(section.posterUrl ?: R.drawable.ic_launcher_foreground)
+            val type = section.sectionType
+            binding.myInfoIcon.load(type.iconId)
             binding.badgeText = section.badge
-            binding.sectionTitle = section.title
+            binding.sectionTitle = type.sectionName
             binding.executePendingBindings()
         }
     }
 }
 
 data class MyInfoHistory(
-    val number: String,
+    var number: String,
     val name: String,
 )
 data class MyInfoStatusSection(
-    val posterUrl: String? = null,
-    val badge: String,
-    val title: String,
-    val subTitle: String? = null,
+    val sectionType: MyInfoSections,
+    var badge: String,
 )
-
+enum class MyInfoSections {
+    BOOKING, PAYMENT_METHOD
+}
+val MyInfoSections.direction: NavDirections get() = when (this) {
+    MyInfoSections.BOOKING -> MyInfoFragmentDirections.actionMyInfoFragmentToMyBookingsFragment()
+    MyInfoSections.PAYMENT_METHOD -> MyInfoFragmentDirections.actionMyInfoFragmentToMyPaymentMethod()
+}
+val MyInfoSections.sectionName: String get() = when (this) {
+    MyInfoSections.BOOKING -> "My Bookings"
+    MyInfoSections.PAYMENT_METHOD -> "Payment Methods"
+}
+val MyInfoSections.iconId: Int get() = when (this) {
+    MyInfoSections.BOOKING -> R.drawable.confirmation_number_outlined_24px
+    MyInfoSections.PAYMENT_METHOD -> R.drawable.credit_card_24px
+}
 fun FragmentActivity.setupAppBar(isVisible: Boolean) {
     // This assumes you're using a toolbar with AppBarLayout
     // You'll need to adjust this based on your actual layout structure
