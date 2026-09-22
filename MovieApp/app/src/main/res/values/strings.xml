@@ -313,5 +313,6 @@
     <string name="action_edit_phone_number">action edit phone number</string>
     <string name="take_picture">Take Picture</string>
     <string name="select_gallery">Select Gallery</string>
+    <string name="add_payment_method">Add Payment method</string>
 
 </resources>
