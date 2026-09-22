@@ -25,8 +25,7 @@ class BookViewModel @Inject constructor(
     val bookings: StateFlow<List<Booking>>
         get() = _bookings.asStateFlow()
     suspend fun fetchMovies() {
-        val token = getAuthToken() ?: return
-        when (val result = movieRepository.getMovies(token)) {
+        when (val result = movieRepository.getNowPlayingMovies()) {
             is APIResult.Success -> {
                 val movies = result.data
                 _movies.value = movies
