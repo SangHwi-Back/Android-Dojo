@@ -27,15 +27,27 @@ export class BookingsService {
       private readonly ticketsRepo: Repository<Ticket>,
   ) {}
 
-  findAll(): Promise<Booking[]> {
+  findAll(userUid: string): Promise<Booking[]> {
+    return this.bookingsRepo.find({ where: { userUid }, relations: { seats: true } });
+  }
+
+  findUpcoming(userUid: string): Promise<Booking[]> {
+    return this.bookingsRepo.find({ where: { userUid, isUpcoming: true }, relations: { seats: true } });
+  }
+
+  findPast(userUid: string): Promise<Booking[]> {
+    return this.bookingsRepo.find({ where: { userUid, isUpcoming: false }, relations: { seats: true } });
+  }
+
+  findAllAdmin(): Promise<Booking[]> {
     return this.bookingsRepo.find({ relations: { seats: true } });
   }
 
-  findUpcoming(): Promise<Booking[]> {
+  findUpcomingAdmin(): Promise<Booking[]> {
     return this.bookingsRepo.find({ where: { isUpcoming: true }, relations: { seats: true } });
   }
 
-  findPast(): Promise<Booking[]> {
+  findPastAdmin(): Promise<Booking[]> {
     return this.bookingsRepo.find({ where: { isUpcoming: false }, relations: { seats: true } });
   }
 
