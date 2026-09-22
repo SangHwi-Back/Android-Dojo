@@ -97,7 +97,7 @@ class SignInFragment : Fragment() {
         binding.googleButton.setOnClickListener {
             Log.d(TAG, "Google sign in clicked")
             lifecycleScope.launch {
-                viewModel.signInWithGoogleButtonTapped(true, requireContext())
+                viewModel.signInWithGoogleButtonTapped(true, requireActivity())
                     .handleAuthResult("Google Sign In", getString(R.string.sign_in_success_message))
             }
         }

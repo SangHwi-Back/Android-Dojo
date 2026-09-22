@@ -4,13 +4,14 @@ import android.content.Context
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
-import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.ViewModel
 import com.example.moviceapp.BuildConfig
 import com.facebook.CallbackManager
 import com.facebook.login.LoginResult
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.Companion.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
 import com.google.firebase.Firebase
@@ -110,16 +111,47 @@ class SignInViewModel @Inject constructor() : ViewModel() {
                 _isLoading.value = false
                 Result.failure(Exception("Invalid credential type"))
             }
-        } catch (e: NoCredentialException) {
+        } catch (e: GetCredentialCancellationException) {
+            // 사용자 취소 또는 계정 재인증 실패 — 재시도 없이 즉시 실패 반환
             _isLoading.value = false
             Result.failure(e)
         } catch (e: GetCredentialException) {
             if (isAuthorizedBefore) {
-                // Try again without filtering by authorized accounts
                 signInWithGoogleButtonTapped(false, context)
             } else {
+                // GetGoogleIdOption(One Tap) 이 모두 실패하면 표준 계정 선택 팝업으로 폴백
+                signInWithGoogleStandardPicker(context)
+            }
+        } catch (e: Exception) {
+            _isLoading.value = false
+            Result.failure(e)
+        }
+    }
+
+    private suspend fun signInWithGoogleStandardPicker(context: Context): Result<AuthResult> {
+        val request = GetCredentialRequest.Builder()
+            .addCredentialOption(
+                GetSignInWithGoogleOption.Builder(BuildConfig.GOOGLE_SERVER_CLIENT_ID).build()
+            )
+            .build()
+
+        return try {
+            val credentialResult = credentialManager!!.getCredential(context, request)
+            val credential = credentialResult.credential
+            if (credential is CustomCredential && credential.type == TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                suspendCancellableCoroutine { continuation ->
+                    val firebaseCredential = GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
+                    auth.signInWithCredential(firebaseCredential)
+                        .addOnCompleteListener { task ->
+                            _isLoading.value = false
+                            if (task.isSuccessful) continuation.resume(Result.success(task.result))
+                            else continuation.resume(Result.failure(task.exception ?: Exception("Unknown error")))
+                        }
+                }
+            } else {
                 _isLoading.value = false
-                Result.failure(e)
+                Result.failure(Exception("Invalid credential type"))
             }
         } catch (e: Exception) {
             _isLoading.value = false
