@@ -8,10 +8,7 @@ import retrofit2.http.Query
 
 interface MovieService {
     @GET("/api/movies")
-    fun getMovies(@Header("Authorization") token: String): Call<List<Movie>>
-
-    @GET("/api/movies/{path}")
-    fun getMovies(@Header("Authorization") token: String, @Path("path") path: String): Call<List<Movie>>
+    fun getMovies(): Call<List<Movie>>
 
     @GET("/api/movies/featured")
     fun getFeaturedMovies(): Call<List<Movie>>
@@ -24,4 +21,7 @@ interface MovieService {
 
     @GET("api/movies/random")
     fun randomMovies(): Call<List<Movie>>
+
+    @GET("/api/movies/now-playing")
+    fun getNowPlayingMovies(): Call<List<Movie>>
 }
