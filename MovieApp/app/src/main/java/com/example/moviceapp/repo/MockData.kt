@@ -1,8 +1,10 @@
 package com.example.moviceapp.repo
 
+import android.os.Parcel
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
+import retrofit2.http.Field
 
 // ================================================================
 //  데이터 모델
@@ -106,6 +108,90 @@ data class UserEntity(
     val saved: Int,
     val profileImageUrl: String?
 ) : Parcelable
+
+@Parcelize
+data class PaymentMethodDto(
+    val id: Int,
+    @SerializedName("user_uid")
+    val userUid: String,
+    val type: String,
+    @SerializedName("billing_key")
+    val billingKey: String?,
+    @SerializedName("masked_number")
+    val maskedNumber: String?,
+    @SerializedName("card_company")
+    val cardCompany: String?,
+    @SerializedName("expiry_date")
+    val expiryDate: String?,
+    @SerializedName("cardholder_name")
+    val cardholderName: String?,
+    @SerializedName("pg_customer_uid")
+    val pgCustomerUid: String?,
+    @SerializedName("is_default")
+    val isDefault: Boolean,
+    @SerializedName("is_active")
+    val isActive: Boolean,
+    val nickname: String?,
+    @SerializedName("created_at")
+    val createdAt: String,
+) : Parcelable
+
+@Parcelize
+data class CreatePaymentMethodDto(
+    @SerializedName("type")
+    val type: PaymentMethodType,
+
+    @SerializedName("billingKey")
+    val billingKey: String?,
+
+    @SerializedName("maskedNumber")
+    val maskedNumber: String?,
+
+    @SerializedName("cardCompany")
+    val cardCompany: String?,
+
+    @SerializedName("expiryDate")
+    val expiryDate: String?,
+
+    @SerializedName("cardholderName")
+    val cardholderName: String?,
+
+    @SerializedName("pgCustomerUid")
+    val pgCustomerUid: String?,
+
+    @SerializedName("isDefault")
+    val isDefault: Boolean,
+
+    @SerializedName("nickname")
+    val nickname: String?
+) : Parcelable
+
+@Parcelize
+data class UpdatePaymentMethodDto(
+    @SerializedName("isDefault")
+    val isDefault: Boolean?,
+
+    @SerializedName("nickname")
+    val nickname: String?
+) : Parcelable
+
+@Parcelize
+enum class PaymentMethodType : Parcelable {
+    @SerializedName("CREDIT_CARD")
+    CREDIT_CARD,
+
+    @SerializedName("DEBIT_CARD")
+    DEBIT_CARD,
+
+    @SerializedName("KAKAO_PAY")
+    KAKAO_PAY,
+
+    @SerializedName("NAVER_PAY")
+    NAVER_PAY,
+
+    @SerializedName("TOSS")
+    TOSS
+}
 // ================================================================
 //  Mock Data — 뷰 단위로 분리된 object
 // ================================================================

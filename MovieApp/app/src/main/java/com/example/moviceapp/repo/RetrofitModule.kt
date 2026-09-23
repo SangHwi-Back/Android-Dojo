@@ -60,6 +60,11 @@ object RetrofitModule {
     @Provides
     fun provideUserService(retrofit: Retrofit): MovieAppUserService =
         retrofit.create(MovieAppUserService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideCardService(retrofit: Retrofit): CardService =
+        retrofit.create(CardService::class.java)
 }
 
 @Module
@@ -88,4 +93,10 @@ abstract class RetrofitRepositoryModule {
     abstract fun bindUserRepository(
         impl: MovieAppUserServiceImpl
     ) : MovieAppUserRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCardRepository(
+        impl: CardRepositoryImpl
+    ) : CardRepository
 }
