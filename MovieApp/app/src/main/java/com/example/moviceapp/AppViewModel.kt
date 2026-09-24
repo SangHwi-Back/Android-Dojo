@@ -33,4 +33,22 @@ class AppViewModel : ViewModel() {
     suspend fun emitError(message: String) {
         _error.emit(message)
     }
+
+    /**
+     * Handle AppException and emit user-friendly error message
+     */
+    suspend fun handleException(exception: Throwable) {
+        val appException = when (exception) {
+            is AppException -> exception
+            else -> exception.toAppException()
+        }
+        _error.emit(appException.getUserMessage())
+    }
+
+    /**
+     * Handle AppException with custom message override
+     */
+    suspend fun handleException(exception: Throwable, customMessage: String) {
+        _error.emit(customMessage)
+    }
 }

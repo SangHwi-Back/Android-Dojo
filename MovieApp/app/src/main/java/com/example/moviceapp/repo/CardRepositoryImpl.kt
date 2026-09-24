@@ -1,5 +1,7 @@
 package com.example.moviceapp.repo
 
+import com.example.moviceapp.AppException.AuthException
+import com.example.moviceapp.myinfo.getAuthToken
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,15 +17,24 @@ class CardRepositoryImpl @Inject constructor(
     private val service: CardService
 ) : CardRepository {
 
-    override suspend fun findAll(): APIResult<List<PaymentMethodDto>> =
-        service.findAll().toAPIResult()
+    override suspend fun findAll(): APIResult<List<PaymentMethodDto>> {
+        val token = getAuthToken() ?: return APIResult.Failure(AuthException.NotAuthenticated())
+        return service.findAll(token).toAPIResult()
+    }
 
-    override suspend fun create(dto: CreatePaymentMethodDto): APIResult<PaymentMethodDto> =
-        service.create(dto).toAPIResult()
+    override suspend fun create(dto: CreatePaymentMethodDto): APIResult<PaymentMethodDto> {
+        val token = getAuthToken() ?: return APIResult.Failure(AuthException.NotAuthenticated())
+        return service.create(token, dto).toAPIResult()
+    }
 
-    override suspend fun update(id: Int, dto: UpdatePaymentMethodDto): APIResult<PaymentMethodDto> =
-        service.update(id, dto).toAPIResult()
 
-    override suspend fun remove(id: Int): APIResult<Unit> =
-        service.remove(id).toAPIResult()
+    override suspend fun update(id: Int, dto: UpdatePaymentMethodDto): APIResult<PaymentMethodDto> {
+        val token = getAuthToken() ?: return APIResult.Failure(AuthException.NotAuthenticated())
+        return service.update(token, id, dto).toAPIResult()
+    }
+
+    override suspend fun remove(id: Int): APIResult<Unit> {
+        val token = getAuthToken() ?: return APIResult.Failure(AuthException.NotAuthenticated())
+        return service.remove(token, id).toAPIResult()
+    }
 }

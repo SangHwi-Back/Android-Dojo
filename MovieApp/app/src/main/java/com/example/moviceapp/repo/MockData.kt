@@ -1,10 +1,8 @@
 package com.example.moviceapp.repo
 
-import android.os.Parcel
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
-import retrofit2.http.Field
 
 // ================================================================
 //  데이터 모델
