@@ -24,6 +24,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.moviceapp.book.BookViewModel
 import com.example.moviceapp.databinding.ActivityMainBinding
 import com.example.moviceapp.myinfo.AccountSettingViewModel
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -117,10 +118,10 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 appViewModel.error.collect { message ->
-                    com.google.android.material.snackbar.Snackbar.make(
+                    Snackbar.make(
                         binding.root,
-                        message,
-                        com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+                        message.message ?: getString(R.string.error_generic),
+                        Snackbar.LENGTH_LONG
                     ).show()
                 }
             }

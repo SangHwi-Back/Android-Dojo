@@ -12,8 +12,8 @@ class AppViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    private val _error = MutableSharedFlow<String>(replay = 0)
-    val error: SharedFlow<String> = _error
+    private val _error = MutableSharedFlow<Throwable>(replay = 0)
+    val error: SharedFlow<Throwable> = _error
 
     private val _visibilityFloatingActionButton = MutableStateFlow(View.VISIBLE)
     val visibilityFloatingActionButton: StateFlow<Int> = _visibilityFloatingActionButton
@@ -30,25 +30,18 @@ class AppViewModel : ViewModel() {
         _visibilityFloatingActionButton.value = visibility
     }
 
-    suspend fun emitError(message: String) {
-        _error.emit(message)
-    }
-
     /**
      * Handle AppException and emit user-friendly error message
      */
-    suspend fun handleException(exception: Throwable) {
-        val appException = when (exception) {
+    suspend fun handleException(exception: Throwable) =
+        _error.emit(when (exception) {
             is AppException -> exception
             else -> exception.toAppException()
-        }
-        _error.emit(appException.getUserMessage())
-    }
+        })
 
     /**
      * Handle AppException with custom message override
      */
-    suspend fun handleException(exception: Throwable, customMessage: String) {
-        _error.emit(customMessage)
-    }
+    suspend fun handleException(exception: AppException, customMessage: String) =
+        _error.emit(exception)
 }

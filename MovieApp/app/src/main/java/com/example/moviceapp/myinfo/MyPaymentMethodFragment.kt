@@ -29,6 +29,7 @@ class MyPaymentMethodFragment : Fragment() {
     private val binding get() = _binding!!
     private val cardViewModel: CardViewModel by viewModels()
     private val appViewModel: AppViewModel by activityViewModels()
+    private lateinit var adapter: MyPaymentAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentMyPaymentMethodBinding.inflate(inflater)
@@ -38,7 +39,7 @@ class MyPaymentMethodFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = MyPaymentAdapter(navController = findNavController())
+        this.adapter = MyPaymentAdapter(navController = findNavController())
         binding.paymentRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.paymentRecyclerView.adapter = adapter
 
@@ -46,6 +47,24 @@ class MyPaymentMethodFragment : Fragment() {
         lifecycleScope.launch {
             cardViewModel.cards.collect { cards ->
                 adapter.submitList(cards)
+            }
+        }
+
+        // Observe loading state from AppViewModel
+        lifecycleScope.launch {
+            cardViewModel.isLoading.collect { isLoading ->
+                if (isLoading)
+                    appViewModel.showLoading()
+                else
+                    appViewModel.hideLoading()
+            }
+        }
+
+        // Observe error from AppViewModel
+        lifecycleScope.launch {
+            cardViewModel.error.collect { error ->
+                if (error != null)
+                    appViewModel.handleException(error)
             }
         }
 
